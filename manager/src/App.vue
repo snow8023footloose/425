@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-
+    ////
     <div class="login" v-show="loginShow">
       <img class="loginPic" src="./logo.png" alt="">
       <el-form
