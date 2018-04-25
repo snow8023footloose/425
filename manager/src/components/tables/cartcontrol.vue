@@ -6,7 +6,9 @@
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop="addCart"></i>
+    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop="addCart" ref="add"></i>
+
+
   </div>
 </template>
 
@@ -22,13 +24,21 @@
     },
     data() {
       return {
-        SColor: 'SColor'
       }
     },
     created () {
     },
+    beforeDestroy(){
+    },
+    mounted(){
+      // console.log(this.$refs.add);
+
+      window.removeEventListener('click' ,this.addCart)
+    },
     methods: {
+
       addCart(event) {
+        this.dialogVisible = true
         if (!event._constructed) {
           return false;
         }
@@ -39,26 +49,19 @@
           this.food.count++;
         }
         this.$emit('increment', event.target);
-        console.log("cartcontrol")
 
-        // console.log(this.food);
 
         let data = {
           did: this.food.id,
           num: 1
 
         }
-        // console.log(data);
-
-
         this.$request(this.url.cart1,'json',data).then((res)=>{
 
-          // console.log(res.data);
         }).catch((err)=>{
 
           console.log(err);
         })
-        console.log(this.food.count);
 
       },
       decreaseCart(event) {
@@ -68,7 +71,6 @@
         if (this.food.count) {
           this.food.count--;
         }
-        console.log(this.food.count);
       }
     }
   };

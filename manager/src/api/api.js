@@ -72,10 +72,11 @@ export  function urlColletion() {
     table4: BURL +'/restaurantTable/update',
 
     //订单
-    order1: BURL +'/order/add',
-    order2: BURL +'/order/complexPageQuery',
-    order3: BURL +'/order/delete',
-    order4: BURL +'/order/update',
+    order1: BURL +'/userOrder/add',
+    order2: BURL +'/userOrder/complexPageQuery',
+    order3: BURL +'/userOrder/delete',
+    order4: BURL +'/userOrder/update',
+    orderComputer: BURL +'/userOrder/computePrepayInfo',
 
     //订单菜品
     orderDishes1: BURL +'/orderDishes/add',

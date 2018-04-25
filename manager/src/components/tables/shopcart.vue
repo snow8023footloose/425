@@ -36,7 +36,9 @@
         </div>
         <div style="display: flex;justify-content: space-between">
           <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{totalPrice}}</span>
-          <el-button type="success" round @click="pay">结&nbsp;&nbsp;&nbsp;算</el-button>
+          <el-button-group>
+            <el-button type="success" round @click="pay">结&nbsp;&nbsp;&nbsp;算</el-button>
+          </el-button-group>
         </div>
 
       </div>
@@ -187,6 +189,9 @@ const ERR_OK = 0
           }
         }
       },
+      delayPay(){
+
+      },
       beforeDrop(el) {
         let count = this.balls.length;
         while (count--) {
@@ -273,7 +278,7 @@ const ERR_OK = 0
           let diff = this.minPrice - this.totalPrice;
           return `还差￥${diff}元减10元`;
         } else {
-          return '去结算';
+          return '结算';
         }
       },
       payClass() {
