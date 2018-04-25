@@ -1,0 +1,1482 @@
+<template>
+  <div class="tables">
+
+    <!--table模块-->
+    <el-tabs v-model="activeName" @tab-click="handleClick">
+      <el-tab-pane label="餐桌信息" name="first">
+        <el-row :guter="0">
+          <div class="table-container">
+            <transition name="el-zoom-in-left"  v-for="(item,index) in listTable" :key="item.id">
+              <div v-show="show2" class="transition-box"  @click="selectTable(item,index)">
+                <div class="box-header">
+                  <span class="left" style="float: left;margin-left: 7px">桌号：{{index+1}}</span>
+                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.score}}</span>
+                </div>
+                  <!--总：{{item.recommend.length}}项-->
+                <div class="box-content">
+                  <p v-for="(recommend,index) in item.recommend">{{index+1}}.{{recommend}}&nbsp;</p>
+                </div>
+              </div>
+            </transition>
+          </div>
+        </el-row>
+      </el-tab-pane>
+      <!--<el-tab-pane label="餐桌特性" name="second">
+        <div class="categoryGroup">
+          <h6>请不要建立同名分类</h6>
+          <span style="width: 20%;">分类：</span>
+          <span style="width: 80%;">
+            <el-tag
+              :key="tag.zindex"
+              v-for="(tag,index) in dynamicTags1"
+              closable
+              :disable-transitions="false"
+              @close="handleClose1(tag,index)"
+
+            >
+              {{tag.name}}
+              <el-button
+                type="primary"
+                style="padding: 5px"
+                size="mini"
+                icon="el-icon-edit"
+                circle
+                @click.native="editCategory(tag,index)"
+              ></el-button>
+            </el-tag>
+
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible1"
+              v-model="inputValue1"
+              ref="saveTagInput1"
+              @keyup.enter.native="handleInputConfirm1"
+              @blur="handleInputConfirm1"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag" @click="showInput1">+ 新分类</el-button>
+            </span>
+        </div>
+      </el-tab-pane>-->
+      <!--<el-tab-pane label="餐桌记录" name="third">
+        <div style="margin-top: 15px; display: flex;justify-content: space-between">
+          <el-select v-model="tableSearchSelect1" slot="prepend" placeholder="请选择桌号/订单号">
+            <el-option label="桌号" value="1"></el-option>
+            <el-option label="订单号" value="2"></el-option>
+          </el-select>
+          <el-time-picker
+            v-model="valueSearchSelect"
+            :picker-options="{
+              selectableRange: '18:30:00 - 20:30:00'
+            }"
+            placeholder="今日任意时间点">
+          </el-time-picker>
+          <el-input placeholder="请输入内容" v-model="input5" class="input-with-select">
+          <el-button slot="append" icon="el-icon-search"></el-button>
+          </el-input>
+        </div>
+      </el-tab-pane>-->
+    </el-tabs>
+
+    <!--table遮罩-->
+    <div class="mask-black" v-show="show3"></div>
+
+    <!--table操作按钮-->
+    <div class="tableButtonGroup" v-show="show3">
+      <el-button type="danger" @click="handleDelete" icon="el-icon-delete" circle></el-button>
+      <el-button @click="stopTableService" type="warning" icon="el-icon-time" circle></el-button>
+      <el-button @click="handleEdit" icon="el-icon-edit" circle></el-button>
+      <el-button @click="refreshTable" v-loading.fullscreen.lock="fullscreenLoading" icon="el-icon-refresh" circle></el-button>
+      <el-button @click="closeTable" class="closeTable" icon="el-icon-close" circle></el-button>
+    </div>
+
+    <!--table订单按钮：个人订单详请-->
+    <div class="tableButtonGroup1" v-show="show3">
+      <span class="singleContainer">
+        <el-radio-group v-model="selectSingleOrder">
+          <span v-for="(item,index,key) in orderCollection" :key="key">
+            <el-popover
+              placement="bottom"
+              title="个人账单详情"
+              width="300"
+              trigger="hover"
+              class="popover"
+              :visible-arrow= "true"
+              :popper-class="popperClass"
+            >
+              <div style="text-align: right; margin: 0">
+                <div class="shopcart-list">
+                  <div class="list-header" @click.stop="toggleList">
+                    <!--<p class="title">购物车</p>-->
+                    <span class="empty" @click="empty">清空</span>
+                  </div>
+                  <div class="list-content" ref="list-content">
+                    <ul style="padding: 0px">
+                      <li
+                        style="display: flex;align-items:center; justify-content: space-around"
+                        class="food"
+                        v-for="(food,key) in selectFoods"
+                        :key="key">
+                        <h4 style="text-align: left;font-weight: lighter; width: 100px" class="name">{{food.name}}</h4>
+                        <div class="price">
+                          <span>￥{{food.normalPrice*food.count}}</span>
+                        </div>
+                        <div>
+                          <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <span class="price" style="font-size: 20px;font-weight: bolder;margin-right: 85px" :class="{'highlight':totalPrice>0}">总计 ￥{{totalPrice}}</span>
+                <el-button size="mini" type="text" @click="minusCustomer">删除</el-button>
+                <el-button type="success" size="mini" @click="singleAccounts">结账</el-button>
+              </div>
+
+              <el-radio-button slot="reference" icon="el-icon-document" @click.native.stop="selectCustomer(item,$event)" :label="index">订单{{index+1}}</el-radio-button>
+
+              <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
+            </el-popover>
+            <el-badge :value="selectFoods.count" class="item">
+            </el-badge>
+          </span>
+        </el-radio-group>
+      </span>
+
+      <el-button
+        @click="plusCustomer"
+        icon="el-icon-plus"
+        circle
+      ></el-button>
+    </div>
+
+    <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
+    <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
+      <div class="goodse animated" id="goods" ref="goods-top" v-show="show3">
+        <el-popover
+          placement="top"
+          title="餐桌账单详情"
+          width="200"
+          trigger="hover"
+        >
+          <div v-model="toAccountBox" ></div>
+          <p v-for="(item,index) in toAccountBox.recommend">{{index+1}}.{{item}}</p>
+          <div style="text-align: right; margin: 0">
+            <el-button type="success" size="mini" @click="singleAccounts">结账</el-button>
+          </div>
+          <div slot="reference" class="tableNumber">{{tableTitle}}</div>
+        </el-popover>
+
+
+        <!--分类-->
+        <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
+          <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
+            <ul class="menu-ul">
+              <li
+                v-for="(item,index,key) in goods"
+                :key="key"
+                class="menu-item"
+                :class="{'current':currentIndex===index}"
+                @click="selectMenu(index,$event)">
+                <span class="text border-1px">
+                  <!-- <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span> -->
+                  {{item.name }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </transition>
+        <div @click="show=!show" class="menu-button">
+        </div>
+
+        <!--菜品展示-->
+        <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
+          <ul class="foods-ul">
+            <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
+              <h1 class="goods-title">{{goods.name}}</h1>
+              <ul class="goodsUl">
+                <li ref="food-li" @click="selectFood(food,$event)" v-for="(food,key) in item.foods" :key="key" class="food-item border-1px">
+                  <div class="icon">
+                      <img width="70px" height="70px" class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb" alt="点击查看原图">
+                  </div>
+                  <div class="goods-content">
+                    <h3 class="goods-name">{{food.name}}</h3>
+                    <p class="desc">{{food.description}}</p>
+                    <div class="extra">
+                      <span class="count">月售{{food.stock}}份</span><span>好评率{{food.rating}}%</span>
+                    </div>
+                    <div class="price">
+                      <span class="now">￥{{food.normalPrice}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                    </div>
+                    <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
+                      <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+
+        <!--加入购物车-->
+        <shopcart ref="shop-cart" :select-foods="selectFoods"></shopcart>
+      </div>
+    </transition>
+
+    <!--丢弃弹框-->
+    <el-dialog :title="tableTitle" :model="tableForm" :visible.sync="dialogFormVisibleTable" width="70%">
+      <!--此处省略搜索输入框-->
+      <!-- <el-select v-model="value" placeholder="请选择类别，默认全部">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <el-select
+        v-model="value9"
+        multiple
+        filterable
+        remote
+        label="搜索"
+        reserve-keyword
+        placeholder="可输入首字母搜索"
+        :remote-method="remoteMethod"
+        :loading="loading">
+        <el-option
+          v-for="item in options4"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value">
+        </el-option>
+      </el-select>
+      <el-form :model="tableForm">
+        <el-form-item label="已点" :label-width="formLabelWidth">
+          <div>
+          <span v-for="item in tableForm.type" v-model="tableForm.type">
+            <el-checkbox :label="item" name="type"></el-checkbox>
+          </span>
+          </div>
+        </el-form-item>
+      </el-form>
+      <el-form :model="tableForm">
+        <el-form-item label="备注" :label-width="formLabelWidth">
+          <el-input v-model="tableForm.content" auto-complete="off" placeholder="请输入备注"></el-input>
+        </el-form-item>
+      </el-form> -->
+      <div slot="footer" class="dialog-footer">
+        <el-button size="large" type="danger" icon="el-icon-delete" @click="dialogFormVisibleTable = false">删除</el-button>
+        <el-button @click="dialogFormVisibleTable = false">暂停服务</el-button>
+        <el-button @click="dialogFormVisibleTable = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisibleTable = false">确 定</el-button>
+      </div>
+    </el-dialog>
+
+    <!--添加餐桌弹框-->
+    <el-dialog title="增加餐桌" :visible.sync="dialogFormVisibleTablePlus">
+      <el-form :model="tableForm" :label-width="formLabelWidth">
+        <el-form-item label="名称" >
+          <el-input v-model="tableForm.name" auto-complete="off" placeholder="请输入名称"></el-input>
+        </el-form-item>
+        <el-form-item label="桌号">
+          <el-input v-model.number="tableForm.num" auto-complete="off" placeholder="请输入桌号"></el-input>
+        </el-form-item>
+        <el-form-item label="容纳人数">
+          <el-input v-model.number="tableForm.seatNum" auto-complete="off" placeholder="请输入容纳人数"></el-input>
+        </el-form-item>
+        <el-form-item label="餐桌类型" style="text-align: left">
+          <el-select
+            style="display: inline-block"
+            v-model="tableForm.orderType"
+            @change="tableTypeChange"
+            placeholder="请选择餐桌类型">
+            <el-option
+              v-for="(item,index) in tableType"
+              :key="item.index"
+              :label="item.typeName"
+              :value="item.typeIndex"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="收费类型" style="text-align: left">
+          <el-select
+            style="display: inline-block"
+            v-model="tableForm.chargeType"
+            @change="tableTypeChange"
+            placeholder="请选择收费类型">
+            <el-option
+              v-for="(item,index) in chargeType"
+              :key="index"
+              :label="item.name"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="tableForm.chargeType === 'charge'" label="价格">
+          <el-input v-model.number="tableForm.money" auto-complete="off" placeholder="请输入价格"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model.number="tableForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="large" @click="plusTable1" icon="el-icon-time">暂不开启</el-button>
+        <el-button @click="dialogFormVisibleTablePlus = false; tableForm = {}">取 消</el-button>
+        <el-button type="primary" @click="plusTable">立即开启</el-button>
+      </div>
+    </el-dialog>
+
+    <!--修改餐桌弹框-->
+    <el-dialog title="修改餐桌" :visible.sync="dialogFormVisibleTableChange">
+      <el-form :model="tableForm" :label-width="formLabelWidth">
+        <el-form-item label="名称" >
+          <el-input v-model="tableForm.name" auto-complete="off" placeholder="请输入名称"></el-input>
+        </el-form-item>
+        <el-form-item label="桌号">
+          <el-input v-model.number="tableForm.money" auto-complete="off" placeholder="请输入桌号"></el-input>
+        </el-form-item>
+        <el-form-item label="容纳人数">
+          <el-input v-model.number="tableForm.seatNum" auto-complete="off" placeholder="请输入容纳人数"></el-input>
+        </el-form-item>
+        <el-form-item label="餐桌类型" style="text-align: left">
+          <el-select
+            style="display: inline-block"
+            v-model="tableForm.orderType"
+            @change="tableTypeChange"
+            placeholder="请选择餐桌类型">
+            <el-option
+              v-for="item in tableType"
+              :key="item.typeIndex"
+              :label="item.typeName"
+              :value="item.typeIndex"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="收费类型" style="text-align: left">
+          <el-select
+            style="display: inline-block"
+            v-model="tableForm.chargeType"
+            placeholder="请选择收费类型">
+            <el-option
+              v-for="(item,index) in chargeType"
+              :key="index"
+              :label="item.name"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="tableForm.chargeType === 'charge'" label="价格">
+          <el-input v-model.number="tableForm.price" auto-complete="off" placeholder="请输入价格"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model.number="tableForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button size="large" @click="plusTable1" icon="el-icon-time">暂不开启</el-button>
+        <el-button @click="dialogFormVisibleTableChange = false; tableForm = {}">取 消</el-button>
+        <el-button type="primary" @click="changeTable">立即开启</el-button>
+      </div>
+    </el-dialog>
+
+    <!--添加组件-->
+    <editcontrol @plusMethods="plusMethodsThis"></editcontrol>
+  </div>
+</template>
+
+<script>
+import BScroll from 'better-scroll'
+import shopcart from '@/components/tables/shopcart.vue'
+import cartcontrol from '@/components/tables/cartcontrol.vue'
+import editcontrol from '@/components/editcontrol/editcontrol';
+const ERR_OK = 0
+export default {
+
+  name: 'tables',
+  data: () => ({
+    //餐桌属性保存
+    // inputVisible1: false,
+    // inputValue1: '',
+    // toDynamicTags1:[
+    //
+    // ],
+    // dynamicTags1: [
+    //   {
+    //     zindex:'0',
+    //     name:'其他',
+    //     type:'',
+    //     showTime:'',
+    //     showType:'',
+    //     pid: '',
+    //     rid: 0,
+    //     description: '',
+    //     status: '',
+    //   },
+    // ],
+    popperClass:'popperClass',
+    show3: false,
+    inputCustomer:'',
+    input5: '',
+    dishesCategory:'',
+    fullscreenLoading: false,
+    tableSearchSelect1: '',
+    tableSearchSelect2: '',
+    valueSearchSelect: new Date(2016, 9, 10, 18, 40),
+    goods: [],
+    listHeight: [],
+    scrollY: 0,
+    selectedFood: {},
+    show: false,
+    divTop: "divTop",
+    SColor: 'SColor',
+    show2: false,
+    activeName: 'first',
+    dialogFormVisibleTable: false,
+    dialogFormVisibleTablePlus: false,
+    dialogFormVisibleTableChange: false,
+    listTable:[],
+    goodsTable:[],
+    value5:[],
+    tableData:[],
+    tableType:[
+      {
+        typeName: '标准',
+        typeIndex: '标准',
+      },
+      {
+        typeName: '大厅',
+        typeIndex: '大厅',
+      },
+      {
+        typeName: '卡座',
+        typeIndex: '卡座',
+      },
+      {
+        typeName: '包厢',
+        typeIndex: '包厢',
+      },
+      {
+        typeName: '特供',
+        typeIndex: '特供',
+      }
+    ],
+    currentDate: new Date(),
+    formLabelWidth:'80px',
+    tableTitle:"",
+    toCustomer:'',
+    visible2: false,
+    toAccountBox: [],
+    classes:[],
+    food1:[],
+    orderCollection:[
+      {
+        did:'1',
+        rid:1,
+        uid:1,
+        sid:1,
+        totalPrice:0,
+        dishes:[
+
+        ]
+      },
+      {
+        did:'2',
+        rid:2,
+        uid:2,
+        sid:2,
+        totalPrice:0,
+        dishes:[
+
+        ]
+      },
+      {
+        did:'3',
+        rid:3,
+        uid:3,
+        sid:3,
+        totalPrice:0,
+        dishes:[
+          {
+            name:'茄子炒蛋'
+          },
+          {
+            name:'花菜炒肉'
+          }
+        ]
+      },
+    ],
+    tableForm:
+    {
+      id:'',
+      tid:'',
+      name: '',
+      zindex: '',
+      orderType: '',
+      chargeType: '',
+      num:'',
+      seatNum:'',
+      money:'',
+      description:'',
+      status:'enable',
+
+    },
+    chargeType:[
+      {
+        name:'免费',
+        value:'free'
+      },
+      {
+        name:'收费',
+        value:'charge'
+      }
+    ],
+    value6:'',
+    options4: [],
+    selectSingleOrder: 0,
+    singleOrder:[],
+    value9: [],
+    list: [],
+    loading: false,
+    states: ["Alabama", "Alaska", "Arizona",
+      "Arkansas", "California", "Colorado",
+      "Connecticut", "Delaware", "Florida",
+      "Georgia", "Hawaii", "Idaho", "Illinois",
+      "Indiana", "Iowa", "Kansas", "Kentucky",
+      "Louisiana", "Maine", "Maryland",
+      "Massachusetts", "Michigan", "Minnesota",
+      "Mississippi", "Missouri", "Montana",
+      "Nebraska", "Nevada", "New Hampshire",
+      "New Jersey", "New Mexico", "New York",
+      "North Carolina", "North Dakota", "Ohio",
+      "Oklahoma", "Oregon", "Pennsylvania",
+      "Rhode Island", "South Carolina",
+      "South Dakota", "Tennessee", "Texas",
+      "Utah", "Vermont", "Virginia",
+      "Washington", "West Virginia", "Wisconsin",
+      "Wyoming"],
+    options: [],
+    value: '',
+    foodss:[]
+
+  }),
+  computed: {
+    totalPrice() {
+      let total = 0;
+      this.selectFoods.forEach((food) => {
+        total += food.normalPrice * food.count;
+      });
+      return total;
+    },
+    currentIndex() {
+      for (let i = 0; i < this.listHeight.length; i++) {
+        let height1 = this.listHeight[i];
+        let height2 = this.listHeight[i + 1];
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+          return i;
+        }
+      }
+      return 0;
+    },
+    selectFoods() {
+      let foods = [];
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      this.singleOrder = foods
+      return foods;
+    }
+  },
+
+  methods: {
+    // 餐桌特性暂存
+    // handleClose1(tag,index) {
+    //   console.log(tag);
+    //   this.$confirm('是否删除该分类，此类菜品将无分类, 是否继续?', '提示', {
+    //     confirmButtonText: '确定',
+    //     cancelButtonText: '取消',
+    //     type: 'warning'
+    //   }).then(() => {
+    //     let data = {
+    //       id:tag.id
+    //     }
+    //     this.$request(this.url.dishesCategory3,'form',data).then((res)=>{
+    //       this.$message({
+    //         type: 'success',
+    //         message: '数据提交成功!'
+    //       });
+    //       this.dynamicTags1.splice(this.dynamicTags1.indexOf(tag), 1);
+    //     }).catch((err)=>{
+    //       this.$message({
+    //         type: 'info',
+    //         message: '数据提交失败!'
+    //       });
+    //     })
+    //
+    //     this.$message({
+    //       type: 'success',
+    //       message: '删除成功!'
+    //     });
+    //   }).catch(() => {
+    //     this.$message({
+    //       type: 'info',
+    //       message: '已取消删除'
+    //     });
+    //   });
+    // },
+    // showInput1() {
+    //   this.inputVisible1 = true;
+    //   this.$nextTick(_ => {
+    //     this.$refs.saveTagInput1.$refs.input.focus();
+    //   });
+    // },
+    // editCategory(tag,index){
+    //   // console.log(tag.zindex);
+    //
+    //   console.log(index);
+    //
+    //   this.toDynamicTags1 = Object.assign({},tag);
+    //   this.categoryIndex = index;
+    //   console.log(this.toDynamicTags1);
+    //   this.dialogFormVisibleCategoryEdit = !this.dialogFormVisibleCategoryEdit
+    // },
+    // handleInputConfirm1() {
+    //   let inputValue1 = this.inputValue1;
+    //   let repeatNum1  = this.repeatNum1
+    //
+    //   var lastNumber = 0
+    //   if(this.dynamicTags2 === null){
+    //     lastNumber = 1
+    //   }else{
+    //     lastNumber = this.dynamicTags2.length+1
+    //   }
+    //   console.log(this.dynamicTags1);
+    //   if (inputValue1){
+    //     if(repeatNum1 === false){
+    //       alert('提示：同名项，不可建立')
+    //     }else {
+    //       let data = {
+    //         zindex: lastNumber,
+    //         name: inputValue1,
+    //       }
+    //       this.$request(this.url.dishesCategory1,'json',data).then((res)=>{
+    //         this.$message({
+    //           type: 'success',
+    //           message: '数据提交成功!'
+    //         });
+    //       }).catch((err)=>{
+    //         this.$message({
+    //           type: 'info',
+    //           message: '数据提交失败!'
+    //         });
+    //         console.log(err);
+    //       })
+    //       this.dynamicTags1.push(
+    //         {
+    //           zindex: lastNumber,
+    //           name: inputValue1,
+    //         }
+    //       );
+    //     }
+    //   }
+    //   this.inputVisible1 = false;
+    //   this.inputValue1 = '';
+    // },
+    selectFoodss(){
+      let foods = [];
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food);
+          }
+        });
+      });
+      this.foodss = foods
+    },
+    empty() {
+      this.selectFoods.forEach((food) => {
+        food.count = 0;
+      });
+      console.log(this.listGoods);
+    },
+    payConfirm() {
+      if (this.totalPrice < this.minPrice) {
+        return;
+      }
+      this.fold = false;
+      console.log(this.selectFoods);
+      this.dialogTableVisible = !this.dialogTableVisible
+    },
+    toggleList() {
+      if (!this.totalCount) {
+        return;
+      }
+    },
+    closeTable(){
+
+      this.show3 = false
+
+      location.reload();
+    },
+    tableTypeChange(){
+      console.log(this.value5);
+      console.log(this.tableForm);
+    },
+    stopTableService(){
+      const loading = this.$loading({
+        lock: true,
+        text: '正在暂停该餐桌服务……',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+      let data = this.tableData
+      //传入状态
+
+      this.$request(this.url.table3,'json',data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        setTimeout(() => {
+          loading.close();
+          this.$message({
+            showClose: true,
+            message: '该餐桌二维码已经失效！',
+            type: 'success'
+          });
+        }, 2000);
+        console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+
+    },
+
+
+    singleAccounts(){
+      alert("结账中……")
+    },
+    minusCustomer(){
+      let numberOfpeople = this.tableForm.name;
+      if (numberOfpeople) {
+        numberOfpeople--;
+        this.tableForm.name = numberOfpeople
+        // this.toCustomer.push(numberOfpeople);
+      }
+    },
+    plusCustomer(){
+      let i = this.orderCollection.length
+      this.orderCollection.push(
+        {
+          did:i,
+          rid:i,
+          uid:i,
+          sid:i,
+          totalPrice:0,
+          dishes:[
+
+          ]
+        }
+      )
+      // this.numberOfpeople = false;
+      // this.toCustomer = '';
+      // console.log(this.tableForm.name);
+      // console.log(this.tableForm);
+    },
+    selectCustomer(item,event){
+      console.log(item);
+      console.log(event,'?????????');
+      if(item.dishes.length === null && item.dishes.length === 0){
+        this.selectFoods = []
+      }else{
+        this.selectFoods = item.dishes
+      }
+      this.singleOrder = item.dishes
+      console.log(this.singleOrder,'得到个人订单');
+      // this.goods.forEach((good) => {
+      //   good.foods.forEach((food) => {
+      //     if (food.count) {
+      //       this.singleOrder.push(food);
+      //     }
+      //   });
+      // });
+    },
+    refreshTable(){
+      console.log(this.selectFoods);
+      console.log(this.goods);
+      console.log(this.singleOrder,'已经得到所选菜品');
+
+      // const loading = this.$loading({
+      //   lock: true,
+      //   text: '清台中……',
+      //   spinner: 'el-icon-loading',
+      //   background: 'rgba(0, 0, 0, 0.7)'
+      // });
+      // let data = this.tableData
+      // //传入状态
+      //
+      // this.$request(this.url.table3,'json',data).then((res)=>{
+      //   this.$message({
+      //     type: 'success',
+      //     message: '数据提交成功!'
+      //   });
+      //   setTimeout(() => {
+      //     loading.close();
+      //     this.$message({
+      //       showClose: true,
+      //       message: '清台成功！',
+      //       type: 'success'
+      //     });
+      //   }, 2000,function () {
+      //
+      //   });
+      //   console.log(res);
+      // }).catch((err)=>{
+      //   this.$message({
+      //     type: 'info',
+      //     message: '数据提交失败!'
+      //   });
+      //   console.log(err);
+      // })
+
+
+    },
+    handleDelete(tag) {
+      this.$confirm('即将删除该餐桌, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let data = this.tableData
+
+        this.$request(this.url.table3,'json',data).then((res)=>{
+          this.$message({
+            type: 'success',
+            message: '数据提交成功!'
+          });
+          // this.dishesDataTable.push(data);
+          console.log(res);
+        }).catch((err)=>{
+          this.$message({
+            type: 'info',
+            message: '数据提交失败!'
+          });
+          console.log(err);
+        })
+
+        // this.dynamicTags1.splice(this.dynamicTags1.indexOf(tag), 1);
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        });
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    otouch() {
+      this.show = false
+    },
+    selectMenu(index, event) {
+      if (!event._constructed) {
+        return;
+      }
+      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
+      let el = foodList[index];
+      this.foodsScroll.scrollToElement(el, 300);
+    },
+    selectFood(food, event) {
+      if (!event._constructed) {
+        return;
+      }
+      if (document.getElementById("goods").offsetTop < 124) {
+        return;
+      };
+      this.selectedFood = food;
+    },
+    incrementTotal(target) {
+      //体验优化,异步执行下落动画
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(target);
+      });
+    },
+    _initScroll() {
+      this.menuScroll = new BScroll(this.$refs['menu-wrapper'], {
+        click: true
+      });
+      this.foodsScroll = new BScroll(this.$refs['foods-wrapper'], {
+        click: true,
+        probeType: 3
+      });
+      this.foodsScroll.on('scroll', (pos) => {
+        this.scrollY = Math.abs(Math.round(pos.y));
+      });
+    },
+    _calculateHeight() {
+      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
+      let height = 0;
+      this.listHeight.push(height);
+      for (let i = 0; i < foodList.length; i++) {
+        let item = foodList[i];
+        height += item.clientHeight;
+        this.listHeight.push(height);
+      }
+    },
+
+
+    remoteMethod(query) {
+      if (query !== '') {
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.options4 = this.list.filter(item => {
+            return item.label.toLowerCase()
+              .indexOf(query.toLowerCase()) > -1;
+          });
+        }, 200);
+      } else {
+        this.options4 = [];
+      }
+    },
+    plusTable(){
+      let data = this.tableForm
+      console.log(data);
+      this.$request(this.url.table1, 'json', data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        // this.dishesDataTable.push(data);
+
+        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
+        console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    changeTable(){
+      let data = this.tableForm
+      console.log(data);
+      this.$request(this.url.table4, 'json', data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        // this.dishesDataTable.push(data);
+
+        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
+        console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    plusTable1(){
+      let data = this.tableForm
+      console.log(data);
+      this.$request(this.url.table1, 'json', data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        // this.dishesDataTable.push(data);
+
+        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
+        console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    plusMethodsThis(data){
+      this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
+    },
+    handleEdit(){
+      // let data = this.tableForm
+      // console.log(data);
+      // this.$request(this.url.table4, 'json', data).then((res)=>{
+      //   this.$message({
+      //     type: 'success',
+      //     message: '数据提交成功!'
+      //   });
+      //   // this.dishesDataTable.push(data);
+      //
+      //   this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
+      //   console.log(res);
+      // }).catch((err)=>{
+      //   this.$message({
+      //     type: 'info',
+      //     message: '数据提交失败!'
+      //   });
+      //   console.log(err);
+      // })
+      this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
+    },
+    getData(){
+
+    },
+    selectTable(item,index){
+      this.goods = this.goodsArr(this)
+      this.getData()
+      this.$nextTick(() => {
+        if(!this.scroll){
+          this._initScroll();
+        }else{
+          this.scroll.refresh();
+        }
+        this._calculateHeight();
+      })
+
+      this.show3=!this.show3
+      this.toAccountBox = item;
+      this.tableForm.name = item.score
+      this.tableForm.type = item.recommend
+      var Title = new Array("桌号"+(index+1))
+      this.tableTitle = Title.join('——')
+    },
+    handleClick(tab, event) {
+    },
+    labelHideSroll(){
+    },
+    openMsg(msg){
+      const h = this.$createElement;
+      this.$msgbox({
+        title: '结账',
+        message: h('p', null, [
+          h('span', null, '内容可以是 '),
+          h('el-button', { style: 'color: teal' }, 'VNode')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        beforeClose: (action, instance, done) => {
+          if (action === 'confirm') {
+            instance.confirmButtonLoading = true;
+            instance.confirmButtonText = '结账中...';
+            setTimeout(() => {
+              done();
+              setTimeout(() => {
+                instance.confirmButtonLoading = false;
+              }, 300);
+            }, 3000);
+          } else {
+            done();
+          }
+        }
+      }).then(action => {
+        this.$message({
+          type: 'info',
+          message: 'action: ' + action
+        });
+      });
+      // this.$alert(
+      //   '<el-row>\n' +
+      //   '  <el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">\n' +
+      //   '    <el-card :body-style="{ padding: \'0px\' }">\n' +
+      //   '      <div style="padding: 14px;">\n' +
+      //   '        <span>好吃的汉堡</span>\n' +
+      //   '        <div class="bottom clearfix">\n' +
+      //   '          <time class="time">' +
+      //                 this.currentDate+
+      //               '</time>\n' +
+      //   '          <el-button type="text" class="button">操作按钮</el-button>\n' +
+      //   '        </div>\n' +
+      //   '      </div>\n' +
+      //   '    </el-card>\n' +
+      //   '  </el-col>\n' +
+      //   '</el-row>',
+      //   '确认结账', {
+      //   dangerouslyUseHTMLString: true
+      // });
+    }
+  },
+  mounted() {
+    setTimeout(this.show2 = !this.show2,2000);
+    this.list = this.states.map(item => {
+      return { value: item, label: item };
+    });
+
+  },
+  created() {
+    let data1 = [{
+      feild: 'status',
+      value: 'enable',
+      joinType: 'eq'
+    }]
+    this.$request(this.url.dishesCategory2,'json',data1).then((res)=>{
+      this.dishesCategory = res.data.data
+    }).catch((err)=>{
+      console.log(err);
+    })
+    let data2 = [{
+      feild: 'status',
+      value: '0',
+      joinType: 'eq'
+    }]
+    this.$request(this.url.table2,'json',data2).then((res)=>{
+      console.log(res);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    this.$axios.get('../api/ratings').then((response) => {
+      var response = response.data
+      if (response.errno === ERR_OK) {
+        this.listTable = response.data
+      }
+    })
+
+  },
+  components:{
+    editcontrol,
+    shopcart,
+    cartcontrol
+  },
+  events: {
+    'cart.add'(target) {
+      this._drop(target);
+    }
+  },
+
+}
+
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="stylus" rel="stylesheet/stylus">
+
+@import "mixin.styl"
+@import "animate.css";
+
+
+
+.tables
+  margin:0 3% 0
+  .el-row
+    .table-container
+      display: flex
+      height: 720px
+      flex-wrap: wrap
+      .transition-box
+        margin-bottom: 8px
+        width: 10em
+        height: 10em
+        border-radius: 10px
+        background-color: white
+        color: white
+        text-align: center
+        box-sizing: border-box
+        margin-right: 20px
+        overflow hidden
+        position relative
+        z-index 99
+        .box-header
+          width 100%
+          height 15%
+          display block
+          background #409EFF
+        .box-content
+          overflow-y scroll
+          height 77%
+          width 95%
+          color: rgba(0, 0, 0, 0.5) !important
+          border-radius 0px 0px 9px 9px/ 0px 0px 9px 9px
+          text-align left
+          padding-left 5%
+          background rgba(0, 0, 0, 0.05)
+          p
+            margin 4px 0px
+            font-size 14px
+
+
+
+  .tableButtonGroup
+    position: absolute
+    right: 50px
+    bottom: 20px
+    width 50px
+    z-index 100
+    button
+      margin 0px 0px 10px 10px
+
+
+  .tableNumber
+    position: absolute
+    font-size: 17px
+    z-index: 1
+    background: #f56c6c
+    color: white
+    width: 111px
+    height: 73px
+    border-radius: 50%
+    text-align: center
+    line-height: 100px
+    right: 27%
+    top: -36px
+
+  .tableButtonGroup1
+    position: fixed
+    left: 12%
+    bottom: 20px
+    width 641px
+    height 65px
+    z-index 100
+    overflow-x scroll
+    .singleContainer
+      height 40px
+      width 2000px
+      display inline-block
+      span
+        .popover
+          .singleButton
+            margin-left 0px
+            padding 10px
+            margin-top 10px
+            &:hover
+              box-shadow 1px 2px 3px rgba(0,0,0,0.3)
+    >button
+      margin-left 2px
+      position fixed
+      right 17%
+      bottom: 35px
+
+
+  .el-badge
+    top -9px
+    left -15px
+
+
+  .time
+    font-size: 13px
+    color: #999
+
+
+  .bottom
+    margin-top: 13px
+    line-height: 12px
+
+
+  .button
+    padding: 0
+    float: right
+
+
+  .image
+    width: 100%
+    display: block
+
+
+  .clearfix:before,.clearfix:after
+    display: table
+    content: ""
+
+
+  .clearfix:after
+    clear: both
+
+
+.mask-black
+  width 150%
+  height 150%
+  left -50%
+  top -50%
+  background rgba(0,0,0,0.5)
+  position fixed
+  z-index 100
+
+
+.closeTable:hover
+  background #f56c6c
+  color white
+  border-color #f56c6c
+
+
+.goodse
+  display: flex
+  position fixed
+  top 50px
+  left 124px
+  background white
+  width: 75%
+  overflow: hidden
+  text-align left
+  border-radius 10px
+  height 80%
+  z-index 103
+  .close-bnt
+    color white
+    position fixed
+    bottom 20px
+    left 50%
+    font-size 40px
+  .menu-button
+    position relative
+    width 20px
+    height 20px
+    background #f3f5f7
+    border-radius 100%
+    display none
+
+  .menu-wrapper
+    flex: 0 0 80px
+    width: auto
+    background: #f3f5f7
+    display block !important
+    .menu-ul
+      width 105px
+      padding-left 15px
+    .menu-item
+      display: table
+      height: 54px
+      width: 75px
+      padding: 0 12px
+      line-height: 14px
+      &.current
+        position: relative
+        z-index: 10
+        margin-top: -1px
+        background: #fff
+        font-weight: 700
+        .text
+          border-none()
+      .icon
+        display: inline-block
+        vertical-align: top
+        width: 12px
+        height: 12px
+        margin-right: 2px
+        background-size: 12px 12px
+        background-repeat: no-repeat
+
+      .text
+        display: table-cell
+        width: 56px
+        vertical-align: middle
+        border-1px(rgba(7, 17, 27, 0.1))
+        font-size: 12px
+
+  .foods-wrapper
+    flex: 1
+    ul
+      padding 0px 0px 30px
+      margin-top 0px
+     .food-list
+      padding-top 20px
+      background white
+      .goods-title
+        padding-left: 14px
+        height: 26px
+        line-height: 26px
+        border-left: 2px solid #d9dde1
+        font-size: 12px
+        color: rgb(147, 153, 159)
+        background: #f3f5f7
+      .food-item
+        display: flex
+        margin: 18px
+        padding-bottom: 18px
+        border-1px(rgba(7, 17, 27, 0.1))
+        &:last-child
+          border-none()
+          margin-bottom: 0
+        .icon
+          flex: 0 0 57px
+          margin-right: 10px
+          .goods-content
+            flex: 1
+            .goods-name
+              margin: 2px 0 8px 0
+              height: 14px
+              line-height: 14px
+              font-size: 14px
+              color: rgb(7, 17, 27)
+
+.desc, .extra
+  line-height: 10px
+  font-size: 10px
+  color: rgb(147, 153, 159)
+.desc
+  line-height: 12px
+  margin: 3px 0px 8px
+.extra
+  .count
+    margin-right: 12px
+.price
+  font-weight: 700
+  line-height: 24px
+  .now
+    margin-right: 8px
+    font-size: 14px
+    color: rgb(240, 20, 20)
+  .old
+    text-decoration: line-through
+    font-size: 10px
+    color: rgb(147, 153, 159)
+
+
+.cartcontrol-wrapper
+  position: absolute
+  right: 0
+  bottom: 12px
+  background white
+  border-radius 20px
+  .cartcontrol
+    padding-top 1px
+    .cart-decrease,.cart-add,.cart-count
+      padding 1px
+
+.desc, .extra
+  line-height: 10px
+  font-size: 10px
+  color: rgb(147, 153, 159)
+.desc
+  line-height: 12px
+  margin: 3px 0px 8px
+.extra
+  .count
+    margin-right: 12px
+  .now
+    margin-right: 8px
+    font-size: 14px
+    color: rgb(240, 20, 20)
+  .old
+    text-decoration: line-through
+    font-size: 10px
+    color: rgb(147, 153, 159)
+
+
+
+  .el-select,.el-input
+    width: 130px
+
+  .input-with-select,.el-input-group__prepend
+    background-color: #fff
+
+
+
+</style>
