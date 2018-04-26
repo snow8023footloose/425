@@ -1,12 +1,12 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.prevent="decreaseCart">
+      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.stop="decreaseCart">
         <i class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.prevent="addCart"></i>
+    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop="addCart"></i>
   </div>
 </template>
 

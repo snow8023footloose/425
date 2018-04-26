@@ -80,10 +80,10 @@
     </el-tabs>
 
     <!--table遮罩-->
-    <div class="mask-black" v-show="show3"></div>
+    <div class="mask-black" v-if="tableShow === 1"></div>
 
     <!--table操作按钮-->
-    <div class="tableButtonGroup" v-show="show3">
+    <div class="tableButtonGroup" v-if="tableShow === 1" v-show="true">
       <el-button type="danger" @click="handleDelete" icon="el-icon-delete" circle></el-button>
       <el-button @click="stopTableService" type="warning" icon="el-icon-time" circle></el-button>
       <el-button @click="handleEdit" icon="el-icon-edit" circle></el-button>
@@ -92,7 +92,7 @@
     </div>
 
     <!--table订单按钮：个人订单详请-->
-    <div class="tableButtonGroup1" v-show="show3">
+    <div class="tableButtonGroup1" v-if="tableShow === 1" v-show="true">
       <span class="singleContainer">
         <el-radio-group v-model="selectSingleOrder">
           <span v-for="(item,index,key) in orderCollection" :key="key">
@@ -150,8 +150,8 @@
 
     <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
 
-      <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
-        <div class="goodse animated" id="goods" ref="goods-top" v-show="show3">
+    <transition >
+        <div class="goodse" id="goods" ref="goods-top" v-if="tableShow === 1">
         <el-popover
           placement="top"
           title="餐桌账单详情"
@@ -189,12 +189,12 @@
         </div>
 
         <!--菜品展示-->
-        <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
+        <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
             <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
               <h1 class="goods-title">{{goods.name}}</h1>
               <ul class="goodsUl">
-                <li ref="food-li" @click="selectFood(food,$event)" v-for="(food,key) in item.foods" :key="key" class="food-item border-1px">
+                <li ref="food-li" v-for="(food,key) in item.foods" :key="key" class="food-item border-1px">
                   <div class="icon">
                       <img width="70px" height="70px" class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb" alt="点击查看原图">
                   </div>
@@ -400,25 +400,7 @@ export default {
 
   name: 'tables',
   data: () => ({
-    //餐桌属性保存
-    // inputVisible1: false,
-    // inputValue1: '',
-    // toDynamicTags1:[
-    //
-    // ],
-    // dynamicTags1: [
-    //   {
-    //     zindex:'0',
-    //     name:'其他',
-    //     type:'',
-    //     showTime:'',
-    //     showType:'',
-    //     pid: '',
-    //     rid: 0,
-    //     description: '',
-    //     status: '',
-    //   },
-    // ],
+    tableShow:0,
     popperClass:'popperClass',
     show3: false,
     inputCustomer:'',
@@ -476,27 +458,6 @@ export default {
     classes:[],
     food1:[],
     orderCollection:[
-      // {
-      //   did:'1',
-      //   rid:1,
-      //   uid:1,
-      //   sid:1,
-      //   totalPrice:0,
-      //   dishes:[
-      //
-      //   ]
-      // },
-      // {
-      //   did:'2',
-      //   rid:2,
-      //   uid:2,
-      //   sid:2,
-      //   totalPrice:0,
-      //   dishes:[
-      //
-      //   ]
-      // },
-
     ],
     tableForm:
     {
@@ -740,30 +701,10 @@ export default {
           message: '数据提交失败!'
         });
       })
-
-      // this.numberOfpeople = false;
-      // this.toCustomer = '';
-      // console.log(this.tableForm.name);
-      // console.log(this.tableForm);
     },
 
     selectOrder(item,event){
       console.log(item);
-      // console.log(event,'?????????');
-      // if(item.dishes.length === null && item.dishes.length === 0){
-      //   this.selectFoods = []
-      // }else{
-      //   this.selectFoods = item.dishes
-      // }
-      // this.singleOrder = item.dishes
-      // console.log(this.singleOrder,'得到个人订单');
-      // this.goods.forEach((good) => {
-      //   good.foods.forEach((food) => {
-      //     if (food.count) {
-      //       this.singleOrder.push(food);
-      //     }
-      //   });
-      // });
     },
     refreshTable(){
       console.log(this.selectFoods);
@@ -771,40 +712,6 @@ export default {
       console.log(this.singleOrder,'已经得到所选菜品');
 
       this._pullTable()
-
-      // const loading = this.$loading({
-      //   lock: true,
-      //   text: '清台中……',
-      //   spinner: 'el-icon-loading',
-      //   background: 'rgba(0, 0, 0, 0.7)'
-      // });
-      // let data = this.tableData
-      // //传入状态
-      //
-      // this.$request(this.url.table3,'json',data).then((res)=>{
-      //   this.$message({
-      //     type: 'success',
-      //     message: '数据提交成功!'
-      //   });
-      //   setTimeout(() => {
-      //     loading.close();
-      //     this.$message({
-      //       showClose: true,
-      //       message: '清台成功！',
-      //       type: 'success'
-      //     });
-      //   }, 2000,function () {
-      //
-      //   });
-      //   console.log(res);
-      // }).catch((err)=>{
-      //   this.$message({
-      //     type: 'info',
-      //     message: '数据提交失败!'
-      //   });
-      //   console.log(err);
-      // })
-
 
     },
     handleDelete(tag) {
@@ -824,7 +731,6 @@ export default {
           });
           // this.dishesDataTable.push(data);
           // this.show3 = false
-          // location.reload();
           this._pullTable()
         }).catch((err)=>{
           this.$message({
@@ -834,7 +740,6 @@ export default {
           console.log(err);
         })
 
-        // this.dynamicTags1.splice(this.dynamicTags1.indexOf(tag), 1);
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -847,25 +752,11 @@ export default {
       });
 
     },
-    otouch() {
-      this.show = false
-    },
     selectMenu(index, event) {
-      if (!event._constructed) {
-        return;
-      }
+
       let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
       let el = foodList[index];
       this.foodsScroll.scrollToElement(el, 300);
-    },
-    selectFood(food, event) {
-      if (!event._constructed) {
-        return;
-      }
-      if (document.getElementById("goods").offsetTop < 124) {
-        return;
-      };
-      this.selectedFood = food;
     },
     incrementTotal(target) {
       //体验优化,异步执行下落动画
@@ -874,7 +765,7 @@ export default {
       });
     },
     closeTable(){
-
+      this.tableShow = 0
       this.show3 = false
 
       // location.reload();
@@ -1053,23 +944,10 @@ export default {
       // })
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
-    getData(){
-
-    },
     selectTable(item,index){
       this.goods = this.goodsArr(this)
-      this.getData()
-      this.$nextTick(() => {
-        if(!this.scroll){
-          this._initScroll();
-        }else{
-          this.scroll.refresh();
-        }
-        this._calculateHeight();
-      })
-      console.log(item,'2323232323');
       this.tableVisible = !this.tableVisible
-      this.show3=!this.show3
+      this.tableShow = 1
       this.toAccountBox = item;
       this.tableForm.name = item.score
       this.tableForm.type = item.recommend
@@ -1151,8 +1029,11 @@ export default {
       return { value: item, label: item };
     });
 
+
+
   },
   created() {
+
     let data1 = [{
       feild: 'status',
       value: 'enable',
@@ -1164,13 +1045,6 @@ export default {
       console.log(err);
     })
     this._pullTable()
-
-    // this.$axios.get('../api/ratings').then((response) => {
-    //   var response = response.data
-    //   if (response.errno === ERR_OK) {
-    //     this.listTable = response.data
-    //   }
-    // })
 
   },
   components:{
@@ -1188,7 +1062,6 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="stylus" rel="stylesheet/stylus">
 
 @import "mixin.styl"

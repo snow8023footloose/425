@@ -139,6 +139,12 @@ export function goodsArr(self) {
         name:_this.dishesCategory[i].name,
         foods:res.data.data
       })
+      _this.$nextTick(()=>{
+        _this._initScroll()
+        _this._calculateHeight()
+      })
+
+
     }).catch((err)=>{
       this.$message({
         type: 'info',
