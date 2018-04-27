@@ -188,7 +188,7 @@
         <div @click="show=!show" class="menu-button">
         </div>
         <!--菜品展示-->
-        <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
+        <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
             <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
               <h1 class="goods-title">{{goods.name}}</h1>
@@ -965,33 +965,7 @@ export default {
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
     selectTable(item,index){
-      // this.goods = this.goodsArr(this)
-      let goodsArr = []
-      for(let i = 0 ; i< this.dishesCategory.length; i++){
-        let cidNum = this.dishesCategory[i].zindex
-        let cidData = [
-          {
-            feild: 'cid',
-            value: cidNum,
-            joinType: 'eq'
-          }
-        ]
-        this.$request(this.url.dishes2,'json',cidData).then((res)=>{
-          goodsArr.unshift({
-            name:this.dishesCategory[i].name,
-            foods:res.data.data
-          })
-          console.log(goodsArr,'1111111111111');
-        }).catch((err)=>{
-          this.$message({
-            type: 'info',
-            message: '数据提交失败!'
-          });
-          console.log(err);
-        })
-      }
-      this.goods = goodsArr
-
+      this.goods = this.goodsArr(this)
 
       console.log(this.goods,'1231321345646546456465456');
       this.tableVisible = !this.tableVisible
@@ -1001,8 +975,6 @@ export default {
       this.tableForm.type = item.recommend
       var Title = new Array("桌号"+(index+1))
       this.tableTitle = Title.join('——')
-
-
 
     },
     handleClick(tab, event) {

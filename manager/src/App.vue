@@ -116,7 +116,6 @@
               <span slot="title" class="title">菜品管理</span>
             </el-menu-item>
           </router-link>
-
           <router-link :to="{path:'/XWFs/finance'}" class="vlink">
             <el-menu-item index="4">
               <i class="el-icon-news"></i>
@@ -167,7 +166,6 @@ export default {
       if (value === '') {
         callback(new Error('请输入密码'));
       } else if (value !== this.ruleForm2.username) {
-
         callback(new Error('密码不对'));
       } else {
         callback();
@@ -178,10 +176,10 @@ export default {
       mydata:{},
       fullscreenLoading: false,
       value5:100,
-      loginstate: false,
-      loginShow: true,
+      loginstate: true,
+      loginShow: false,
       owner: false,
-      manager: false,
+      manager: true,
       // manager 为true 新沃丰公司内部登录
       // manager 为false 客户登录
       labelPosition: 'top',
@@ -306,6 +304,7 @@ export default {
               });
             }else if(res.data.msg === 'success'){
               localStorage.setItem('mydata',JSON.stringify(data))
+              document.cookie = 'userCookie =' + JSON.stringify(data);
               if(this.ruleForm2.username.split('xwf').length === 1){
                 this.manager = true
                 this.owner = false
@@ -317,6 +316,18 @@ export default {
                   message: '新沃丰内部系统'
                 });
                 this.$router.push({path:'/XWFer/xwfcustom'})
+
+                this.manager = false
+                this.owner = true
+                this.loginstate = true
+                this.loginShow = false
+                this.$message({
+                  duration: 1000,
+                  type: 'success',
+                  message: '欢迎登录新沃丰系统'
+                });
+                this.$router.push({path:'/'})
+
               }else {
                 // this.manager = false
                 // this.owner = true
@@ -329,13 +340,6 @@ export default {
                 // });
                 // this.$router.push({path:'/XWFs/order'})
               }
-              // var str = "1xwf11".split('xwf');
-              // console.log(str);
-              // var patt1 = /\Bxwf\B/ig;
-              // this.$router.push({path:'/XWFs/order'})
-              // console.log(patt1.test(str),'sssssss');
-
-
             }
 
           }).catch((res)=>{
@@ -348,16 +352,35 @@ export default {
         }
       });
     },
+    //设置cookie
+
     resetForm(formName) {
-        this.ruleForm2 = {
-          username: '',
-          password: '',
-        }
-        this.$refs[formName].resetFields();
+      this.ruleForm2 = {
+        username: '',
+        password: '',
       }
+      this.$refs[formName].resetFields();
     },
+    //清除cookie
+    clearCookie: function () {
+      this.setCookie("username", "", -1);
+    },
+    checkCookie: function () {
+      var user = this.getCookie("username");
+      if (user != "") {
+        alert("Welcome again " + user);
+      } else {
+        user = prompt("Please enter your name:", "");
+        if (user != "" && user != null) {
+          this.setCookie("username", user, 365);
+        }
+      }
+    }
+  },
   created() {
     this.owner = !this.manager
+    let C = document.cookie
+    console.log(C);
     if (localStorage.mydata){
       this.ruleForm2 = JSON.parse(localStorage.mydata)
       this.$message({

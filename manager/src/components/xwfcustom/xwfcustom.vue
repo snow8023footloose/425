@@ -305,15 +305,37 @@
       <!--餐厅信息弹框-->
       <el-dialog top="4vh" title="餐厅信息" :visible.sync="dialogFormVisibleMsg" ref="showRestaurantData">
         <el-form :model="restaurantData" ref="confirmRestaurantData" :rules="rulesRestaurantData">
-          <el-form-item label="法人姓名" :label-width="formLabelWidth">
-            <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="请填写法人id"></el-input>
+          <el-form-item v-if="addNewPerson === 1" label="法人姓名" :label-width="formLabelWidth">
+            <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="请填写法人姓名"></el-input>
           </el-form-item>
-          <el-form-item label="身份证" :label-width="formLabelWidth">
-            <el-input v-model="restaurantPerson.idcard" auto-complete="off" placeholder="请填写法人id"></el-input>
+          <el-form-item v-if="addNewRestaurant === 1" label="法人姓名" :label-width="formLabelWidth">
+            <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="已注册用户，请完善法人姓名"></el-input>
           </el-form-item>
-          <el-form-item label="手机号" :label-width="formLabelWidth">
-            <el-input v-model.number="restaurantPerson.phone" @blur="confirmCEO" auto-complete="off" placeholder="请填写法人id"></el-input>
+          <el-form-item v-if="addNewPerson === 1" label="性别" :label-width="formLabelWidth" prop="male" style="text-align: left">
+            <el-select v-model="restaurantPerson.gender" placeholder="性别">
+              <el-option label="男" value="male"></el-option>
+              <el-option label="女" value="female"></el-option>
+            </el-select>
           </el-form-item>
+          <el-form-item label="身份证" :label-width="formLabelWidth" prop="idcard">
+            <el-input v-model:value="restaurantPerson.idcard" @change="confirmIdcard" auto-complete="off" placeholder="请填写法人身份证"></el-input>
+          </el-form-item>
+          <!--<el-form-item v-if="addNewPerson === 1" label="证件正面" :label-width="formLabelWidth">-->
+            <!--<upload-->
+              <!--v-on:ToUrl="legalPersonPicF"-->
+              <!--:name="UID('/legalPerson/')"-->
+              <!--:target="this.restaurantPerson.idcardFrontImg"></upload>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item v-if="addNewPerson === 1" label="证件背面" :label-width="formLabelWidth">-->
+            <!--<upload-->
+              <!--v-on:ToUrl="legalPersonPicB"-->
+              <!--:name="UID('/legalPerson/')"-->
+              <!--:target="this.restaurantPerson.idcardBackImg"></upload>-->
+          <!--</el-form-item>-->
+          <el-form-item v-if="addNewPerson === 1" label="手机号" :label-width="formLabelWidth">
+            <el-input v-model.number="restaurantPerson.phone" auto-complete="off" placeholder="请填写法人手机号"></el-input>
+          </el-form-item>
+          <span v-if="addNewRestaurant === 1">
           <el-form-item label="餐厅名称" :label-width="formLabelWidth" prop="name">
             <el-input v-model="restaurantData.name" auto-complete="off" placeholder="请填写餐厅名称"></el-input>
           </el-form-item>
@@ -321,10 +343,10 @@
             <el-input v-model="restaurantData.description" auto-complete="off" placeholder="请填写简要餐厅介绍"></el-input>
           </el-form-item>
           <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
-            <el-input v-model.number="restaurantData.backupPhone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
+            <el-input v-model.number="restaurantData.phone" auto-complete="off" placeholder="请填写餐厅常用电话"></el-input>
           </el-form-item>
-          <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
-            <el-input v-model.number="restaurantData.phone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
+          <el-form-item label="备用电话" :label-width="formLabelWidth" prop="backupPhone">
+            <el-input v-model.number="restaurantData.backupPhone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
           </el-form-item>
           <el-form-item label="餐厅类型" :label-width="formLabelWidth" prop="tid" style="text-align: left">
             <el-select v-model.number="restaurantData.tid" placeholder="请选择餐厅类型">
@@ -461,57 +483,30 @@
           <el-form-item label="备注" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.remark" auto-complete="off" placeholder="备注"></el-input>
           </el-form-item>
+          </span>
         </el-form>
+        <div slot="footer" class="dialog-footer" v-if="addNewPerson === 1">
+          <el-button @click="dialogFormVisibleMsg = false" v-if="">取 消</el-button>
+          <el-button type="primary" @click="addLegalPerson('confirmRestaurantData','showRestaurantData')">添加新法人</el-button>
+        </div>
         <div slot="footer" class="dialog-footer" v-if="addOrEdit === 2">
           <el-button @click="dialogFormVisibleMsg = false">取 消</el-button>
-          <el-button type="primary" @click="updateReataurant('confirmRestaurantData','showRestaurantData')">修 改</el-button>
+          <el-button type="primary" @click="updateReataurant('confirmRestaurantData','showRestaurantData')">修改餐厅</el-button>
         </div>
         <div slot="footer" class="dialog-footer" v-if="addOrEdit === 1">
           <el-button @click="dialogFormVisibleMsg = false" v-if="">取 消</el-button>
-          <el-button type="primary" @click="addRestaurant('confirmRestaurantData','showRestaurantData')">保 存</el-button>
-        </div>
-      </el-dialog>
-
-      <!--餐厅法人弹框-->
-      <el-dialog top="8vh" title="法人信息" :visible.sync="dialogFormVisibleCeo">
-        <el-form :model="eidForm">
-          <el-form-item label="姓名" :label-width="formLabelWidth">
-            <el-input v-model="eidForm.name" auto-complete="off" placeholder="请填写法人身份证姓名"></el-input>
-          </el-form-item>
-          <el-form-item label="性别" :label-width="formLabelWidth">
-            <el-select v-model="eidForm.region" placeholder="请选择性别">
-              <el-option label="女" value="shanghai"></el-option>
-              <el-option label="男" value="beijing"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="身份证号" :label-width="formLabelWidth">
-            <el-input v-model="eidForm.idCard" auto-complete="off" placeholder="请填写法人身份证号，业务人员请仔细核对"></el-input>
-          </el-form-item>
-          <el-form-item label="证件正面" :label-width="formLabelWidth">
-
-          </el-form-item>
-          <el-form-item label="证件背面" :label-width="formLabelWidth">
-
-          </el-form-item>
-          <el-form-item label="银行卡号" :label-width="formLabelWidth">
-            <el-input v-model="eidForm.name" auto-complete="off" placeholder="请填写法人的银行卡号，业务人员请仔细核对"></el-input>
-          </el-form-item>
-          <el-form-item label="联系电话" :label-width="formLabelWidth">
-            <el-input v-model="eidForm.phone" auto-complete="off" placeholder="请填写法人常用手机号码"></el-input>
-          </el-form-item>
-
-        </el-form>
-
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="dialogFormVisibleCeo = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisibleCeo = false">保 存</el-button>
+          <el-button type="primary" @click="addRestaurant('confirmRestaurantData','showRestaurantData')">保存餐厅</el-button>
         </div>
       </el-dialog>
 
       <!--添加餐厅按钮-->
       <div class="bnt-group">
         <el-button-group>
-          <el-button size="large" type="primary" icon="el-icon-plus" @click="dialogFormVisibleMsg = true; addOrEdit = 1">新增餐厅</el-button>
+          <el-button size="large" type="primary" icon="el-icon-plus" @click="
+          dialogFormVisibleMsg = true;
+          addOrEdit = 1;
+          addNewPerson = 0;
+          ">新增餐厅</el-button>
         </el-button-group>
       </div>
     </div>
@@ -523,10 +518,45 @@
       components:{
         upload
       },
+      watch: {
+        restaurantPerson:{
+          handler:function(val,oldval){
+            if(val.idcard.length === 18){
+              let data1 = [
+                {
+                  feild:'idcard',
+                  value: val.idcard,
+                  joinType:'eq'
+                }
+              ]
+              this.$request(this.url.legalPerson2,'json',data1).then((res)=>{
+                let response = res.data.data
+                if(response.length === 0){
+                  this.addNewPerson = 1
+                  this.addOrEdit = 0
+                }else {
+                  this.addNewRestaurant = 1
+                  this.addOrEdit = 1
+                  return
+                }
+              }).catch((err)=>{
+                this.addNewPerson = 1
+
+                this.addOrEdit = 0
+              })
+            }else{
+                return
+            }
+          },
+          deep:true//深度监听
+        },
+      },
       computed: {
+
       },
       data (){
         return{
+          restaurantDatapid:0,
           picCollection: {
             brandLogo: 'restaurant/brandLogo/',
             businessPermitImg: 'restaurant/businessPermitImg/',
@@ -602,6 +632,8 @@
             serviceChange: '',
             oid: ''
           }],
+          addNewPerson: 0,
+          addNewRestaurant:0,
           restaurantData: {
           },
           restaurantIndex: 0,
@@ -624,6 +656,9 @@
           rulesRestaurantData: {
             name: [
               {required: true, message:'请输入名', trigger:'blur'},
+            ],
+            name: [
+              {required: true, message:'请输入身份证', trigger:'blur'},
             ],
             // tid: [
             //   {required: true, message:'请选择类型', trigger:'blur'},
@@ -664,9 +699,11 @@
           console.log(this.restaurantData.businessTime);
         },
         UID(n){
-          let name = n + this.getUID
+          let name = n + this.getUID()
+          console.log(this.getUID(),'123456789ssssss');
           return name
         },
+
         listenUrl(data){
           this.restaurantData.brandLogo = data.name
         },
@@ -694,7 +731,25 @@
         listenUrlLogo(data){
           this.restaurantData.logo = data.name
         },
+        legalPersonPicF(data){
+          this.restaurantPerson.idcardFrontImg = data.name
+        },
+        legalPersonPicB(data){
+          this.restaurantPerson.idcardBackImg = data.name
+        },
+        addLegalPerson(){
+          let data2 = this.restaurantPerson
+          console.log(data2);
+          this.$request(this.url.legalPerson1,'json',data2).then((res)=>{
+            console.log(res);
+            this.addNewRestaurant = 1
+            this.addNewPerson = 0
+            this.addOrEdit = 1
 
+          }).catch((err)=>{
+            console.log(err);
+          })
+        },
         // 拉取列表
         _pullTable(){
           var Data =[
@@ -716,39 +771,62 @@
         addRestaurant(formName1,formName2){
           console.log(formName1);
           console.log(formName2);
-          this.restaurantData.pid = this.restaurantPerson.id
-          let data = this.restaurantData
-          console.log(data);
-          console.log(this.restaurantPerson);
-          console.log(this.restaurantData.pid);
-          /**/
-          this.$refs[formName1].validate((valid) => {
-            if (valid) {
 
-
-              this.$request(this.url.restaurant1,'json',data).then((res)=>{
-                this.$message({
-                  type: 'success',
-                  message: '数据提交成功!'
-                });
-                this.restaurantDataTable.push(data);
-                this.dialogFormVisibleMsg = !this.dialogFormVisibleMsg
-              }).catch((err)=>{
-                this.$message({
-                  type: 'info',
-                  message: '数据提交失败!'
-                });
-                console.log(err);
-              })
-            }else{
-              this.$message.error(
-                '信息不完整或者填写错误！!'
-              );
-              return false;
+          let data3 = [
+            {
+              feild:'idcard',
+              value: this.restaurantPerson.idcard,
+              joinType:'eq'
             }
-          });
-        },
+          ]
+          this.$request(this.url.legalPerson2,'json',data3).then((res)=>{
+            let response = res.data.data
+            this.restaurantData.pid = response[0].id
 
+
+            console.log(this.restaurantDatapid,'得到餐厅pid');
+            let data = this.restaurantData
+            console.log(data,'添加餐厅时提交的数据');
+            console.log(this.restaurantPerson);
+            console.log(this.restaurantDatapid,'pidpid');
+            /**/
+            this.$refs[formName1].validate((valid) => {
+              if (valid) {
+                this.$request(this.url.restaurant1,'json',this.restaurantData).then((res)=>{
+                  this.$message({
+                    type: 'success',
+                    message: '数据提交成功!'
+                  });
+                  console.log(res,'56565656565656565');
+                  this.restaurantDataTable.push(data);
+                  this.dialogFormVisibleMsg = !this.dialogFormVisibleMsg
+                }).catch((err)=>{
+                  this.$message({
+                    type: 'info',
+                    message: '数据提交失败!'
+                  });
+                  console.log(err);
+                })
+              }else{
+                this.$message.error(
+                  '信息不完整或者填写错误！!'
+                );
+                return false;
+              }
+            });
+
+
+
+          }).catch((err)=>{
+            console.log(err);
+          })
+
+
+
+        },
+        confirmIdcard(){
+          console.log(this.restaurantPerson.idcard.length);
+        },
         confirmCEO(){
           let data1 = [
             {
@@ -774,7 +852,6 @@
               }).catch((err)=>{
                 console.log(err,'添加新用户失败')
               })
-
               this.$message({
                 type: 'success',
                 message: this.restaurantPerson.name +'先生，欢迎！新用户!'
@@ -783,8 +860,9 @@
             // this.restaurantPerson.phone = response[0].phone
 
           }).catch((err)=>{
+            console.log(err,'添加餐厅丢出的错误');
             this.$message({
-              type: 'success',
+              type: 'info',
               message: '网络连接失败'
             });
           })
@@ -798,8 +876,6 @@
           //   console.log(err);
           // })
         },
-
-
         //删除餐厅
         deleteRestaurant (row,index) {
           let data = {

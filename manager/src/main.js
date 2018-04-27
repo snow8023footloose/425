@@ -16,7 +16,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 Vue.prototype.$request = request
 Vue.prototype.url = urlColletion()
-Vue.prototype.getUID = getUID()
+Vue.prototype.getUID = getUID
 Vue.prototype.goodsArr = goodsArr
 
 /* eslint-disable no-new */
