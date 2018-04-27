@@ -3,6 +3,8 @@ import qs from 'qs'
 
 // axios.defaults.baseURL = 'http://192.168.2.189';
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+
+
 var BURL = 'http://192.168.2.189'
 export function _addRestaurant(obj) {
   return axios.post("/restaurant/add",  obj, {
@@ -24,6 +26,10 @@ export  function urlColletion() {
     restaurant2: BURL +'/restaurant/complexPageQuery',
     restaurant3: BURL +'/restaurant/delete',
     restaurant4: BURL +'/restaurant/update',
+
+
+    //登录
+    login1:BURL +'/restaurantManager/login',
 
     //阿里数据上传
     ali: BURL +'/common/getAliOssSTSAccessSToken',
@@ -85,6 +91,15 @@ export  function urlColletion() {
     orderDishes4: BURL +'/orderDishes/update',
 
 
+    //法人
+    legalPerson1: BURL +'/legalPerson/add',
+    legalPerson2: BURL +'/legalPerson/complexPageQuery',
+    legalPerson3: BURL +'/legalPerson/delete',
+    legalPerson4: BURL +'/legalPerson/update',
+
+
+
+
   }
 }
 
@@ -126,7 +141,7 @@ export function goodsArr(self) {
   let _this = self
   let goodsArr = []
   for(let i = 0 ; i< _this.dishesCategory.length; i++){
-    let cidNum = _this.dishesCategory[i].zindex
+    let cidNum = _this.dishesCategory[i].id
     let cidData = [
       {
         feild: 'cid',
@@ -154,6 +169,7 @@ export function goodsArr(self) {
     })
   }
   return goodsArr
+
 }
 
 

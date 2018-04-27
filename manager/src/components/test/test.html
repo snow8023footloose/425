@@ -174,7 +174,20 @@
   //             //     joinType:'lt'
   //             // }
   //         ];
-  /*    let dishes = {
+
+
+
+  <upload
+    v-on:ToUrl="listenUrl"
+    :name="UID('/dishes/')"
+    :target="this.dishes.bannerImg"></upload>
+
+  listenUrl(data){
+    this.dishes.thumb = data.name
+  },
+
+
+      let dishes = {
           name:'zhangsan',
           specs: [
               {
@@ -189,7 +202,7 @@
                   normalPrice:45.23
               }
           ]
-      }; */
+      };
   //     let restaurant = {
   //         "name":"测试店铺11111",
   //         "tid":123456789,

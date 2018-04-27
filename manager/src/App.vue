@@ -12,26 +12,27 @@
         status-icon
         :rules="rules2"
         ref="ruleForm2">
-          <el-form-item label="账号" prop="pass">
+          <el-form-item label="账号" prop="username">
             <el-input
               autofocus="true"
-              v-model="ruleForm2.pass"
+              v-model="ruleForm2.username"
               auto-complete="off"
               @keyup.enter.native="submitForm('ruleForm2')"
             ></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="checkPass">
+          <el-form-item label="密码" prop="password">
             <el-input
               type="password"
-              v-model="ruleForm2.checkPass"
+              v-model="ruleForm2.password"
               auto-complete="off"
               @keyup.enter.native="submitForm('ruleForm2')"
               @blur="submitForm('ruleForm2')"
             ></el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm2')">提交</el-button>
+            <el-button type="primary" @click="submitForm('ruleForm2')">登录</el-button>
             <el-button @click="resetForm('ruleForm2')">重置</el-button>
+            <el-button type="text" @click="clearLocalStorage">清除</el-button>
           </el-form-item>
       </el-form>
     </div>
@@ -55,6 +56,7 @@
       >
       </el-switch>
       <i style="color: #ff525b" class="el-icon-circle-close person-close" @click="loginOut"></i>
+
 
       <el-col :span="5" v-show="manager">
         <img src="./logo.png" alt="">
@@ -85,6 +87,8 @@
 
         </el-menu>
       </el-col>
+
+
       <el-col :span="5" v-show="owner">
         <img src="./logo.png" alt="">
         <el-menu
@@ -133,6 +137,8 @@
           </el-menu-item>-->
         </el-menu>
       </el-col>
+
+
       <el-col :span="19" >
         <router-view></router-view>
       </el-col>
@@ -143,8 +149,6 @@
 
 <script>
 
-
-
 export default {
   name: 'App',
   data () {
@@ -152,16 +156,18 @@ export default {
       if (value === '') {
         callback(new Error('请输入账号'));
       } else {
-        if (this.ruleForm2.checkPass !== '') {
-          this.$refs.ruleForm2.validateField('checkPass');
+        if (this.ruleForm2.password !== '') {
+          this.$refs.ruleForm2.validateField('password');
         }
         callback();
       }
     };
     var validatePass2 = (rule, value, callback) => {
+
       if (value === '') {
         callback(new Error('请输入密码'));
-      } else if (value !== this.ruleForm2.pass) {
+      } else if (value !== this.ruleForm2.username) {
+
         callback(new Error('密码不对'));
       } else {
         callback();
@@ -169,24 +175,27 @@ export default {
     };
     return {
       value4: true,
+      mydata:{},
       fullscreenLoading: false,
       value5:100,
-      loginstate: true,
-      loginShow: false,
-      owner:false,
-      manager: true,
+      loginstate: false,
+      loginShow: true,
+      owner: false,
+      manager: false,
+      // manager 为true 新沃丰公司内部登录
+      // manager 为false 客户登录
       labelPosition: 'top',
       show2: true,
       footer: '新沃丰网络科技',
       ruleForm2: {
-        pass: '',
-        checkPass: '',
+        username: '',
+        password: '',
       },
       rules2: {
-        pass: [
+        username: [
           { validator: validatePass, trigger: 'blur' }
         ],
-        checkPass: [
+        password: [
           { validator: validatePass2, trigger: 'blur' }
         ]
       }
@@ -201,6 +210,9 @@ export default {
     }
   },
   methods: {
+    clearLocalStorage(){
+      localStorage.clear()
+    },
     atSwitch(){
       console.log("1");
       const loading = this.$loading({
@@ -278,23 +290,57 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-
-          if(this.value4 === true){
-            this.$message({
-              duration: 1500,
-              type: 'success',
-              message: '登录成功 01'
-            });
-          }else if(this.value4 === false){
-            this.$message({
-              duration: 1500,
-              type: 'info',
-              message: '登录成功 02'
-            });
+          console.log(this.value4);
+          let data = {
+            username:this.ruleForm2.username,
+            password:this.ruleForm2.password
           }
-          this.loginstate = true
-          this.loginShow = false
+          console.log(data);
+          this.$request(this.url.login1,'form',data).then((res)=>{
+            console.log(res.data);
+            if(res.data.msg === 'username is not exist'){
+              this.$message({
+                duration: 1000,
+                type: 'info',
+                message: '用户名不存在'
+              });
+            }else if(res.data.msg === 'success'){
+              localStorage.setItem('mydata',JSON.stringify(data))
+              if(this.ruleForm2.username.split('xwf').length === 1){
+                this.manager = true
+                this.owner = false
+                this.loginstate = true
+                this.loginShow = false
+                this.$message({
+                  duration: 1000,
+                  type: 'success',
+                  message: '新沃丰内部系统'
+                });
+                this.$router.push({path:'/XWFer/xwfcustom'})
+              }else {
+                // this.manager = false
+                // this.owner = true
+                // this.loginstate = true
+                // this.loginShow = false
+                // this.$message({
+                //   duration: 1000,
+                //   type: 'success',
+                //   message: '欢迎登录新沃丰系统'
+                // });
+                // this.$router.push({path:'/XWFs/order'})
+              }
+              // var str = "1xwf11".split('xwf');
+              // console.log(str);
+              // var patt1 = /\Bxwf\B/ig;
+              // this.$router.push({path:'/XWFs/order'})
+              // console.log(patt1.test(str),'sssssss');
 
+
+            }
+
+          }).catch((res)=>{
+            console.log(res);
+          })
 
         } else {
           console.log('提交失败');
@@ -303,15 +349,29 @@ export default {
       });
     },
     resetForm(formName) {
-      this.$refs[formName].resetFields();
-    }
+        this.ruleForm2 = {
+          username: '',
+          password: '',
+        }
+        this.$refs[formName].resetFields();
+      }
     },
   created() {
     this.owner = !this.manager
+    if (localStorage.mydata){
+      this.ruleForm2 = JSON.parse(localStorage.mydata)
+      this.$message({
+        duration: 1500,
+        type: 'success',
+        message: '读取到本地用户！'
+      });
+    }
   },
   mounted() {
     this.Height();
-
+    // if(this.mydata){
+    //   this.ruleForm2 = this.mydata
+    // }
   }
 
 
@@ -470,6 +530,9 @@ td
     p,span
       margin 2px 0
       font-size 10px !important
+
+
+
 
 
   .el-tabs__item

@@ -495,7 +495,7 @@
                 v-for="item in dynamicTags1"
                 :key="item.zindex"
                 :label="item.name"
-                :value="item.zindex">
+                :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -1053,8 +1053,6 @@ export default {
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
-
-
     console.log(this.getUID);
 
 
@@ -1163,7 +1161,6 @@ export default {
 
     // 增加菜品
     addDishes(formName1,formName2){
-
       console.log(formName1);
       console.log(formName2);
       this.dishes.zindex = this.dishesIndex
@@ -1896,17 +1893,17 @@ td
 
 
 
-.previewImg
-  height 40px
-  width auto
-  &:hover
-    height 200px
-    position absolute
-    left -45%
-    top -50%
-    border-radius 5px
-    border 2px solid white
-    z-index 200
+ .previewImg
+   height 40px
+   width auto
+   &:hover
+     height 200px
+     position absolute
+     left -45%
+     top -50%
+     border-radius 5px
+     border 2px solid white
+     z-index 200
 
 
 .previewImg:first-child

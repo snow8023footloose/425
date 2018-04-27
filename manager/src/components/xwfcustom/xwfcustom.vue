@@ -43,6 +43,12 @@
               </el-table-column>
               <el-table-column
                 sortable
+                width="120"
+                prop="backupPhone"
+                label="备用电话号码">
+              </el-table-column>
+              <el-table-column
+                sortable
                 width="100"
                 prop="country"
                 label="国别">
@@ -104,7 +110,7 @@
               <el-table-column
                 sortable
                 width="100"
-                prop="brand"
+                prop="brandName"
                 label="品牌名称">
               </el-table-column>
               <el-table-column
@@ -112,6 +118,9 @@
                 width="150"
                 prop="brandLogo"
                 label="品牌logo">
+                <template slot-scope="scope">
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.brandLogo" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -130,6 +139,9 @@
                 width="150"
                 prop="businessPermitImg"
                 label="营业执照图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.businessPermitImg" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -142,42 +154,63 @@
                 width="150"
                 prop="foodPermitImg"
                 label="食品许可证图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.foodPermitImg" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="120"
                 prop="logo"
                 label="餐厅logo图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.logo" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="150"
                 prop="Door_img"
                 label="餐厅门头大图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.doorImg" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="100"
                 prop="cashierDeskImg"
                 label="收银台图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.cashierDeskImg" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="150"
                 prop="sceneImgOne"
                 label="店内场景图1">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.sceneImgOne" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="150"
                 prop="sceneImgTwo"
                 label="店内场景图2">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.sceneImgTwo" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="150"
                 prop="sceneImgThree"
                 label="店内场景图3">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.sceneImgThree" alt="点击查看原图">
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -272,11 +305,23 @@
       <!--餐厅信息弹框-->
       <el-dialog top="4vh" title="餐厅信息" :visible.sync="dialogFormVisibleMsg" ref="showRestaurantData">
         <el-form :model="restaurantData" ref="confirmRestaurantData" :rules="rulesRestaurantData">
+          <el-form-item label="法人姓名" :label-width="formLabelWidth">
+            <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="请填写法人id"></el-input>
+          </el-form-item>
+          <el-form-item label="身份证" :label-width="formLabelWidth">
+            <el-input v-model="restaurantPerson.idcard" auto-complete="off" placeholder="请填写法人id"></el-input>
+          </el-form-item>
+          <el-form-item label="手机号" :label-width="formLabelWidth">
+            <el-input v-model.number="restaurantPerson.phone" @blur="confirmCEO" auto-complete="off" placeholder="请填写法人id"></el-input>
+          </el-form-item>
           <el-form-item label="餐厅名称" :label-width="formLabelWidth" prop="name">
             <el-input v-model="restaurantData.name" auto-complete="off" placeholder="请填写餐厅名称"></el-input>
           </el-form-item>
           <el-form-item label="餐厅介绍" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.description" auto-complete="off" placeholder="请填写简要餐厅介绍"></el-input>
+          </el-form-item>
+          <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
+            <el-input v-model.number="restaurantData.backupPhone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
           </el-form-item>
           <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
             <el-input v-model.number="restaurantData.phone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
@@ -290,31 +335,34 @@
               <el-option label="其他" value="5"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="餐厅状态" :label-width="formLabelWidth" prop="status" style="text-align: left">
-            <el-select v-model="restaurantData.status" placeholder="餐厅状态">
-              <el-option label="可用" value="enable"></el-option>
-              <el-option label="不可用" value="disable"></el-option>
-            </el-select>
+          <!--<el-form-item label="餐厅状态" :label-width="formLabelWidth" prop="status" style="text-align: left">-->
+            <!--<el-select v-model="restaurantData.status" placeholder="餐厅状态">-->
+              <!--<el-option label="可用" value="enable"></el-option>-->
+              <!--<el-option label="不可用" value="disable"></el-option>-->
+            <!--</el-select>-->
+          <!--</el-form-item>-->
+          <el-form-item label="国家" :label-width="formLabelWidth">
+            <el-input v-model="restaurantData.country" auto-complete="off" placeholder="请填写国家"></el-input>
           </el-form-item>
-          <el-form-item label="餐厅地址" :label-width="formLabelWidth">
-            <el-cascader
-              :options="options2"
-              @active-item-change="handleItemChange"
-              :props="props"
-            ></el-cascader>
+          <el-form-item label="省" :label-width="formLabelWidth">
+            <el-input v-model="restaurantData.province" auto-complete="off" placeholder="请填写餐厅所在省"></el-input>
+          </el-form-item>
+          <el-form-item label="城市" :label-width="formLabelWidth">
+            <el-input v-model="restaurantData.city" auto-complete="off" placeholder="请填写餐厅所在城市"></el-input>
+          </el-form-item>
+          <el-form-item label="县/区" :label-width="formLabelWidth">
+            <el-input v-model="restaurantData.area" auto-complete="off" placeholder="请填写餐厅所在城市"></el-input>
           </el-form-item>
           <el-form-item label="详细地址" :label-width="formLabelWidth" prop="address">
             <el-input v-model="restaurantData.address" auto-complete="off" placeholder="请填写餐厅详细地址"></el-input>
           </el-form-item>
-          <el-form-item label="法人" :label-width="formLabelWidth">
-            <el-input v-model.number="restaurantData.pid" auto-complete="off" placeholder="请填写法人id"></el-input>
-          </el-form-item>
-          <el-form-item label="业务员" :label-width="formLabelWidth">
-            <el-input v-model.number="restaurantData.eid" auto-complete="off" placeholder="请填写业务员id"></el-input>
-          </el-form-item>
-          <el-form-item label="饿了么" :label-width="formLabelWidth">
-            <el-input v-model="restaurantData.eleId" auto-complete="off" placeholder="请填写饿了么id"></el-input>
-          </el-form-item>
+
+          <!--<el-form-item label="业务员" :label-width="formLabelWidth">-->
+            <!--<el-input v-model.number="restaurantData.eid" auto-complete="off" placeholder="请填写业务员id"></el-input>-->
+          <!--</el-form-item>-->
+          <!--<el-form-item label="饿了么" :label-width="formLabelWidth">-->
+            <!--<el-input v-model="restaurantData.eleId" auto-complete="off" placeholder="请填写饿了么id"></el-input>-->
+          <!--</el-form-item>-->
           <el-form-item label="Wifi名" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.wifiName" auto-complete="off" placeholder="请填写Wifi名"></el-input>
           </el-form-item>
@@ -325,11 +373,15 @@
             <el-input v-model="restaurantData.brandName" auto-complete="off" placeholder="请填写品牌名称"></el-input>
           </el-form-item>
           <el-form-item label="LOGO" :label-width="formLabelWidth">
-              <upload :name="picCollection.brandLogo"></upload>
+            <upload
+              v-on:ToUrl="listenUrl"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.bannerLogo"></upload>
           </el-form-item>
-          <el-form-item label="时间段" :label-width="formLabelWidth">
+          <el-form-item v-model="restaurantData.businessTime" label="时间段" :label-width="formLabelWidth">
             <el-time-picker
               style="width: 170px"
+              v-model="startTime"
               :picker-options="{
                 selectableRange: '06:30:00 - 23:30:00'
               }"
@@ -339,34 +391,63 @@
             <el-time-picker
               style="width: 170px"
               arrow-control
+              v-model="endTime"
+              @change="endTimeFun"
               :picker-options="{
                 selectableRange: '06:30:00 - 23:30:00'
               }"
               placeholder="任意时间点">
             </el-time-picker>
           </el-form-item>
+          <el-form-item label="餐厅logo" :label-width="formLabelWidth">
+            <upload
+              v-on:ToUrl="listenUrlLogo"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.logo"></upload>
+          </el-form-item>
           <el-form-item label="执照号" :label-width="formLabelWidth" prop="businessPermitNum">
             <el-input v-model.number="restaurantData.businessPermitNum" auto-complete="off" placeholder="请填写餐厅执照号"></el-input>
           </el-form-item>
           <el-form-item label="执照图" :label-width="formLabelWidth">
-            <upload :name="picCollection.businessPermitImg"></upload>
+            <upload
+              v-on:ToUrl="listenUrl1"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.businessPermitImg"></upload>
           </el-form-item>
           <el-form-item label="许可证号" :label-width="formLabelWidth" prop="foodPermitNum">
             <el-input v-model.number="restaurantData.foodPermitNum" auto-complete="off" placeholder="请填写食品许可证号"></el-input>
           </el-form-item>
           <el-form-item label="许可证图" :label-width="formLabelWidth">
-            <upload :name="picCollection.foodPermitImg"></upload>
+            <upload
+              v-on:ToUrl="listenUrl2"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.foodPermitImg"></upload>
           </el-form-item>
           <el-form-item label="门头大图" :label-width="formLabelWidth">
-            <upload :name="picCollection.doorImg"></upload>
+            <upload
+              v-on:ToUrl="listenUrlDoorImg"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.doorImg"></upload>
           </el-form-item>
           <el-form-item label="收银台图" :label-width="formLabelWidth">
-            <upload :name="picCollection.cashierDeskImg"></upload>
+            <upload
+              v-on:ToUrl="listenUrl3"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.cashierDeskImg"></upload>
           </el-form-item>
           <el-form-item id="sencePic" label="场景图" :label-width="formLabelWidth">
-            <upload :name="picCollection.sceneImgOne"></upload>
-            <upload :name="picCollection.sceneImgTwo"></upload>
-            <upload :name="picCollection.sceneImgThree"></upload>
+            <upload
+              v-on:ToUrl="listenUrl4"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.sceneImgOne"></upload>
+            <upload
+              v-on:ToUrl="listenUrl5"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.sceneImgTwo"></upload>
+            <upload
+              v-on:ToUrl="listenUrl6"
+              :name="UID('/restaurant/')"
+              :target="this.restaurantData.sceneImgThree"></upload>
           </el-form-item>
           <el-form-item label="店铺经度" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.longitude" auto-complete="off" placeholder="请填写店铺经度"></el-input>
@@ -375,7 +456,7 @@
             <el-input v-model="restaurantData.latitude" auto-complete="off" placeholder="请填写店铺纬度"></el-input>
           </el-form-item>
           <el-form-item label="服务费" :label-width="formLabelWidth">
-            <el-input v-model="restaurantData.serviceChange" auto-complete="off" placeholder="请填写软件服务费"></el-input>
+            <el-input v-model.number="restaurantData.serviceCharge" auto-complete="off" placeholder="请填写软件服务费"></el-input>
           </el-form-item>
           <el-form-item label="备注" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.remark" auto-complete="off" placeholder="备注"></el-input>
@@ -442,6 +523,8 @@
       components:{
         upload
       },
+      computed: {
+      },
       data (){
         return{
           picCollection: {
@@ -455,6 +538,11 @@
             sceneImgTwo: 'restaurant/sceneImgTwo/',
             sceneImgThree: 'restaurant/sceneImgThree/',
           },
+          restaurantPerson:{
+            name:'',
+            idcard:'',
+            phone:''
+          },
           response:{},
           activeName: 'first',
           addOrEdit: 0,
@@ -464,6 +552,9 @@
           dialogFormVisibleBrief: false,
           dialogFormVisibleName: false,
           formLabelWidth: '80px',
+          havePerson:false,
+          startTime:'',
+          endTime:'',
           eidForm: {
             name: '',
             gender: 1,
@@ -471,7 +562,6 @@
             idCard:'',
             phone:'',
           },
-
           restaurantDataTable: [{
             name: '一家粉店',
             tid: 0,
@@ -564,6 +654,47 @@
         this._pullTable();
       },
       methods: {
+        endTimeFun(){
+          this.restaurantData.businessTime = this.startTime.getHours()+
+            ':'+this.startTime.getMinutes()+
+            ':'+this.startTime.getSeconds()+
+            '-'+this.endTime.getHours()+
+            ':'+this.endTime.getMinutes()+
+            ':'+this.endTime.getSeconds()
+          console.log(this.restaurantData.businessTime);
+        },
+        UID(n){
+          let name = n + this.getUID
+          return name
+        },
+        listenUrl(data){
+          this.restaurantData.brandLogo = data.name
+        },
+        listenUrl1(data){
+          this.restaurantData.businessPermitImg = data.name
+        },
+        listenUrl2(data){
+          this.restaurantData.foodPermitImg = data.name
+        },
+        listenUrl3(data){
+          this.restaurantData.cashierDeskImg = data.name
+        },
+        listenUrl4(data){
+          this.restaurantData.sceneImgOne = data.name
+        },
+        listenUrl5(data){
+          this.restaurantData.sceneImgTwo = data.name
+        },
+        listenUrl6(data){
+          this.restaurantData.sceneImgThree = data.name
+        },
+        listenUrlDoorImg(data){
+          this.restaurantData.doorImg = data.name
+        },
+        listenUrlLogo(data){
+          this.restaurantData.logo = data.name
+        },
+
         // 拉取列表
         _pullTable(){
           var Data =[
@@ -585,17 +716,23 @@
         addRestaurant(formName1,formName2){
           console.log(formName1);
           console.log(formName2);
+          this.restaurantData.pid = this.restaurantPerson.id
           let data = this.restaurantData
           console.log(data);
+          console.log(this.restaurantPerson);
+          console.log(this.restaurantData.pid);
+          /**/
           this.$refs[formName1].validate((valid) => {
             if (valid) {
-              this.dialogFormVisibleMsg = !this.dialogFormVisibleMsg
+
+
               this.$request(this.url.restaurant1,'json',data).then((res)=>{
                 this.$message({
                   type: 'success',
                   message: '数据提交成功!'
                 });
                 this.restaurantDataTable.push(data);
+                this.dialogFormVisibleMsg = !this.dialogFormVisibleMsg
               }).catch((err)=>{
                 this.$message({
                   type: 'info',
@@ -611,6 +748,57 @@
             }
           });
         },
+
+        confirmCEO(){
+          let data1 = [
+            {
+              feild:'idcard',
+              value:this.restaurantPerson.idcard,
+              joinType:'eq'
+            }
+          ]
+          this.$request(this.url.legalPerson2,'json',data1).then((res)=>{
+            console.log(res)
+            let response = res.data.data
+            this.restaurantPerson.id = res.data.data[0].id
+            console.log(response);
+            if(response.length >= 1){
+              this.$message({
+                type: 'success',
+                message: '匹配到用户!'
+              });
+              this.havePerson = true
+            }else {
+              this.$request(this.url.legalPerson1,'json',this.restaurantPerson).then((res)=>{
+                console.log(res,'添加新用户成功')
+              }).catch((err)=>{
+                console.log(err,'添加新用户失败')
+              })
+
+              this.$message({
+                type: 'success',
+                message: this.restaurantPerson.name +'先生，欢迎！新用户!'
+              });
+            }
+            // this.restaurantPerson.phone = response[0].phone
+
+          }).catch((err)=>{
+            this.$message({
+              type: 'success',
+              message: '网络连接失败'
+            });
+          })
+
+          // let data = this.restaurantPerson
+          // console.log(data);
+          // this.$request(this.url.legalPerson1,'json',data).then((res)=>{
+          //   // let response = res.data.data
+          //   console.log(res);
+          // }).catch((err)=>{
+          //   console.log(err);
+          // })
+        },
+
 
         //删除餐厅
         deleteRestaurant (row,index) {
@@ -663,7 +851,7 @@
             }
             updateObj[key] = this.restaurantData[key];
           }
-          console.log(updateObj);
+          console.log(updateObj,'修改餐厅提交的数据');
           // let index = this.restaurantIndex
           this.$request(this.url.restaurant4,'json',updateObj).then((res)=>{
             this.$message({
@@ -705,6 +893,19 @@
     }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
+
+  .previewImg
+    height 40px
+    width auto
+    &:hover
+      height 200px
+      position absolute
+      left -45%
+      top -50%
+      border-radius 5px
+      border 2px solid white
+      z-index 200
+
   .el-table th>.cell
     text-align center !important
 

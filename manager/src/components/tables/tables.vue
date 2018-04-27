@@ -187,7 +187,6 @@
         </transition>
         <div @click="show=!show" class="menu-button">
         </div>
-
         <!--菜品展示-->
         <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
@@ -689,6 +688,21 @@ export default {
         tableId: this.toAccountBox.id,
       }
 
+
+      let json = [
+        {
+          feild:'time',
+          value:'2018-04-04',
+          joinType:'eq'
+        },
+        {
+          feild:'status',
+          value:'disable',
+          joinType:'eq'
+        },
+
+      ]
+
       this.$request(this.url.orderComputer,'form',data).then((res)=> {
         this.$message({
           type: 'success',
@@ -756,6 +770,7 @@ export default {
 
       let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
       let el = foodList[index];
+      console.log(el,'111111111');
       this.foodsScroll.scrollToElement(el, 300);
     },
     incrementTotal(target) {
@@ -766,7 +781,9 @@ export default {
     },
     closeTable(){
       this.tableShow = 0
-      this.show3 = false
+      console.log('12321');
+      // this.goods = this.goodsArr(this)
+      // this.show3 = false
 
       // location.reload();
     },
@@ -860,6 +877,8 @@ export default {
       }
     },
     plusTable(){
+
+
       let data = this.tableForm
       console.log(data);
       this.$request(this.url.table1, 'json', data).then((res)=>{
@@ -921,6 +940,7 @@ export default {
       })
     },
     plusMethodsThis(data){
+
       this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
     },
     handleEdit(){
@@ -945,7 +965,35 @@ export default {
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
     selectTable(item,index){
-      this.goods = this.goodsArr(this)
+      // this.goods = this.goodsArr(this)
+      let goodsArr = []
+      for(let i = 0 ; i< this.dishesCategory.length; i++){
+        let cidNum = this.dishesCategory[i].zindex
+        let cidData = [
+          {
+            feild: 'cid',
+            value: cidNum,
+            joinType: 'eq'
+          }
+        ]
+        this.$request(this.url.dishes2,'json',cidData).then((res)=>{
+          goodsArr.unshift({
+            name:this.dishesCategory[i].name,
+            foods:res.data.data
+          })
+          console.log(goodsArr,'1111111111111');
+        }).catch((err)=>{
+          this.$message({
+            type: 'info',
+            message: '数据提交失败!'
+          });
+          console.log(err);
+        })
+      }
+      this.goods = goodsArr
+
+
+      console.log(this.goods,'1231321345646546456465456');
       this.tableVisible = !this.tableVisible
       this.tableShow = 1
       this.toAccountBox = item;
@@ -953,6 +1001,9 @@ export default {
       this.tableForm.type = item.recommend
       var Title = new Array("桌号"+(index+1))
       this.tableTitle = Title.join('——')
+
+
+
     },
     handleClick(tab, event) {
     },
@@ -1031,9 +1082,14 @@ export default {
 
 
 
+
   },
   created() {
 
+
+
+
+    console.log('1');
     let data1 = [{
       feild: 'status',
       value: 'enable',
@@ -1041,6 +1097,7 @@ export default {
     }]
     this.$request(this.url.dishesCategory2,'json',data1).then((res)=>{
       this.dishesCategory = res.data.data
+      console.log(res);
     }).catch((err)=>{
       console.log(err);
     })

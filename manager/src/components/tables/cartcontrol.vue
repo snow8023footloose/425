@@ -8,7 +8,7 @@
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
     <i class="el-icon-circle-plus cart-add icon-add_circle" @click.prevent.stop="addCart" ref="add"></i>
 
-    <!--<dialog v-if="show === 1" class="skuselect animated" style="margin-top: 20px" >
+    <dialog v-if="show === 1" class="skuselect animated" style="margin-top: 20px" >
         <p>请选择</p>
         <el-form label-width="50px" label-position="left">
           <el-form-item label="份量">
@@ -38,7 +38,7 @@
         </el-form>
         <el-button style="margin-left: 100px" @click="delaySku" type="text" size="small" round>取消</el-button>
         <el-button type="danger" size="small" @click="closeSku" round>确定</el-button>
-      </dialog>-->
+      </dialog>
 
 
 
@@ -109,9 +109,9 @@
 
       },
       decreaseCart(event) {
-        if (!event._constructed) {
-          return false;
-        }
+        // if (!event._constructed) {
+        //   return false;
+        // }
         if (this.food.count) {
           this.food.count--;
         }
