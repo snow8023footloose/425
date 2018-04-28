@@ -877,8 +877,6 @@ export default {
       }
     },
     plusTable(){
-
-
       let data = this.tableForm
       console.log(data);
       this.$request(this.url.table1, 'json', data).then((res)=>{
@@ -1033,11 +1031,13 @@ export default {
       // });
     },
     _pullTable(){
-      let data2 = [{
+      let data2 = [
+        {
         feild: 'time',
         value: '',
         joinType: 'time'
-      }]
+        },
+      ]
       this.$request(this.url.table2,'json',data2).then((res)=>{
         console.log(res.data.data);
         this.listTable = res.data.data
@@ -1057,9 +1057,6 @@ export default {
 
   },
   created() {
-
-
-
 
     console.log('1');
     let data1 = [{

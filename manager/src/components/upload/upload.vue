@@ -48,14 +48,6 @@
       }
     },
     created() {
-      console.log(this.target);
-      // if(this.target === null){
-      //   return;
-      // }else{
-      //   var oDiv = document.getElementById(name)
-      //   oDiv.style.background = 'url('+ this.target +') no-repeat center center'
-      //   oDiv.style.backgroundSize = '100% auto'
-      // }
 
     },
     methods: {

@@ -1164,8 +1164,9 @@ export default {
       console.log(formName1);
       console.log(formName2);
       this.dishes.zindex = this.dishesIndex
+      this.dishes.skus = []
       let data = this.dishes
-      console.log(data);
+      console.log(data,'提交菜品数据');
       this.$refs[formName1].validate((valid) => {
         if (valid) {
           this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
@@ -1189,6 +1190,9 @@ export default {
           return false;
         }
       });
+
+
+      //提交SKU
     },
     //添加分类
     updateTags(){
@@ -1887,11 +1891,8 @@ h6
   &:hover
     background rgba(0, 0, 0, 0.02)
 
-
 td
   padding 12px 0px !important
-
-
 
  .previewImg
    height 40px

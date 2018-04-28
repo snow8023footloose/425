@@ -316,7 +316,6 @@ export default {
                   message: '新沃丰内部系统'
                 });
                 this.$router.push({path:'/XWFer/xwfcustom'})
-
                 this.manager = false
                 this.owner = true
                 this.loginstate = true
@@ -362,25 +361,9 @@ export default {
       this.$refs[formName].resetFields();
     },
     //清除cookie
-    clearCookie: function () {
-      this.setCookie("username", "", -1);
-    },
-    checkCookie: function () {
-      var user = this.getCookie("username");
-      if (user != "") {
-        alert("Welcome again " + user);
-      } else {
-        user = prompt("Please enter your name:", "");
-        if (user != "" && user != null) {
-          this.setCookie("username", user, 365);
-        }
-      }
-    }
   },
   created() {
     this.owner = !this.manager
-    let C = document.cookie
-    console.log(C);
     if (localStorage.mydata){
       this.ruleForm2 = JSON.parse(localStorage.mydata)
       this.$message({

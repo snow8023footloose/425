@@ -282,7 +282,7 @@
                     size="mini"
                     icon="el-icon-edit"
                     circle
-                    @click="editRestaurant(scope.row,scope.$index);  addOrEdit = 2; dialogFormVisibleMsg = true">
+                    @click="editRestaurant(scope.row,scope.$index); dialogFormVisibleMsg = true">
                   </el-button>
                   <el-button
                     type="danger"
@@ -407,7 +407,7 @@
               :picker-options="{
                 selectableRange: '06:30:00 - 23:30:00'
               }"
-              placeholder="任意时间点">
+              :placeholder="startTimePre">
             </el-time-picker>
             <el-col class="line" style="text-align: center; display: inline-block; float: none" :span="2">-</el-col>
             <el-time-picker
@@ -418,7 +418,7 @@
               :picker-options="{
                 selectableRange: '06:30:00 - 23:30:00'
               }"
-              placeholder="任意时间点">
+              :placeholder="endTimePre">
             </el-time-picker>
           </el-form-item>
           <el-form-item label="餐厅logo" :label-width="formLabelWidth">
@@ -471,12 +471,6 @@
               :name="UID('/restaurant/')"
               :target="this.restaurantData.sceneImgThree"></upload>
           </el-form-item>
-          <el-form-item label="店铺经度" :label-width="formLabelWidth">
-            <el-input v-model="restaurantData.longitude" auto-complete="off" placeholder="请填写店铺经度"></el-input>
-          </el-form-item>
-          <el-form-item label="店铺纬度" :label-width="formLabelWidth">
-            <el-input v-model="restaurantData.latitude" auto-complete="off" placeholder="请填写店铺纬度"></el-input>
-          </el-form-item>
           <el-form-item label="服务费" :label-width="formLabelWidth">
             <el-input v-model.number="restaurantData.serviceCharge" auto-complete="off" placeholder="请填写软件服务费"></el-input>
           </el-form-item>
@@ -494,7 +488,7 @@
           <el-button type="primary" @click="updateReataurant('confirmRestaurantData','showRestaurantData')">修改餐厅</el-button>
         </div>
         <div slot="footer" class="dialog-footer" v-if="addOrEdit === 1">
-          <el-button @click="dialogFormVisibleMsg = false" v-if="">取 消</el-button>
+          <el-button @click="dialogFormVisibleMsg = false">取 消</el-button>
           <el-button type="primary" @click="addRestaurant('confirmRestaurantData','showRestaurantData')">保存餐厅</el-button>
         </div>
       </el-dialog>
@@ -502,17 +496,14 @@
       <!--添加餐厅按钮-->
       <div class="bnt-group">
         <el-button-group>
-          <el-button size="large" type="primary" icon="el-icon-plus" @click="
-          dialogFormVisibleMsg = true;
-          addOrEdit = 1;
-          addNewPerson = 0;
-          ">新增餐厅</el-button>
+          <el-button size="large" type="primary" icon="el-icon-plus" @click="addRetaurantPre">新增餐厅</el-button>
         </el-button-group>
       </div>
     </div>
 </template>
 <script type="text/ecmascript-6">
   import upload from '@/components/upload/upload'
+
 
     export default {
       components:{
@@ -551,9 +542,7 @@
           deep:true//深度监听
         },
       },
-      computed: {
-
-      },
+      computed: {},
       data (){
         return{
           restaurantDatapid:0,
@@ -592,6 +581,8 @@
             idCard:'',
             phone:'',
           },
+          startTimePre:'',
+          endTimePre:'',
           restaurantDataTable: [{
             name: '一家粉店',
             tid: 0,
@@ -689,6 +680,15 @@
         this._pullTable();
       },
       methods: {
+        addRetaurantPre(){
+          this.dialogFormVisibleMsg = true;
+          this.addOrEdit = 0;
+          this.addNewPerson = 0;
+          this.restaurantPerson.idcard = ''
+          this.addNewRestaurant = 0
+          this.startTimePre = '请选择开始时间'
+          this.endTimePre = '请选择结束时间'
+        },
         endTimeFun(){
           this.restaurantData.businessTime = this.startTime.getHours()+
             ':'+this.startTime.getMinutes()+
@@ -700,7 +700,7 @@
         },
         UID(n){
           let name = n + this.getUID()
-          console.log(this.getUID(),'123456789ssssss');
+          // console.log(this.getUID(),'123456789ssssss');
           return name
         },
 
@@ -739,9 +739,9 @@
         },
         addLegalPerson(){
           let data2 = this.restaurantPerson
-          console.log(data2);
+          // console.log(data2);
           this.$request(this.url.legalPerson1,'json',data2).then((res)=>{
-            console.log(res);
+            // console.log(res);
             this.addNewRestaurant = 1
             this.addNewPerson = 0
             this.addOrEdit = 1
@@ -769,63 +769,82 @@
         },
         //增加餐厅
         addRestaurant(formName1,formName2){
+          let _this = this
           console.log(formName1);
           console.log(formName2);
+          this.$refs[formName1].validate((valid) => {
+            console.log(this.restaurantPerson.idcard)
+            if (valid) {
+              let data3 = [
+                {
+                  feild:'idcard',
+                  value: this.restaurantPerson.idcard,
+                  joinType:'eq'
+                }
+              ]
 
-          let data3 = [
-            {
-              feild:'idcard',
-              value: this.restaurantPerson.idcard,
-              joinType:'eq'
+              this.$request(this.url.legalPerson2,'json',data3).then((res)=>{
+                let response = res.data.data
+                var address = this.restaurantData.country + this.restaurantData.province + this.restaurantData.city + this.restaurantData.area + this.restaurantData.address
+                var longtitude = 0;
+                var latitude = 0;
+                var url = "http://api.map.baidu.com/geocoder/v2/?address=" + address + "&output=json&ak=FG7wxr1VUj0k2NwoO3yXzymd&callback=?";
+
+                $.getJSON(url, function (data) {
+                  latitude = data.result.location.lat.toFixed(3);
+                  longtitude = data.result.location.lng.toFixed(3);
+                  console.log(latitude,longtitude,'打印经纬度');
+                  console.log(_this.restaurantData);
+                  _this.restaurantData.latitude = latitude
+                  _this.restaurantData.longitude = longtitude
+
+
+
+                  let data1 = _this.restaurantData
+                  console.log(data1,'最后提交的数据');
+                  _this.$request(_this.url.restaurant1,'json',_this.restaurantData).then((res)=>{
+
+                    _this.restaurantDataTable.push(data1);
+                    _this.dialogFormVisibleMsg = !_this.dialogFormVisibleMsg
+                    _this.$message({
+                      type: 'success',
+                      message: '数据提交成功!'
+                    });
+                  }).catch((err)=>{
+                    console.log(err);
+                  })
+
+
+                });
+
+                this.restaurantData.pid = response[0].id
+                console.log(this.restaurantDatapid,'得到餐厅pid');
+                //pid就是法人相关
+                // console.log(data,'添加餐厅时提交的数据');
+                // console.log(this.restaurantPerson);
+                // console.log(this.restaurantDatapid,'pidpid');
+                /**/
+
+
+
+              }).catch((err)=>{
+                this.$message({
+                  type: 'info',
+                  message: '数据提交失败!'
+                });
+                console.log(err);
+              })
+
+            }else{
+              this.$message.error(
+                '信息不完整或者填写错误！!'
+              );
+              return false;
             }
-          ]
-          this.$request(this.url.legalPerson2,'json',data3).then((res)=>{
-            let response = res.data.data
-            this.restaurantData.pid = response[0].id
-
-
-            console.log(this.restaurantDatapid,'得到餐厅pid');
-            let data = this.restaurantData
-            console.log(data,'添加餐厅时提交的数据');
-            console.log(this.restaurantPerson);
-            console.log(this.restaurantDatapid,'pidpid');
-            /**/
-            this.$refs[formName1].validate((valid) => {
-              if (valid) {
-                this.$request(this.url.restaurant1,'json',this.restaurantData).then((res)=>{
-                  this.$message({
-                    type: 'success',
-                    message: '数据提交成功!'
-                  });
-                  console.log(res,'56565656565656565');
-                  this.restaurantDataTable.push(data);
-                  this.dialogFormVisibleMsg = !this.dialogFormVisibleMsg
-                }).catch((err)=>{
-                  this.$message({
-                    type: 'info',
-                    message: '数据提交失败!'
-                  });
-                  console.log(err);
-                })
-              }else{
-                this.$message.error(
-                  '信息不完整或者填写错误！!'
-                );
-                return false;
-              }
-            });
-
-
-
-          }).catch((err)=>{
-            console.log(err);
-          })
-
-
-
+          });
         },
         confirmIdcard(){
-          console.log(this.restaurantPerson.idcard.length);
+          console.log(this.restaurantPerson.idcard.length,'身份证长度',this.restaurantPerson.idcard,'身份证');
         },
         confirmCEO(){
           let data1 = [
@@ -912,8 +931,30 @@
 
         //修改餐厅
         editRestaurant (row,index) {
+          console.log(this.restaurantPerson);
+          let data =[
+            {
+              feild: 'id',
+              value: row.pid,
+              joinType: 'eq'
+            }
+          ]
+          this.$request(this.url.legalPerson2,'json',data).then((res)=>{
+            this.restaurantPerson.idcard = res.data.data[0].idcard
+            this.restaurantPerson.name = res.data.data[0].name
+
+          }).catch((err)=>{
+            console.log(err);
+          })
+          let start = row.businessTime.split('-')
+
+          this.startTimePre = start[0]
+          this.endTimePre = start[1]
           this.restaurantData = Object.assign({},row);
           this.restaurantIndex = index;
+          this.addNewRestaurant = 1
+          this.addNewPerson = 0
+          this.addOrEdit = 2;
           // to  updateReataurant
         },
         updateReataurant(){

@@ -3,7 +3,7 @@ import qs from 'qs'
 
 // axios.defaults.baseURL = 'http://192.168.2.189';
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
+axios.defaults.withCredentials = true
 
 var BURL = 'http://192.168.2.189'
 export function _addRestaurant(obj) {
@@ -27,7 +27,6 @@ export  function urlColletion() {
     restaurant3: BURL +'/restaurant/delete',
     restaurant4: BURL +'/restaurant/update',
 
-
     //登录
     login1:BURL +'/restaurantManager/login',
 
@@ -39,6 +38,12 @@ export  function urlColletion() {
     dishes2: BURL +'/dishes/complexPageQuery',
     dishes3: BURL +'/dishes/delete',
     dishes4: BURL +'/dishes/update',
+
+    //菜品
+    sku1: BURL +'/dishes/add',
+    sku2: BURL +'/dishes/complexPageQuery',
+    sku3: BURL +'/dishes/delete',
+    sku4: BURL +'/dishes/update',
 
     //分类
     dishesCategory1: BURL +'/dishesCategory/add',
@@ -96,10 +101,6 @@ export  function urlColletion() {
     legalPerson2: BURL +'/legalPerson/complexPageQuery',
     legalPerson3: BURL +'/legalPerson/delete',
     legalPerson4: BURL +'/legalPerson/update',
-
-
-
-
   }
 }
 
@@ -171,10 +172,3 @@ export function goodsArr(self) {
   return goodsArr
 
 }
-
-
-
-
-
-
-
