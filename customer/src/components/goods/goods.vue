@@ -3,7 +3,7 @@
       <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
         <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
           <ul>
-            <li v-for="(item,index,key) in goods" :key="key" class="menu-item" :class="{'current':currentIndex===index}" @click="selectMenu(index,$event)">
+            <li v-for="(item,index,key) in goods" :key="key" class="menu-item" :class="{'current':currentIndex === index}" @click.stop.prevent="selectMenu(index,$event)">
               <span class="text border-1px">
                 <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span>
                 {{item.name}}
@@ -23,7 +23,7 @@
               <!--单个菜品信息遍历-->
               <li
                 ref="food-li"
-                @click="selectFood(food,$event)"
+                @click.stop="selectFood(food,$event)"
                 v-for="(food,key) in item.foods"
                 :key="key"
                 class="food-item border-1px"
@@ -38,11 +38,11 @@
                     <span class="count">月售{{food.sellCount}}份</span><span>好评率{{food.rating}}%</span>
                   </div>
                   <div class="price">
-                    <span class="now">￥{{food.price}}</span>
+                    <span class="now">￥{{food.normalPrice}}</span>
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
-                    <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
+                    <cartcontrol :food="food" @increment.native="incrementTotal"></cartcontrol>
                   </div>
                 </div>
               </li>
@@ -81,57 +81,85 @@ export default {
       selectedFood: {},
       show: false,
       divTop: "divTop",
+      dishesCategory:[],
       SColor: 'SColor'
     };
   },
-  computed: {
-    currentIndex() {
-      for (let i = 0; i < this.listHeight.length; i++) {
-        let height1 = this.listHeight[i];
-        let height2 = this.listHeight[i + 1];
-        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-          return i;
-        }
-      }
-      return 0;
-    },
-    selectFoods() {
-      let foods = [];
-      this.goods.forEach((good) => {
-        good.foods.forEach((food) => {
-          if (food.count) {
-            foods.push(food);
-          }
-        });
-      });
-      return foods;
-    }
-  },
+
   created () {
+
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-    this.$axios.get('./api/goods').then((response) => {
-      var response = response.data
-      if (response.errno === ERR_OK) {
-        this.goods = response.data
-        this.$nextTick(() => {
-          this._initScroll();
-          this._calculateHeight();
-        })
-      }
-    })
+    // this.$axios.get('./api/goods').then((response) => {
+    //   var response = response.data
+    //   console.log(1, response)
+    //   if (response.errno === ERR_OK) {
+    //     // this.goods = response.data
+    //     this.$nextTick(() => {
+    //       this._initScroll();
+    //       this._calculateHeight();
+    //     })
+    //   }
+    // })
     this.$axios.get('../api/seller').then((response1) => {
-      var response1 = response1.data
+      var response1 = response1.data;
+      console.log('11',response1)
       if (response1.errno === ERR_OK) {
         this.SColor = response1.data.sysColor[1].plan
       }
     });
 
+
   },
+  mounted(){
+
+  },
+  destroyed(){
+
+  },
+  mounted(){
+    this._pullTable();
+    this._pullSpec();
+    // this.goods = [
+    //   {"name": '1', "foods": []},{"name": '1', "foods": []},{"name": '1', "foods": []}
+    // ];
+    if(!this.scroll){
+          // this._initScroll();
+        }else{
+          this.scroll.refresh();
+        }
+        this._calculateHeight();
+
+    },
+    computed: {
+        currentIndex() {
+          for (let i = 0; i < this.listHeight.length; i++) {
+            let height1 = this.listHeight[i];
+            let height2 = this.listHeight[i + 1];
+            if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+              console.log(44, i)
+              return i;
+            }
+          }
+          return 0;
+        },
+        selectFoods() {
+          let foods = [];
+          this.goods.forEach((good) => {
+            good.foods.forEach((food) => {
+              if (food.count) {
+                foods.push(food);
+              }
+            });
+          });
+          return foods;
+        }
+      },
   methods: {
     otouch() {
       this.show = false
     },
     selectMenu(index, event) {
+      console.log('1')
       if (!event._constructed) {
         return;
       }
@@ -140,8 +168,7 @@ export default {
       this.foodsScroll.scrollToElement(el, 300);
     },
     selectFood(food, event) {
-      console.log(document.getElementById("goods").clientHeight)
-      console.log(document.getElementById("goods").offsetTop)
+
       if (!event._constructed) {
         return;
       }
@@ -152,6 +179,7 @@ export default {
       this.$refs['food'].show();
     },
     incrementTotal(target) {
+      console.log(target,'456546456456')
       //体验优化,异步执行下落动画
       this.$nextTick(() => {
         this.$refs['shop-cart'].drop(target);
@@ -178,6 +206,46 @@ export default {
         height += item.clientHeight;
         this.listHeight.push(height);
       }
+    },
+
+    // 拉取列表
+    _pullTable(){
+      var _this = this;
+      var Data = [
+        {
+          feild: '',
+          value: '',
+          joinType: ''
+        }
+      ];
+      this.$request(this.url.dishesCategory2, 'json', Data).then((res)=>{
+        this.dishesCategory = res.data.data;
+      }).catch((err)=>{
+        console.log(err)
+      }).then(function () {
+        _this.goods = _this.goodsArr(_this);
+
+        // console.log(55, _this.goods);
+
+      }).then(function () {
+        // _this.goods = goods;
+      })
+
+
+    },
+  //  拉取规格
+    _pullSpec(){
+      var _this = this;
+      var Data = [
+        {
+          feild: '',
+          value: '',
+          joinType: ''
+        }
+      ];
+      this.$request(this.url.spec2, 'json', Data).then((res)=>{
+        console.log(res)
+      })
     }
   },
   components:{
@@ -189,16 +257,6 @@ export default {
     'cart.add'(target) {
       this._drop(target);
     }
-  },
-  mounted(){
-
-      if(!this.scroll){
-        this._initScroll();
-      }else{
-        this.scroll.refresh();
-      }
-      this._calculateHeight();
-
   }
 }
 </script>

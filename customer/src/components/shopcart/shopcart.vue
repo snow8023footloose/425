@@ -44,7 +44,7 @@
           <li class="food" v-for="(food,key) in selectFoods" :key="key">
             <span class="name">{{food.name}}</span>
             <div class="price">
-              <span>￥{{food.price*food.count}}</span>
+              <span>￥{{food.normalPrice*food.count}}</span>
             </div>
             <div class="cartcontrol-wrapper">
               <cartcontrol :food="food"></cartcontrol>
@@ -199,7 +199,7 @@ const ERR_OK = 0
       totalPrice() {
         let total = 0;
         this.selectFoods.forEach((food) => {
-          total += food.price * food.count;
+          total += food.normalPrice * food.count;
         });
         return total;
       },

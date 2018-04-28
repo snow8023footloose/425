@@ -1,12 +1,41 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.stop="decreaseCart">
+      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.stop.prevent="decreaseCart">
         <i class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop="addCart"></i>
+    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop.prevent="addCart"></i>
+    <!--<el-dialog title="请选择口味" :visible.sync="dialogVisible" width="80%" :modal-append-to-body="false" style="position: fixed!important;left: 50px;top:50px;">-->
+      <!--<span>-->
+        <!--<div>-->
+          <!--<el-radio-group size="small" v-model="falg1">-->
+            <!--<el-radio-button label="大份"></el-radio-button>-->
+            <!--<el-radio-button label="中份"></el-radio-button>-->
+            <!--<el-radio-button label="小份"></el-radio-button>-->
+          <!--</el-radio-group>-->
+        <!--</div>-->
+        <!--<div style="margin-top: 20px">-->
+          <!--<el-radio-group size="small" v-model="falg2">-->
+            <!--<el-radio-button label="热"></el-radio-button>-->
+            <!--<el-radio-button label="温"></el-radio-button>-->
+            <!--<el-radio-button label="冷"></el-radio-button>-->
+          <!--</el-radio-group>-->
+        <!--</div>-->
+        <!--<div style="margin-top: 20px">-->
+          <!--<el-radio-group size="small" v-model="falg3">-->
+            <!--<el-radio-button label="辣"></el-radio-button>-->
+            <!--<el-radio-button label="中辣"></el-radio-button>-->
+            <!--<el-radio-button label="无辣"></el-radio-button>-->
+          <!--</el-radio-group>-->
+        <!--</div>-->
+      <!--</span>-->
+      <!--<span slot="footer" class="dialog-footer">-->
+        <!--<el-button @click.stop.prevent="dialogVisible = false">取 消</el-button>-->
+        <!--<el-button type="primary" @click.stop.prevent="dialogVisible = false">确 定</el-button>-->
+      <!--</span>-->
+    <!--</el-dialog>-->
   </div>
 </template>
 
@@ -22,23 +51,48 @@
     },
     data() {
       return {
-        SColor: 'SColor'
+        SColor: 'SColor',
+        dialogVisible: false,
+        spce: [],
+        // falg1: '大份',
+        // falg2: '热',
+        // falg3: '辣'
       }
     },
     created () {
     },
+    mounted(){
+      // this.$nextTick(()=>{
+      //   this._initScroll()
+      //   this._calculateHeight()
+      // })
+      this._pullSpec();
+      console.log(1, this.food);
+    },
     methods: {
+      // handleClose(done){
+      //   this.$confirm('确认关闭？')
+      //     .then(_ => {
+      //       done();
+      //     })
+      //     .catch(_ => {});
+      // },
       addCart(event) {
         if (!event._constructed) {
           return;
         }
+        console.log(event)
+        // if (1 === 1) {
+        //   this.dialogVisible = true
+        //   return;
+        // }
 
         if (!this.food.count) {
           Vue.set(this.food, 'count', 1);
         } else {
           this.food.count++;
         }
-        this.$emit('increment', event.target);
+        this.$emit('increment', {event:target,name:'123'});
         console.log("cartcontrol")
       },
       decreaseCart(event) {
@@ -48,6 +102,22 @@
         if (this.food.count) {
           this.food.count--;
         }
+      },
+      //  拉取规格
+      _pullSpec(){
+        var _this = this;
+        var Data = [
+          {
+            feild: '',
+            value: '',
+            joinType: ''
+          }
+        ];
+        this.$request(this.url.spec2, 'json', Data).then((res)=>{
+          // console.log(res)
+          _this.spce = res.data.data;
+          console.log(_this.spce)
+        })
       }
     }
   };
