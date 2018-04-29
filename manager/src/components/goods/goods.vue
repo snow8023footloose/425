@@ -702,8 +702,11 @@
                 prop="content"
               >
               </el-table-column>
+
+
+              <!--如何把normalPrice 和 dishes.normalPrice绑定起来-->
               <el-table-column
-                prop="name"
+                prop="normalPrice"
                 label="价格">
                 <template scope="scope">
                   <el-input
@@ -717,7 +720,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="address"
+                prop="memberPrice"
                 label="会员价"
               >
                 <template scope="scope">
@@ -732,7 +735,7 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="address"
+                prop="promotionPrice"
                 label="活动价"
               >
                 <template scope="scope">
@@ -1112,7 +1115,7 @@ export default {
       // console.log(row, column, cell, event);
     },
     handleMouseOut:function(row, column, cell, event){
-      // console.log(row, column, cell, event,'handleMouseOut');
+      console.log(row,'这是row', column,'这是column', cell,'这是cell', event,'handleMouseOut');
       // console.log(row, column, cell, event);
       // cell.children[0].children[1].style.color="#ffffff";
     },
@@ -1911,7 +1914,7 @@ export default {
       if(!skuArr || skuArr.length === 0){
         skuArr = spec.attrs.map(function (item) {
           return {
-            description:item.id,
+            attrJoin:item.id,
             content:item.name,
           }
         })
@@ -1921,7 +1924,7 @@ export default {
       for(let item of skuArr){
         for(let newItem of spec.attrs){
           newSkuArr.unshift({
-            description:item.description + "_" + newItem.id,
+            attrJoin:item.attrJoin + "_" + newItem.id,
             content: item.content + "," + newItem.name,
           })
         }
@@ -1940,12 +1943,10 @@ export default {
       console.log(this.value5,'this.value5');
       this.generating = !this.generating;
       this.generateSkuDate =  this.generateSku([],valueOfSku);
-
-
-
       for(var j=0; j<this.generateSkuDate.length; j++){
         this.generateSkuDate[j].did = this.dishesIndex
       }
+      console.log(this.generateSkuDate,'最后得到的SKU');
     },
   },
   components: {
