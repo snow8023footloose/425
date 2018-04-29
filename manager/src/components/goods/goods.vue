@@ -599,7 +599,7 @@
             </el-input>
             <el-input
               size="small"
-              v-model="dishes.memberPrice"
+              v-model.number="dishes.memberPrice"
               auto-complete="off"
               :value="mPrice"
               placeholder="会员价"
@@ -609,7 +609,7 @@
             </el-input>
             <el-input
               size="small"
-              v-model="dishes.promotionPrice"
+              v-model.number="dishes.promotionPrice"
               auto-complete="off"
               :value="pPrice"
               placeholder="活动价"
@@ -709,14 +709,7 @@
                 prop="normalPrice"
                 label="价格">
                 <template scope="scope">
-                  <el-input
-                    placeholder="请输入价格"
-                    class="cell-edit-input"
-                    v-model="dishes.normalPrice"
-                    @keyup.enter.native="confirmPrice"
-                    @blur="confirmPrice"
-                  >
-                  </el-input>
+                  <input :value="scope.row.normalPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
                 </template>
               </el-table-column>
               <el-table-column
@@ -724,14 +717,7 @@
                 label="会员价"
               >
                 <template scope="scope">
-                  <el-input
-                    placeholder="请输入价格"
-                    class="cell-edit-input"
-                    v-model="dishes.memberPrice"
-                    @keyup.enter.native="confirmPrice"
-                    @blur="confirmPrice"
-                  >
-                  </el-input>
+                  <input :value="scope.row.memberPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
                 </template>
               </el-table-column>
               <el-table-column
@@ -739,14 +725,7 @@
                 label="活动价"
               >
                 <template scope="scope">
-                  <el-input
-                    placeholder="请输入价格"
-                    class="cell-edit-input"
-                    v-model="dishes.promotionPrice"
-                    @keyup.enter.native="confirmPrice"
-                    @blur="confirmPrice"
-                  >
-                  </el-input>
+                  <input :value="scope.row.promotionPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
                 </template>
               </el-table-column>
             </el-table>
@@ -948,6 +927,7 @@ export default {
       toDynamicTags3:[],
       value4: '',
       value5: [],
+      normalPrice:12,
       value6: '',
       fileList2: [
       ],
@@ -1005,9 +985,18 @@ export default {
       },
     }
   },
+  watch:{
+
+  },
   computed:{
-    skuPrice: function(){
+    normalPrice1: function(){
       return this.dishes.normalPrice
+    },
+    memberPrice1: function(){
+      return this.dishes.memberPrice
+    },
+    promotionPrice1: function(){
+      return this.dishes.promotionPrice
     },
     repeatzindex: function(){
       var n = 0;
@@ -1076,6 +1065,10 @@ export default {
     this._pullPrePopularizeTag()
   },
   methods: {
+    normalPriceBlurtest(row,index){
+      console.log(row,'1111111111111111', index,'222222222222222');
+      console.log(this.generateSkuDate);
+    },
     UID(n){
       var name = n + this.getUID()
       return name
@@ -1108,11 +1101,9 @@ export default {
       //column: 一列数据
       // cell.children[0].children[1].style.color="black";
     },
-    confirmPrice(row, column, cell, event){
-      // console.log(this.dishes.normalPrice);
-      // console.log(this.memberPrice);
-      // console.log(this.promotionPrice);
-      // console.log(row, column, cell, event);
+    confirmPrice(row,index){
+      console.log(row, 'row',index,'index');
+      console.log(this.normalPrice1);
     },
     handleMouseOut:function(row, column, cell, event){
       console.log(row,'这是row', column,'这是column', cell,'这是cell', event,'handleMouseOut');
@@ -1945,6 +1936,9 @@ export default {
       this.generateSkuDate =  this.generateSku([],valueOfSku);
       for(var j=0; j<this.generateSkuDate.length; j++){
         this.generateSkuDate[j].did = this.dishesIndex
+        this.generateSkuDate[j].normalPrice = this.dishes.normalPrice
+        this.generateSkuDate[j].memberPrice = this.dishes.memberPrice
+        this.generateSkuDate[j].promotionPrice = this.dishes.promotionPrice
       }
       console.log(this.generateSkuDate,'最后得到的SKU');
     },
