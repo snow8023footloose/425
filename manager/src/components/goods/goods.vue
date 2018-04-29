@@ -1053,9 +1053,6 @@ export default {
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
-    console.log(this.getUID);
-
-
   },
   methods: {
     UID(n){
