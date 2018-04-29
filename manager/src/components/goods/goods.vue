@@ -1,3 +1,4 @@
+
 <template>
   <div class="goods">
       <el-tabs
@@ -733,7 +734,7 @@
         <el-button type="primary" @click="addDishes('confirmDishesData','showDishesData')"">立即上架</el-button>
       </div>
     </el-dialog>
-
+    <computer></computer>
   </div>
 </template>
 <script>

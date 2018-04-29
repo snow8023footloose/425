@@ -12,6 +12,7 @@ import Xwfcustom from '@/components/xwfcustom/xwfcustom'
 import Xwffunction from '@/components/xwffunction/xwffunction'
 import upLoad from '@/components/upload/upload'
 import Modle from '@/components/test/modle'
+import Computer from '@/components/comput/computer'
 
 
 Vue.use(Router)
@@ -20,6 +21,11 @@ Vue.use(Resource)
 export default new Router({
   mode: 'history',
   routes: [
+    {
+      path:'/Computer',
+      name:'Computer',
+      component: Computer
+    },
     {
       path:'/XWFs/goods',
       name:'Goods',

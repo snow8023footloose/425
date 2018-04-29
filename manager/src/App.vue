@@ -142,11 +142,13 @@
         <router-view></router-view>
       </el-col>
     </el-row>
-
+    <computer></computer>
   </div>
 </template>
 
 <script>
+
+  import computer from '@/components/comput/computer'
 
 export default {
   name: 'App',
@@ -378,6 +380,9 @@ export default {
     // if(this.mydata){
     //   this.ruleForm2 = this.mydata
     // }
+  },
+  components: {
+    computer
   }
 
 
