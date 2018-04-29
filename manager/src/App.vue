@@ -262,7 +262,7 @@ export default {
         this.$message({
           duration: 1500,
           type: 'info',
-          message: '已取消退出'
+          message: '已取消'
         });
       });
 
@@ -297,7 +297,7 @@ export default {
           }
           console.log(data);
           this.$request(this.url.login1,'form',data).then((res)=>{
-            console.log(res.data);
+            console.log(res.data,'这是登录返回的信息');
             if(res.data.msg === 'username is not exist'){
               this.$message({
                 duration: 1000,
@@ -305,7 +305,8 @@ export default {
                 message: '用户名不存在'
               });
             }else if(res.data.msg === 'success'){
-              localStorage.setItem('mydata',JSON.stringify(data))
+              let rid = res.data.data.rid
+              localStorage.setItem('rid',JSON.stringify(rid))
               document.cookie = 'userCookie =' + JSON.stringify(data);
               if(this.ruleForm2.username.split('xwf').length === 1){
                 this.manager = true

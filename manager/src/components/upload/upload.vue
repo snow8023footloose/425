@@ -53,7 +53,7 @@
     methods: {
       upload(event){
         var _this = this
-        console.log(this.name);
+        console.log(this.name,'得出的name');
         var name = this.name
         var file = event.target.files[0];                                         //得到文件
         var type = file.name.split('.')[1];
@@ -83,7 +83,7 @@
             bucket: res.data.bucket
           });                                                                     //得到密钥
           this.client.multipartUpload(storeAs, file).then(function (result) {
-            console.log(result,'成功555555555')                                             //至此就拿到了返回的路径
+            // console.log(result,'成功555555555')                                             //至此就拿到了返回的路径
             var curUrl = result.res.requestUrls[0];
             var arrUrl = curUrl.split('?');
             const finalUrl = arrUrl[0];

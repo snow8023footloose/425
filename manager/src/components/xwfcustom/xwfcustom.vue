@@ -1,3 +1,4 @@
+
 <template>
     <div class="xwfcustom">
       <el-tabs
@@ -946,10 +947,12 @@
           }).catch((err)=>{
             console.log(err);
           })
-          let start = row.businessTime.split('-')
 
-          this.startTimePre = start[0]
-          this.endTimePre = start[1]
+          if(row.businessTime){
+            let start = row.businessTime.split('-')
+            this.startTimePre = start[0]
+            this.endTimePre = start[1]
+          }
           this.restaurantData = Object.assign({},row);
           this.restaurantIndex = index;
           this.addNewRestaurant = 1

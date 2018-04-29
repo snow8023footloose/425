@@ -121,12 +121,33 @@
                 width="150"
                 prop="highDefinitionImg"
                 label="高清图">
+                <template slot-scope="scope">
+                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg">
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg" alt="点击查看原图">
+                  </a>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
                 width="150"
                 prop="bannerImg"
                 label="banner">
+                <template slot-scope="scope">
+                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg">
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg" alt="点击查看原图">
+                  </a>
+                </template>
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="banner"
+                label="banner">
+                <template slot-scope="scope">
+                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner">
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="点击查看原图">
+                  </a>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -513,13 +534,15 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="单位" prop="unit">
-            <el-select v-model="dishes.unit" placeholder="请选择单位">
+          <el-form-item label="单位" prop="uid">
+            <el-select v-model="dishes.uid" placeholder="请选择单位">
               <el-option
                 v-for="item in unit"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
+                :key="item.zindex"
+                :label="item.name"
+                :value="item.id"
+                @change="getUnit"
+              >
               </el-option>
             </el-select>
           </el-form-item>
@@ -539,27 +562,28 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="dishes.showType === 'sometimes'" label="时间段">
-            <el-time-select
-              placeholder="起始时间"
+          <el-form-item v-if="dishes.showType === 'sometimes'" v-model="dishes.showTime" label="时间段" :label-width="formLabelWidth">
+            <el-time-picker
+              style="width: 170px"
               v-model="startTime"
               :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30'
-            }">
-            </el-time-select>
-            <el-time-select
-              placeholder="结束时间"
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+              :placeholder="startTimePre">
+            </el-time-picker>
+            <el-col class="line" style="text-align: center; display: inline-block; float: none" :span="2">-</el-col>
+            <el-time-picker
+              style="width: 170px"
+              arrow-control
               v-model="endTime"
+              @change="endTimeFun"
               :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30',
-              minTime: startTime
-            }">
-            </el-time-select>
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+              :placeholder="endTimePre">
+            </el-time-picker>
           </el-form-item>
+
 
         <!--菜品价格类型：标准价格、会员价格、活动价格-->
           <el-form-item class="price-form" label="价格" prop="price">
@@ -578,7 +602,7 @@
               v-model="dishes.memberPrice"
               auto-complete="off"
               :value="mPrice"
-              placeholder="请输入价格"
+              placeholder="会员价"
               class="price-item"
             >
               <template slot="prepend"><el-checkbox v-model="checked2"></el-checkbox>&nbsp;会员价{{memberDiscont}}</template>
@@ -588,7 +612,7 @@
               v-model="dishes.promotionPrice"
               auto-complete="off"
               :value="pPrice"
-              placeholder="请输入价格"
+              placeholder="活动价"
               class="price-item"
             >
               <template slot="prepend"><el-checkbox v-model="checked3"></el-checkbox>&nbsp;活动价{{promotionDiscont}}</template>
@@ -599,19 +623,25 @@
               <upload
                 v-on:ToUrl="listenUrl"
                 :name="UID('/dishes/')"
-                :target="this.dishes.highDefinitionImg"></upload>
+                :target="this.dishes.thumb"></upload>
             </el-form-item>
             <el-form-item style="width: 20%;float: left" label="高清图" prop="highDefinitionImg">
               <upload
-                v-on:ToUrl="listenUrl"
+                v-on:ToUrl="listenUrl1"
                 :name="UID('/dishes/')"
                 :target="this.dishes.highDefinitionImg"></upload>
             </el-form-item>
-            <el-form-item style="width: 20%;float: left" label="banner" prop="bannerImg">
+            <el-form-item style="width: 20%;float: left" label="菜单图" prop="bannerImg">
               <upload
-                v-on:ToUrl="listenUrl"
+                v-on:ToUrl="listenUrl2"
                 :name="UID('/dishes/')"
                 :target="this.dishes.bannerImg"></upload>
+            </el-form-item>
+            <el-form-item style="width: 20%;float: left" label="banner" prop="banner">
+              <upload
+                v-on:ToUrl="listenUrl3"
+                :name="UID('/dishes/')"
+                :target="this.dishes.banner"></upload>
             </el-form-item>
             <!--<el-form-item style="width: 20%;float: left" label="推广图" prop="bannerStatus">-->
               <!--<upload :name="dishes.bannerImg"></upload>-->
@@ -629,12 +659,12 @@
         </span>
         <el-form :label-width="formLabelWidth" :model="dishes" status-icon :rules="rules2">
           <el-form-item label="添加标签">
-            <el-select style="display: inline-block; width: 555px" v-model="value6" multiple placeholder="请选择，默认无标签">
+            <el-select style="display: inline-block; width: 555px" v-model="dishes.tags" multiple placeholder="请选择，默认无标签">
               <el-option
                 v-for="item in dynamicTags"
                 :key="item.zindex"
                 :label="item.name"
-                :value="item.zindex">
+                :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -650,7 +680,6 @@
                 :key="item.zindex"
                 :label="item.name"
                 :value="item"
-
               >
               </el-option>
             </el-select>
@@ -734,7 +763,6 @@
         <el-button type="primary" @click="addDishes('confirmDishesData','showDishesData')"">立即上架</el-button>
       </div>
     </el-dialog>
-    <computer></computer>
   </div>
 </template>
 <script>
@@ -754,6 +782,8 @@ export default {
     };
     return {
       picReceive:'',
+      startTimePre:'',
+      endTimePre:'',
       imgColletin:{
         brandLogo: 'restaurant/brandLogo',
         businessPermitImg: 'restaurant/businessPermitImg',
@@ -811,34 +841,20 @@ export default {
       ],
       pid: [
         {
-          value: '选项1',
+          value: 1,
           label: '默认端口1'
         }, {
-          value: '选项2',
+          value: 2,
           label: '端口2'
         }, {
-          value: '选项3',
+          value: 3,
           label: '端口3'
         }
       ],
-      unit: [
-        {
-          value: '1',
-          label: '份'
-        }, {
-          value: '2',
-          label: '碗'
-        }, {
-          value: '3',
-          label: '瓶'
-        }, {
-          value: '4',
-          label: '厅'
-        }, {
-          value: '5',
-          label: '锅'
-        }
-      ],
+      unit: [],
+      PreTag:[],
+      PreSpec:[],
+      PrePopularizeTag:[],
       tagType:[
         {
           value: 'free',
@@ -849,10 +865,7 @@ export default {
         }
       ],
       toDynamicTags: [],
-      dynamicTags: [
-        {
-        },
-      ],
+      dynamicTags: [],
       inputVisible: false,
       inputValue: '',
       toDynamicTags1:[
@@ -970,7 +983,7 @@ export default {
         // pid: [
         //   {required: true, message:'请选择打印机', trigger:'change'}
         // ],
-        // unit: [
+        // uid: [
         //   {required: true, message:'请输入序号', trigger:'change'}
         // ],
         // description: [
@@ -1054,14 +1067,27 @@ export default {
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
+    this._pullUnit()
+    this._pullPreSpec()
+    this._pullPreTag()
+    this._pullPrePopularizeTag()
   },
   methods: {
     UID(n){
-      let name = n + this.getUID
+      var name = n + this.getUID()
       return name
     },
     listenUrl(data){
       this.dishes.thumb = data.name
+    },
+    listenUrl1(data){
+      this.dishes.highDefinitionImg = data.name
+    },
+    listenUrl2(data){
+      this.dishes.bannerImg = data.name
+    },
+    listenUrl3(data){
+      this.dishes.banner = data.name
     },
     optsChange(){
       console.log('1');
@@ -1124,7 +1150,7 @@ export default {
       })
     },
     _pullSpec(){
-      var Data = [
+      let Data = [
         {
           feild: 'time',
           value: '',
@@ -1135,6 +1161,70 @@ export default {
         let response = res.data.data
         this.dynamicTags2 = response
         // console.log(response);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPreTag(){
+      let Data = [
+        {
+          feild: 'status',
+          value: 'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.preTag2,'json',Data).then((res)=>{
+        let response = res.data.data
+        this.PreTag = response
+        // console.log(response,'拉取得到单位');
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPreSpec(){
+      let Data = [
+        {
+          feild: 'status',
+          value: 'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.preSpec2,'json',Data).then((res)=>{
+        let response = res.data.data
+        this.preSpec = response
+        // console.log(response,'拉取得到单位');
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPrePopularizeTag(){
+      let Data = [
+        {
+          feild: 'status',
+          value: 'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.PrePopularizeTag2,'json',Data).then((res)=>{
+        let response = res.data.data
+        this.PrePopularizeTag = response
+        // console.log(response,'拉取得到单位');
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullUnit(){
+      var Data = [
+        {
+          feild: 'status',
+          value: 'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.preUnit2,'json',Data).then((res)=>{
+        let response = res.data.data
+        this.unit = response
+        // console.log(response,'拉取得到单位');
       }).catch((err)=>{
         console.log(err);
       })
@@ -1159,21 +1249,37 @@ export default {
 
     // 增加菜品
     addDishes(formName1,formName2){
-      console.log(formName1);
-      console.log(formName2);
+      console.log(this.dishes.tags,'得到标签');
+      this.dishes.tags = this.dishes.tags.map(function (item) {
+        return {
+          id:item
+        }
+      })
+      console.log(this.dishes.tags);
+      // let tagCollection = []
+      // for(var i = 0; i < this.dishes.tags.length; i++){
+      //   tagCollection.unshift({
+      //     id:this.dishes.tags[i]
+      //   })
+      // }
+      // this.dishes.tags = tagCollection
+
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = []
+      let rid = localStorage.getItem("rid");
+      this.dishes.rid = rid
+
       let data = this.dishes
       console.log(data,'提交菜品数据');
       this.$refs[formName1].validate((valid) => {
         if (valid) {
-          this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
           this.$request(this.url.dishes1,'json',data).then((res)=>{
             this.$message({
               type: 'success',
               message: '数据提交成功!'
             });
             this.dishesDataTable.push(data);
+            this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
           }).catch((err)=>{
             this.$message({
               type: 'info',
@@ -1192,7 +1298,16 @@ export default {
 
       //提交SKU
     },
-    //添加分类
+    endTimeFun(){
+      this.dishes.showTime = this.startTime.getHours()+
+        ':'+this.startTime.getMinutes()+
+        ':'+this.startTime.getSeconds()+
+        '-'+this.endTime.getHours()+
+        ':'+this.endTime.getMinutes()+
+        ':'+this.endTime.getSeconds()
+      console.log(this.dishes.showTime);
+    },
+    //添加标签
     updateTags(){
       console.log('2222222222');
       let index = this.categoryIndex
@@ -1283,6 +1398,9 @@ export default {
         console.log(err);
       })
     },
+    getUnit(){
+      console.log(this.dishes.uid);
+    },
     updateSKU(){
       let specs = []
       for(let i=0; i<this.value5.length; i++){
@@ -1360,6 +1478,12 @@ export default {
       console.log(row,'点击编辑菜品触发');
       // to  updateDishes
       console.log(this.dishesIndex,'第一打印did');
+      if(row.showTime){
+        let start = row.showTime.split('-')
+        this.startTimePre = start[0]
+        this.endTimePre = start[1]
+      }
+
     },
     updateDishes(){
       console.log(this.picReceive);
@@ -1749,8 +1873,11 @@ export default {
     plusMethodsThis(data){
       this.dishesIndex = this.dishesDataTable.length
       // console.log(data);
+      // this.dynamicTags = []
       this.addOrEdit = 1
       this.dishes ={}
+      this.startTimePre = '请选择开始时间'
+      this.endTimePre = '请选择结束时间'
       this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
     },
     plusGoods(){

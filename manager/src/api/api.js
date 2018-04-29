@@ -45,11 +45,49 @@ export  function urlColletion() {
     sku3: BURL +'/dishes/delete',
     sku4: BURL +'/dishes/update',
 
+    //pre单位
+    preUnit1: BURL +'/predefineDishesUnit/add',
+    preUnit2: BURL +'/predefineDishesUnit/complexPageQuery',
+    preUnit3: BURL +'/predefineDishesUnit/delete',
+    preUnit4: BURL +'/predefineDishesUnit/update',
+
+    //pre推广标签
+    prePopularizeTag1: BURL +'/predefinePopularizeTag/add',
+    prePopularizeTag2: BURL +'/predefinePopularizeTag/complexPageQuery',
+    prePopularizeTag3: BURL +'/predefinePopularizeTag/delete',
+    prePopularizeTag4: BURL +'/predefinePopularizeTag/update',
+
+    //pre服务类型
+    preServiceType1: BURL +'/predefineServiceType/add',
+    preServiceType2: BURL +'/predefineServiceType/complexPageQuery',
+    preServiceType3: BURL +'/predefineServiceType/delete',
+    preServiceType4: BURL +'/predefineServiceType/update',
+
+    //pre分类
+    preSpec1: BURL +'/predefineSpec/add',
+    preSpec2: BURL +'/predefineSpec/complexPageQuery',
+    preSpec3: BURL +'/predefineSpec/delete',
+    preSpec4: BURL +'/predefineSpec/update',
+
+    //pre餐桌类型
+    preTableType1: BURL +'/predefineTableType/add',
+    preTableType2: BURL +'/predefineTableType/complexPageQuery',
+    preTableType3: BURL +'/predefineTableType/delete',
+    preTableType4: BURL +'/predefineTableType/update',
+
+
+    //pre标签
+    preTag1: BURL +'/predefineTag/add',
+    preTag2: BURL +'/predefineTag/complexPageQuery',
+    preTag3: BURL +'/predefineTag/delete',
+    preTag4: BURL +'/predefineTag/update',
+
     //分类
     dishesCategory1: BURL +'/dishesCategory/add',
     dishesCategory2: BURL +'/dishesCategory/complexPageQuery',
     dishesCategory3: BURL +'/dishesCategory/delete',
     dishesCategory4: BURL +'/dishesCategory/update',
+
 
     //标签
     restaurantTag1: BURL +'/restaurantTag/add',
