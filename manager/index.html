@@ -275,7 +275,7 @@
     // reset display value
     setDisplayVal(0);
 
-    write('Calculator Reset');
+    // write('Calculator Reset');
   }
 
   // backspacing value
@@ -288,7 +288,7 @@
         b = parseFloat(b.toString().substring(0, b.toString().length - 1 ));
       }
     } else {
-      write('Nothing Left to Backspace');
+      // write('Nothing Left to Backspace');
     }
   }
 
@@ -423,6 +423,10 @@
 
   // click clear
   jQuery('#calc_clear').click(function() {
+    reset_calc();
+  });
+
+  jQuery('#calc_clear_button').click(function() {
     reset_calc();
   });
 

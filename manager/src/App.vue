@@ -142,7 +142,7 @@
         <router-view></router-view>
       </el-col>
     </el-row>
-    <computer></computer>
+    <computer v-if="this.loginShow === false"></computer>
   </div>
 </template>
 

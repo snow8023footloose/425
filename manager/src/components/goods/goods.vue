@@ -709,7 +709,7 @@
                 prop="normalPrice"
                 label="价格">
                 <template scope="scope">
-                  <input :value="scope.row.normalPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
+                  <input :value="scope.row.normalPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'normalPrice')" type="number">
                 </template>
               </el-table-column>
               <el-table-column
@@ -717,7 +717,7 @@
                 label="会员价"
               >
                 <template scope="scope">
-                  <input :value="scope.row.memberPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
+                  <input :value="scope.row.memberPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'memberPrice')" type="number">
                 </template>
               </el-table-column>
               <el-table-column
@@ -725,7 +725,7 @@
                 label="活动价"
               >
                 <template scope="scope">
-                  <input :value="scope.row.promotionPrice" @blur="normalPriceBlurtest(scope.row,scope.$index)" type="text">
+                  <input :value="scope.row.promotionPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'promotionPrice')" type="number">
                 </template>
               </el-table-column>
             </el-table>
@@ -1065,9 +1065,19 @@ export default {
     this._pullPrePopularizeTag()
   },
   methods: {
-    normalPriceBlurtest(row,index){
-      console.log(row,'1111111111111111', index,'222222222222222');
-      console.log(this.generateSkuDate);
+    priceBlurtest(row,index,event,type){
+      // console.log(row,'1111111111111111', index,'222222222222222');
+      // console.log(event,'得到input最终值');
+      // console.log(event.target.value,'得到input最终值');
+      console.log(this.generateSkuDate,'打印出来的normalPriceBlurtest》generateSkuDate');
+      if(type === 'normalPrice'){
+        this.generateSkuDate[index].normalPrice = Number(event.target.value)
+      }else if(type === 'memberPrice'){
+        this.generateSkuDate[index].memberPrice = Number(event.target.value)
+      }else if(type === 'promotionPrice'){
+        this.generateSkuDate[index].promotionPrice = Number(event.target.value)
+      }
+      console.log(this.generateSkuDate,'实时修改的generateSkuDate');
     },
     UID(n){
       var name = n + this.getUID()
@@ -1259,7 +1269,7 @@ export default {
       // this.dishes.tags = tagCollection
 
       this.dishes.zindex = this.dishesIndex
-      this.dishes.skus = []
+      this.dishes.skus = this.generateSkuDate
       let rid = localStorage.getItem("rid");
       this.dishes.rid = rid
 
