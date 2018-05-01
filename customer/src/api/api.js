@@ -46,6 +46,9 @@ export  function urlColletion() {
     restaurantTag3: BURL +'/restaurantTag/delete',
     restaurantTag4: BURL +'/restaurantTag/update',
 
+    //SKU
+    sku1: BURL +'/sku/complexPageQuery',
+
     //规格
     spec1: BURL +'/restaurantSpec/add',
     spec2: BURL +'/restaurantSpec/complexPageQuery',

@@ -307,7 +307,7 @@ export default {
             }else if(res.data.msg === 'success'){
               let rid = res.data.data.rid
               localStorage.setItem('rid',JSON.stringify(rid))
-              document.cookie = 'userCookie =' + JSON.stringify(data);
+              // document.cookie = 'userCookie =' + JSON.stringify(data);
               if(this.ruleForm2.username.split('xwf').length === 1){
                 this.manager = true
                 this.owner = false

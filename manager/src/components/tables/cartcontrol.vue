@@ -98,7 +98,6 @@
         let data = {
           did: this.food.id,
           num: 1
-
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
 

@@ -7,6 +7,7 @@
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
     <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop.prevent="addCart"></i>
+    <div class="skuSelect"></div>
     <!--<el-dialog title="请选择口味" :visible.sync="dialogVisible" width="80%" :modal-append-to-body="false" style="position: fixed!important;left: 50px;top:50px;">-->
       <!--<span>-->
         <!--<div>-->
@@ -52,11 +53,11 @@
     data() {
       return {
         SColor: 'SColor',
-        dialogVisible: false,
+        dialogVisible: true,
         spce: [],
-        // falg1: '大份',
-        // falg2: '热',
-        // falg3: '辣'
+        falg1: '大份',
+        falg2: '热',
+        falg3: '辣'
       }
     },
     created () {
@@ -92,7 +93,7 @@
         } else {
           this.food.count++;
         }
-        this.$emit('increment', {event:target,name:'123'});
+        this.$emit('increment', {event:event.target,food:this.food});
         console.log("cartcontrol")
       },
       decreaseCart(event) {
@@ -164,8 +165,5 @@
       transform: translate3d(24px, 0, 0)
       .inner
         transform: rotate(180deg)
-
-
-
 
 </style>

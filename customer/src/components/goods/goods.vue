@@ -42,7 +42,7 @@
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
-                    <cartcontrol :food="food" @increment.native="incrementTotal"></cartcontrol>
+                    <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
                   </div>
                 </div>
               </li>
@@ -178,11 +178,25 @@ export default {
       this.selectedFood = food;
       this.$refs['food'].show();
     },
-    incrementTotal(target) {
-      console.log(target,'456546456456')
+    incrementTotal(g) {
+      console.log('1');
+      console.log(g.event,g.food,'456546456456')
       //体验优化,异步执行下落动画
+      let data =[
+        {
+          feild: 'did',
+          did:g.food.id,
+          joinType:'eq'
+        }
+      ]
+
+      this.$request(this.url.sku1,'json',data).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
       this.$nextTick(() => {
-        this.$refs['shop-cart'].drop(target);
+        this.$refs['shop-cart'].drop(g.event);
       });
     },
     _initScroll() {

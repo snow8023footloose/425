@@ -877,6 +877,7 @@ export default {
       }
     },
     plusTable(){
+      this.tableForm.rid = localStorage.getItem("rid");
       let data = this.tableForm
       console.log(data);
       this.$request(this.url.table1, 'json', data).then((res)=>{

@@ -111,9 +111,7 @@
                 prop="thumb"
                 label="缩略图">
                 <template slot-scope="scope">
-                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb" alt="点击查看原图">
-                  </a>
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb" alt="未上传">
                 </template>
               </el-table-column>
               <el-table-column
@@ -122,9 +120,7 @@
                 prop="highDefinitionImg"
                 label="高清图">
                 <template slot-scope="scope">
-                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg" alt="点击查看原图">
-                  </a>
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg" alt="未上传">
                 </template>
               </el-table-column>
               <el-table-column
@@ -133,22 +129,18 @@
                 prop="bannerImg"
                 label="banner">
                 <template slot-scope="scope">
-                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg" alt="点击查看原图">
-                  </a>
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg" alt="未上传">
                 </template>
               </el-table-column>
-              <el-table-column
-                sortable
-                width="150"
-                prop="banner"
-                label="banner">
-                <template slot-scope="scope">
-                  <a :href="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="点击查看原图">
-                  </a>
-                </template>
-              </el-table-column>
+              <!--<el-table-column-->
+                <!--sortable-->
+                <!--width="150"-->
+                <!--prop="banner"-->
+                <!--label="banner">-->
+                <!--<template slot-scope="scope">-->
+                    <!--<img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="未上传">-->
+                <!--</template>-->
+              <!--</el-table-column>-->
               <el-table-column
                 sortable
                 width="150"
@@ -230,7 +222,7 @@
             <h6>请不要建立同名标签</h6>
             标签：
             <el-tag
-              :key="tag.zindex"
+              :key="tag.index"
               v-for="(tag,index) in dynamicTags"
               closable
               :disable-transitions="false"
@@ -310,7 +302,7 @@
           <el-input v-model.number="toDynamicTags.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
         </el-form-item>
         <el-form-item label="状态" style="text-align: left">
-          <el-select v-model="dynamicTags.status" placeholder="请选择时间段">
+          <el-select v-model="toDynamicTags.status" placeholder="请选择状态">
             <el-option
               v-for="item in categoryStatus"
               :key="item.value"
@@ -320,7 +312,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="标签类型" style="text-align: left">
-          <el-select v-model="dynamicTags.type" placeholder="请选择标签类型">
+          <el-select v-model="toDynamicTags.chargeType" placeholder="请选择标签类型">
             <el-option
               v-for="item in tagType"
               :key="item.value"
@@ -329,10 +321,10 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="dynamicTags.type === 'charge'" class="price-form" label="价格">
+        <el-form-item v-if="toDynamicTags.chargeType === 'charge'" class="price-form" label="价格">
           <el-input
             size="small"
-            v-model="toDynamicTags.price"
+            v-model.number="toDynamicTags.price"
             auto-complete="off"
             placeholder="请输入价格"
             class="price-item"
@@ -359,7 +351,7 @@
           <el-input v-model.number="toDynamicTags1.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
         </el-form-item>
         <el-form-item label="状态" style="text-align: left">
-          <el-select v-model="dynamicTags1.status" placeholder="请选择时间段">
+          <el-select v-model="toDynamicTags1.status" placeholder="请选择状态">
             <el-option
               v-for="item in categoryStatus"
               :key="item.value"
@@ -369,10 +361,10 @@
           </el-select>
         </el-form-item>
         <el-form-item label="分类介绍" >
-          <el-input v-model="toDynamicTags1.description" auto-complete="off" placeholder="请输入数字"></el-input>
+          <el-input v-model="toDynamicTags1.description" auto-complete="off" placeholder="请输入描述"></el-input>
         </el-form-item>
         <el-form-item label="展示类型" prop="showType">
-          <el-select v-model="dynamicTags1.showType" placeholder="请选择时间段">
+          <el-select v-model="toDynamicTags1.showType" placeholder="请选择展示类型">
             <el-option
               v-for="item in categoryShowType"
               :key="item.value"
@@ -381,26 +373,26 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="dynamicTags1.showType === 'sometimes'" label="时间段">
-          <el-time-select
-            placeholder="起始时间"
-            v-model="startTime"
+        <el-form-item v-if="toDynamicTags1.showType === 'sometimes'" v-model="toDynamicTags1.showTime" label="时间段" :label-width="formLabelWidth">
+          <el-time-picker
+            style="width: 170px"
+            v-model="categoryStartTimePre"
             :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30'
-            }">
-          </el-time-select>
-          <el-time-select
-            placeholder="结束时间"
-            v-model="endTime"
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+            :placeholder="categoryStartTimePre">
+          </el-time-picker>
+          <el-col class="line" style="text-align: center; display: inline-block; float: none" :span="2">-</el-col>
+          <el-time-picker
+            style="width: 170px"
+            arrow-control
+            v-model="categoryEndTimePre"
+            @change="categoryEndTimeFun"
             :picker-options="{
-              start: '08:30',
-              step: '00:15',
-              end: '18:30',
-              minTime: startTime
-            }">
-          </el-time-select>
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+            :placeholder="categoryEndTimePre">
+          </el-time-picker>
         </el-form-item>
         <el-form-item label="打印机" style="text-align: left">
           <el-select v-model="categoryPid" placeholder="打印机1">
@@ -409,10 +401,6 @@
             <el-option label="打印机3" value="printer3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="餐厅id" prop="rid">
-          <el-input v-model.number="toDynamicTags1.rid" auto-complete="off" placeholder="请输入数字"></el-input>
-        </el-form-item>
-
         <el-form-item style="width: 50%" label="缩略图" :label-width="formLabelWidth">
           <upload name="分类-缩略图"></upload>
         </el-form-item>
@@ -505,7 +493,7 @@
           class="matter2-hint">该部分为必填
         </span>
         <el-form :inline="true" :rules="rules2" ref="confirmDishesData" status-icon :model="dishes" :label-width="formLabelWidth">
-          <el-form-item label="品名" prop="name">
+          <el-form-item label="品名" width="227px" prop="name">
             <el-input v-model="dishes.name" auto-complete="off" placeholder="请输入品名"></el-input>
           </el-form-item>
           <el-form-item label="数量" prop="stock">
@@ -637,12 +625,12 @@
                 :name="UID('/dishes/')"
                 :target="this.dishes.bannerImg"></upload>
             </el-form-item>
-            <el-form-item style="width: 20%;float: left" label="banner" prop="banner">
-              <upload
-                v-on:ToUrl="listenUrl3"
-                :name="UID('/dishes/')"
-                :target="this.dishes.banner"></upload>
-            </el-form-item>
+            <!--<el-form-item style="width: 20%;float: left" label="banner" prop="banner">-->
+              <!--<upload-->
+                <!--v-on:ToUrl="listenUrl3"-->
+                <!--:name="UID('/dishes/')"-->
+                <!--:target="this.dishes.banner"></upload>-->
+            <!--</el-form-item>-->
             <!--<el-form-item style="width: 20%;float: left" label="推广图" prop="bannerStatus">-->
               <!--<upload :name="dishes.bannerImg"></upload>-->
             <!--</el-form-item>-->
@@ -658,26 +646,31 @@
           <el-button @click="toNature" type="primary" plain style="padding: 4px" size="mini" round>&nbsp;特性管理&nbsp;</el-button>编辑
         </span>
         <el-form :label-width="formLabelWidth" :model="dishes" status-icon :rules="rules2">
+
           <el-form-item label="添加标签">
-            <el-select style="display: inline-block; width: 555px" v-model="dishes.tags" multiple placeholder="请选择，默认无标签">
+            <el-select
+              style="display: inline-block; width: 555px"
+              v-model="valueOfTags"
+              multiple placeholder="请选择，默认无标签">
               <el-option
-                v-for="item in dynamicTags"
-                :key="item.zindex"
+                v-for="(item,index) in dynamicTags"
+                :key="index"
                 :label="item.name"
                 :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
+
           <el-form-item label="添加SKU">
             <el-select
               style="display: inline-block; width: 555px"
-              v-model="value5"
+              v-model="valueOfSKU"
               value-key="zindex"
               @change="optsChange"
               multiple placeholder="请选择，默认无SKU">
               <el-option
-                v-for="item in dynamicTags2"
-                :key="item.zindex"
+                v-for="(item,index) in dynamicTags2"
+                :key="index"
                 :label="item.name"
                 :value="item"
               >
@@ -709,7 +702,16 @@
                 prop="normalPrice"
                 label="价格">
                 <template scope="scope">
-                  <input :value="scope.row.normalPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'normalPrice')" type="number">
+                  <input style="
+                  border-radius: 8px;
+                  border: 1px solid rgba(0,0,0,0.25);
+                  height: 30px;
+                  width: 89%;
+                  outline: none;
+                  padding: 0px 5%" class="SKUinput"
+                         :value="scope.row.normalPrice"
+                         @focus="changeStyle($event)"
+                         @blur="priceBlurtest(scope.row,scope.$index,$event,'normalPrice')" type="number">
                 </template>
               </el-table-column>
               <el-table-column
@@ -717,7 +719,16 @@
                 label="会员价"
               >
                 <template scope="scope">
-                  <input :value="scope.row.memberPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'memberPrice')" type="number">
+                  <input style="
+                  border-radius: 8px;
+                  border: 1px solid rgba(0,0,0,0.25);
+                  height: 30px;
+                  width: 89%;
+                  outline: none;
+                  padding: 0px 5%"  class="SKUinput"
+                         :value="scope.row.memberPrice"
+                         @focus="changeStyle($event)"
+                         @blur="priceBlurtest(scope.row,scope.$index,$event,'memberPrice')" type="number">
                 </template>
               </el-table-column>
               <el-table-column
@@ -725,7 +736,16 @@
                 label="活动价"
               >
                 <template scope="scope">
-                  <input :value="scope.row.promotionPrice" @blur="priceBlurtest(scope.row,scope.$index,$event,'promotionPrice')" type="number">
+                  <input style="
+                  border-radius: 8px;
+                  border: 1px solid rgba(0,0,0,0.25);
+                  height: 30px;
+                  width: 89%;
+                  outline: none;
+                  padding: 0px 5%"  class="SKUinput"
+                         :value="scope.row.promotionPrice"
+                         @focus="changeStyle($event)"
+                         @blur="priceBlurtest(scope.row,scope.$index,$event,'promotionPrice')" type="number">
                 </template>
               </el-table-column>
             </el-table>
@@ -766,6 +786,8 @@ export default {
       picReceive:'',
       startTimePre:'',
       endTimePre:'',
+      categoryStartTimePre:'',
+      categoryEndTimePre:'',
       imgColletin:{
         brandLogo: 'restaurant/brandLogo',
         businessPermitImg: 'restaurant/businessPermitImg',
@@ -784,8 +806,10 @@ export default {
       generateSkuDate:[],
       visible2: false,
       startTime:'',
-      generatTable:false,
       endTime:'',
+      categoryStartTime:'',
+      categoryEndTime:'',
+      generatTable:false,
       addOrEdit: 0,
       currentPage1:5,
       dialogFormVisibleGoodsPlus:false,
@@ -926,7 +950,8 @@ export default {
       printValue:'选项1',
       toDynamicTags3:[],
       value4: '',
-      value5: [],
+      valueOfSKU: [],
+      valueOfTags: [],
       normalPrice:12,
       value6: '',
       fileList2: [
@@ -984,9 +1009,6 @@ export default {
         // ]
       },
     }
-  },
-  watch:{
-
   },
   computed:{
     normalPrice1: function(){
@@ -1065,10 +1087,14 @@ export default {
     this._pullPrePopularizeTag()
   },
   methods: {
+    changeStyle(event){
+      console.log(event);
+      event.target.style.background= 'rgba(64,158,255,.1)'
+      event.target.style.border = '1px solid rgba(64,158,255,.6)'
+    },
     priceBlurtest(row,index,event,type){
-      // console.log(row,'1111111111111111', index,'222222222222222');
-      // console.log(event,'得到input最终值');
-      // console.log(event.target.value,'得到input最终值');
+      event.target.style.background= 'rgba(146, 199, 253, 0.1)'
+      event.target.style.border = '1px solid rgba(0, 0, 0, 0.25)'
       console.log(this.generateSkuDate,'打印出来的normalPriceBlurtest》generateSkuDate');
       if(type === 'normalPrice'){
         this.generateSkuDate[index].normalPrice = Number(event.target.value)
@@ -1097,6 +1123,7 @@ export default {
     },
     optsChange(){
       console.log('1');
+      console.log(this.valueOfSKU);
     },
     handleEdit:function(row){
       //遍历数组改变editeFlag
@@ -1236,10 +1263,10 @@ export default {
     _pullCategory(){
       var Data = [
         {
-          feild: 'time',
-          value: '',
-          joinType: 'time'
-        }
+          feild: 'rid',
+          value: localStorage.getItem("rid"),
+          joinType: 'eq'
+        },
       ]
       this.$request(this.url.dishesCategory2,'json',Data).then((res)=>{
         let response = res.data.data
@@ -1253,27 +1280,22 @@ export default {
 
     // 增加菜品
     addDishes(formName1,formName2){
-      console.log(this.dishes.tags,'得到标签');
-      this.dishes.tags = this.dishes.tags.map(function (item) {
+      console.log(this.valueOfTags,'得到标签');
+      let tags = []
+      tags = Object.assign([],this.valueOfTags);
+      tags = tags.map(function (item) {
         return {
           id:item
         }
       })
-      console.log(this.dishes.tags);
-      // let tagCollection = []
-      // for(var i = 0; i < this.dishes.tags.length; i++){
-      //   tagCollection.unshift({
-      //     id:this.dishes.tags[i]
-      //   })
-      // }
-      // this.dishes.tags = tagCollection
-
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
       let rid = localStorage.getItem("rid");
       this.dishes.rid = rid
 
-      let data = this.dishes
+      let data = {}
+      data = Object.assign({},this.dishes);
+      data.tags = tags
       console.log(data,'提交菜品数据');
       this.$refs[formName1].validate((valid) => {
         if (valid) {
@@ -1298,8 +1320,6 @@ export default {
           return false;
         }
       });
-
-
       //提交SKU
     },
     endTimeFun(){
@@ -1311,12 +1331,22 @@ export default {
         ':'+this.endTime.getSeconds()
       console.log(this.dishes.showTime);
     },
-    //添加标签
+    categoryEndTimeFun(){
+      this.toDynamicTags1.showTime = this.categoryStartTimePre.getHours()+
+        ':'+this.categoryStartTimePre.getMinutes()+
+        ':'+this.categoryStartTimePre.getSeconds()+
+        '-'+this.categoryEndTimePre.getHours()+
+        ':'+this.categoryEndTimePre.getMinutes()+
+        ':'+this.categoryEndTimePre.getSeconds()
+      console.log(this.toDynamicTags1.showTime);
+    },
+    //更新标签
     updateTags(){
       console.log('2222222222');
+      console.log(this.toDynamicTags);
       let index = this.categoryIndex
       let updateObj = {
-        id:this.toDynamicTags.id
+        id:this.toDynamicTags.id,
       }
       for(let key in this.toDynamicTags){
         if(this.toDynamicTags[key] === this.dynamicTags[index][key]){
@@ -1324,7 +1354,7 @@ export default {
         }
         updateObj[key] = this.toDynamicTags[key];
       }
-      console.log(updateObj,'updateCategoryupdateCategory');
+      console.log(updateObj,'updateTags');
 
       this.$request(this.url.restaurantTag4,'json',updateObj).then((res)=>{
         this.$message({
@@ -1374,10 +1404,12 @@ export default {
       })
     },
     updateCategory(){
+      console.log(this.toDynamicTags1,'打印category');
       console.log('2222222222');
       let index = this.categoryIndex
       let updateObj = {
-        id:this.toDynamicTags1.id
+        id:this.toDynamicTags1.id,
+        rid:localStorage.getItem("rid")
       }
       for(let key in this.toDynamicTags1){
         if(this.toDynamicTags1[key] === this.dynamicTags1[index][key]){
@@ -1385,7 +1417,7 @@ export default {
         }
         updateObj[key] = this.toDynamicTags1[key];
       }
-      console.log(updateObj,'updateCategoryupdateCategory');
+      console.log(updateObj,'updateCategory之前');
 
       this.$request(this.url.dishesCategory4,'json',updateObj).then((res)=>{
         this.$message({
@@ -1407,12 +1439,12 @@ export default {
     },
     updateSKU(){
       let specs = []
-      for(let i=0; i<this.value5.length; i++){
+      for(let i=0; i<this.valueOfSKU.length; i++){
         specs.unshift({
-          name:this.value5[i].name,
+          name:this.valueOfSKU[i].name,
           did:this.dishesIndex,
-          id:this.value5[i].id,
-          zindex:this.value5[i].zindex
+          id:this.valueOfSKU[i].id,
+          zindex:this.valueOfSKU[i].zindex
         })
       }
       console.log(specs);
@@ -1547,6 +1579,7 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue,
+            rid:localStorage.getItem("rid")
           }
           this.$request(this.url.restaurantTag1,'json',data).then((res)=>{
             this.$message({
@@ -1572,7 +1605,7 @@ export default {
       this.inputValue = '';
     },
     editTags(tag,index){
-      // console.log(tag.zindex);
+      console.log(tag.id,'id是多少');
 
       console.log(index);
 
@@ -1637,6 +1670,7 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue1,
+            rid:localStorage.getItem("rid")
           }
           this.$request(this.url.dishesCategory1,'json',data).then((res)=>{
             this.$message({
@@ -1664,12 +1698,17 @@ export default {
     editCategory(tag,index){
       // console.log(tag.zindex);
 
-      console.log(index);
+      console.log(tag);
 
       this.toDynamicTags1 = Object.assign({},tag);
       this.categoryIndex = index;
       console.log(this.toDynamicTags1);
       this.dialogFormVisibleCategoryEdit = !this.dialogFormVisibleCategoryEdit
+      if(tag.showTime){
+        let start = tag.showTime.split('-')
+        this.categoryStartTimePre = start[0]
+        this.categoryEndTimePre = start[1]
+      }
     },
     handleClose1(tag,index) {
       console.log(tag);
@@ -1733,6 +1772,7 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue2,
+            rid:localStorage.getItem("rid")
           }
           this.$request(this.url.spec1,'json',data).then((res)=>{
             this.$message({
@@ -1838,6 +1878,8 @@ export default {
             sid: this.toDynamicTags2.id,
             name: inputValue3,
             zindex: lastNumber,
+            rid:localStorage.getItem("rid")
+
           }
 
         );
@@ -1874,14 +1916,16 @@ export default {
     handlePreview(file) {
       console.log(file);
     },
-    plusMethodsThis(data){
+    plusMethodsThis(){
+      //初始化表格
       this.dishesIndex = this.dishesDataTable.length
-      // console.log(data);
-      // this.dynamicTags = []
       this.addOrEdit = 1
       this.dishes ={}
+      this.valueOfSKU = []
+      this.valueOfTags = []
       this.startTimePre = '请选择开始时间'
       this.endTimePre = '请选择结束时间'
+      this.generatTable = false
       this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
     },
     plusGoods(){
@@ -1915,7 +1959,7 @@ export default {
       if(!skuArr || skuArr.length === 0){
         skuArr = spec.attrs.map(function (item) {
           return {
-            attrJoin:item.id,
+            attrJion:item.id,
             content:item.name,
           }
         })
@@ -1925,7 +1969,7 @@ export default {
       for(let item of skuArr){
         for(let newItem of spec.attrs){
           newSkuArr.unshift({
-            attrJoin:item.attrJoin + "_" + newItem.id,
+            attrJion:item.attrJion + "_" + newItem.id,
             content: item.content + "," + newItem.name,
           })
         }
@@ -1934,14 +1978,29 @@ export default {
     },
 
     outputSku(){
+      if(!this.dishes.normalPrice){
+        this.$message({
+          type: 'info',
+          message: '没有基本价格!'
+        });
+        return false
+      }
+      console.log(this.valueOfSKU,'点击生成SKU弹框');
+      if(!this.valueOfSKU.length){
+        this.$message({
+          type: 'info',
+          message: '没有选择规格!'
+        });
+        return false
+      }
       setTimeout(() => {
         this.generating = false;
       }, 2000);
       this.generatTable = true
 
-      var valueOfSku = Object.assign([],this.value5);
+      var valueOfSku = Object.assign([],this.valueOfSKU);
 
-      console.log(this.value5,'this.value5');
+      console.log(this.valueOfSKU,'this.valueOfSKU');
       this.generating = !this.generating;
       this.generateSkuDate =  this.generateSku([],valueOfSku);
       for(var j=0; j<this.generateSkuDate.length; j++){
@@ -1960,6 +2019,10 @@ export default {
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
+
+
+
+
  .el-upload__tip
    font-size 10px
    line-height 15px
@@ -2047,4 +2110,22 @@ td
     border 2px solid white
     z-index 200
  /*.el-table--fit*/
+
+
+
+.SKUInput
+  -webkit-appearance none !important
+  background-color #fff !important
+  background-image: none !important
+  border-radius: 4px !important
+  border: 1px solid #dcdfe6 !important
+  -webkit-box-sizing: border-box !important
+  box-sizing: border-box !important
+  color: #606266 !important
+  display: inline-block !important
+  font-size: inherit !important
+  height: 40px !important
+  line-height: 40px !important
+  outline: 0 !important
+  padding: 0 15px !important
 </style>

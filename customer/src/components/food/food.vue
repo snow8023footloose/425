@@ -238,7 +238,7 @@ const ERR_OK = 0
       .buy
         position: absolute
         right: 31px
-        bottom: 14px
+        bottom: 19px
         z-index: 10
         height: 24px
         line-height: 24px
