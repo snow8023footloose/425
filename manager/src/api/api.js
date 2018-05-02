@@ -22,6 +22,8 @@ export  function urlColletion() {
   return {
     //不可改变顺序
     //餐厅请求接口
+
+
     restaurant1: BURL +'/restaurant/add',
     restaurant2: BURL +'/restaurant/complexPageQuery',
     restaurant3: BURL +'/restaurant/delete',

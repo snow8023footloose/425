@@ -2,6 +2,7 @@ import axios from 'axios'
 import qs from 'qs'
 
 // axios.defaults.baseURL = 'http://192.168.2.189';
+axios.defaults.withCredentials = true
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 var BURL = 'http://192.168.2.189'
 export function _addRestaurant(obj) {
@@ -20,6 +21,9 @@ export  function urlColletion() {
   return {
     //不可改变顺序
     //餐厅请求接口
+
+    login2: BURL +'/xwfUser/login',
+
     restaurant1: BURL +'/restaurant/add',
     restaurant2: BURL +'/restaurant/complexPageQuery',
     restaurant3: BURL +'/restaurant/delete',
@@ -30,7 +34,7 @@ export  function urlColletion() {
 
     //菜品
     dishes1: BURL +'/dishes/add',
-    dishes2: BURL +'/dishes/complexPageQuery',
+    dishes2: BURL +'/dishes/complexPageQueryWithExtraData',
     dishes3: BURL +'/dishes/delete',
     dishes4: BURL +'/dishes/update',
 
@@ -135,9 +139,12 @@ function handleRes(obj,res,goodsArr){
 
 
 export function goodsArr(self) {
+
+
   let _this = self
   let goodsArr = []
   let promiseArr = [];
+
   console.log(_this.dishesCategory);
   for(let i = 0 ; i< _this.dishesCategory.length; i++) {
     promiseArr.push(request(urlColletion().dishes2, 'json', [
@@ -157,6 +164,8 @@ export function goodsArr(self) {
     })
     _this.goods = goodsArr;
     console.log(_this.goods);
+
+
   })
 }
 

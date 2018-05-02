@@ -1,5 +1,6 @@
 <template>
     <div class="goods" id="goods" ref="goods-top">
+      <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
       <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
         <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
           <ul>
@@ -57,6 +58,25 @@
         :min-price="seller.minPrice"
       ></shopcart>
       <food :food="selectedFood" ref="food"></food>
+
+
+      <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
+        <el-form :model="form">
+          <el-form-item label="活动名称" :label-width="formLabelWidth">
+            <el-input v-model="form.name" auto-complete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="活动区域" :label-width="formLabelWidth">
+            <el-select v-model="form.region" placeholder="请选择活动区域">
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisible = false">取 消</el-button>
+          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        </div>
+      </el-dialog>
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -82,7 +102,38 @@ export default {
       show: false,
       divTop: "divTop",
       dishesCategory:[],
-      SColor: 'SColor'
+      SColor: 'SColor',
+
+      gridData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }],
+      dialogTableVisible: false,
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px'
     };
   },
 
@@ -168,7 +219,7 @@ export default {
       this.foodsScroll.scrollToElement(el, 300);
     },
     selectFood(food, event) {
-
+      console.log(this.goods,'======================');
       if (!event._constructed) {
         return;
       }
@@ -232,18 +283,32 @@ export default {
           joinType: ''
         }
       ];
-      this.$request(this.url.dishesCategory2, 'json', Data).then((res)=>{
-        this.dishesCategory = res.data.data;
+      this.$request(this.url.login2,'form',{
+        thirdId:123456789
+      }).then((res)=>{
+        console.log(res,'login-ressssssssssssssssss');
+
+        _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
+          _this.dishesCategory = res.data.data;
+        }).catch((err)=>{
+          console.log(err)
+        }).then(function () {
+          _this.goods = _this.goodsArr(_this);
+          // console.log(55, _this.goods);
+
+        }).then(function () {
+          // _this.goods = goods;
+        })
+
       }).catch((err)=>{
-        console.log(err)
-      }).then(function () {
-        _this.goods = _this.goodsArr(_this);
 
-        // console.log(55, _this.goods);
+      }).then(()=>{
 
-      }).then(function () {
-        // _this.goods = goods;
+
+
       })
+
+
 
 
     },

@@ -1085,6 +1085,7 @@ export default {
     this._pullPreSpec()
     this._pullPreTag()
     this._pullPrePopularizeTag()
+
   },
   methods: {
     changeStyle(event){
@@ -1290,6 +1291,7 @@ export default {
       })
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
+      this.dishes.specs = this.valueOfSKU
       let rid = localStorage.getItem("rid");
       this.dishes.rid = rid
 
@@ -1327,8 +1329,7 @@ export default {
         ':'+this.startTime.getMinutes()+
         ':'+this.startTime.getSeconds()+
         '-'+this.endTime.getHours()+
-        ':'+this.endTime.getMinutes()+
-        ':'+this.endTime.getSeconds()
+        ':'+this.endTime.getMinutes()
       console.log(this.dishes.showTime);
     },
     categoryEndTimeFun(){
@@ -1336,8 +1337,7 @@ export default {
         ':'+this.categoryStartTimePre.getMinutes()+
         ':'+this.categoryStartTimePre.getSeconds()+
         '-'+this.categoryEndTimePre.getHours()+
-        ':'+this.categoryEndTimePre.getMinutes()+
-        ':'+this.categoryEndTimePre.getSeconds()
+        ':'+this.categoryEndTimePre.getMinutes()
       console.log(this.toDynamicTags1.showTime);
     },
     //更新标签
