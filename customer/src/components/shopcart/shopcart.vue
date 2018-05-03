@@ -47,8 +47,16 @@
               <span>￥{{food.normalPrice*food.count}}</span>
             </div>
             <div class="cartcontrol-wrapper">
-              <cartcontrol :food="food"></cartcontrol>
+              <cartcontrol
+                :confirmMessage="confirmMessage"
+                :food="food"
+                @incrementmi="incrementTotalDecre"
+                @increment="incrementTotalAdd">
+              </cartcontrol>
             </div>
+            <!--<div class="delete-wrapper">-->
+              <!--<el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteSelect"></el-button>-->
+            <!--</div>-->
           </li>
         </ul>
       </div>
@@ -111,16 +119,159 @@ const ERR_OK = 0
         book: false,
         SColor:'SColor',
         SColor2:'SColor2',
-        SColor4:'SColor4'
+        SColor4:'SColor4',
+        confirmMessage: {
+          is: 0
+        },
+        getFoods:{}
       };
 
     },
     methods: {
+      deleteSelect(){
+        let data = {
+          did: this.getFoods.id,
+          rid: this.getFoods.rid,
+          tid: 12,
+          type: 'single',
+        }
+
+        this.$request(this.url.cart3,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+      },
+      transformArrySku(){
+        let selectedSkuArr = []
+        for(var i=0;0<this.selectedSkuArr.length;i++){
+          if(this.selectedSkuArr.length === i){
+            return selectedSkuArr
+          }else {
+            for(var j=0;j<this.specs[i].attrs.length;j++){
+              // console.log(this.specs[i].attrs);
+              if(this.selectedSkuArr.length === i){
+                continue
+              }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
+                selectedSkuArr.push(this.specs[i].attrs[j].id)
+              }
+            }
+          }
+        }
+      },
+      transformArryTags(){
+        let selectedArryTags = []
+        let data = [
+          {
+            feild:'status',
+            value:'enable',
+            joinType: 'eq'
+          }
+        ]
+        this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
+          console.log(res);
+          let response = res.data.data
+          for(var i=0;0<this.selectedTags.length;i++){
+            if(this.selectedTags.length === i){
+              this.transformArryTag = selectedArryTags
+              return true
+            }else {
+              for(var j=0;j<this.response.length;j++){
+                // console.log(this.specs[i].attrs);
+                if(this.selectedTags.length === i){
+                  continue
+                }else if(this.selectedTags[i] === this.response[j].name){
+                  selectedArryTags.push(this.response[j].id)
+                }
+              }
+            }
+          }
+        }).catch((err)=>{
+          console.log(err);
+        })
+      },
+      confirmSku(){
+        // console.log(this.specs);
+        // console.log(this.selectedSkuArr);
+        console.log(this.selectedTags);
+        // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
+        // console.log(this.trueLabelofTags+'trueLabelofTags');
+        let attrJoin = this.transformArrySku().join('_');
+        // this.transformArryTags()
+        // console.log(this.transformArryTags());
+        let attrTags = this.selectedTags.join(',');
+        let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+        let data = {
+          num:1,
+          sid: selectedSkuObj.id,
+          did: this.getFoods.id,
+          rid: this.getFoods.rid,
+          tid: 12,
+          type: 'single',
+          tagIds: attrTags
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+        if (!this.getFoods.count) {
+          Vue.set(this.getFoods, 'count', 1);
+        } else {
+          this.getFoods.count++;
+        }
+        this.dialogFormVisible = !this.dialogFormVisible
+      },
+      incrementTotalAdd(g) {
+        console.log(g.event,g.food,'456546456456')
+        //体验优化,异步执行下落动画
+        if(g.specs){
+          this.dialogFormVisible = !this.dialogFormVisible
+          this.getFoods = g.food
+          this.specs = g.food.specs
+        }else{
+
+          let data = {
+            num: 1,
+            did: g.food.id,
+            rid: g.food.rid,
+            tid: 12,
+            type: 'single',
+          }
+          this.$request(this.url.cart1,'json',data).then((res)=>{
+            console.log(res);
+          }).catch((err)=>{
+            console.log(err);
+          })
+        }
+      },
+      incrementTotalDecre(g){
+        // console.log(g.event,g.food,'456546456456')
+        //体验优化,异步执行下落动画
+        if(g.specs){
+          this.dialogFormVisible = !this.dialogFormVisible
+          this.getFoods = g.food
+          this.specs = g.food.specs
+        }else{
+          let data = {
+            num: -1,
+            did: g.food.id,
+            rid: g.food.rid,
+            tid: 12,
+            type: 'single',
+          }
+          this.$request(this.url.cart1,'json',data).then((res)=>{
+            console.log(res);
+          }).catch((err)=>{
+            console.log(err);
+          })
+        }
+      },
       serveCall() {
         alert("已为您呼叫服务")
       },
       drop(el) {
-        console.log("shopcart")
+        // console.log("shopcart")
         for(let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
           if(!ball.show) {
@@ -366,16 +517,16 @@ const ERR_OK = 0
 
     .shopcart-list
       position: absolute
-      right: 36px
+      /*right: 36px*/
       bottom: 26px
       z-index: -1
-      width: 260px
+      width: 95%
       .list-header
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
         height: 40px
         line-height: 31px
         width : 100%
-        padding: 0 18px
+        padding: 0 2.5%
         background: #f3f5f7
         border-bottom: 1px solid rgba(7, 17, 27, 0.1)
         .title
@@ -391,7 +542,7 @@ const ERR_OK = 0
 
       .list-content
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
-        padding: 0 18px
+        padding: 0 2.5%
         max-height: 200px
         bottom : 40px
         padding-bottom 20px
@@ -413,7 +564,7 @@ const ERR_OK = 0
             width 135px
           .price
             position: absolute
-            right: 90px
+            right: 50%
             bottom: 12px
             line-height: 24px
             font-size: 14px
@@ -421,8 +572,14 @@ const ERR_OK = 0
             color: rgb(240, 20, 20)
           .cartcontrol-wrapper
             position: absolute
-            right: 0
+            right: 5%
             bottom: 6px
+          .delete-wrapper
+            position: absolute
+            right: 0%
+            bottom: 12px
+            .el-button
+              padding 5px !important
 
 .ball-container
   .ball

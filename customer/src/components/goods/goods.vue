@@ -1,6 +1,5 @@
 <template>
     <div class="goods" id="goods" ref="goods-top">
-      <el-button type="text" @click="dialogFormVisible = true">打开嵌套表单的 Dialog</el-button>
       <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
         <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
           <ul>
@@ -30,7 +29,7 @@
                 class="food-item border-1px"
               >
                 <div class="icon">
-                  <img width="70px" height="70px" :src="food.icon">
+                  <img width="70px" height="70px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.highDefinitionImg">
                 </div>
                 <div class="goods-content">
                   <h2 class="goods-name">{{food.name}}</h2>
@@ -43,7 +42,12 @@
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
-                    <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
+                    <cartcontrol
+                      :confirmMessage="confirmMessage"
+                      :food="food"
+                      @incrementmi="incrementTotalDecre"
+                      @increment="incrementTotalAdd">
+                    </cartcontrol>
                   </div>
                 </div>
               </li>
@@ -58,23 +62,31 @@
         :min-price="seller.minPrice"
       ></shopcart>
       <food :food="selectedFood" ref="food"></food>
-
-
-      <el-dialog title="收货地址" :visible.sync="dialogFormVisible">
-        <el-form :model="form">
-          <el-form-item label="活动名称" :label-width="formLabelWidth">
-            <el-input v-model="form.name" auto-complete="off"></el-input>
+      <el-dialog
+        width="95%"
+        title="规格"
+        :visible.sync="dialogFormVisible"
+        :append-to-body="true"
+        style="z-index: 9999"
+      >
+        <el-form v-for="(item,index) in specs" label-position="left">
+          <el-form-item :label="item.name" :label-width="formLabelWidth">
+            <el-radio-group size="mini" v-model="selectedSkuArr[index]">
+              <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
+            </el-radio-group>
           </el-form-item>
-          <el-form-item label="活动区域" :label-width="formLabelWidth">
-            <el-select v-model="form.region" placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
+        </el-form>
+        <el-form label-position="left">
+          <el-form-item label="标签" :label-width="formLabelWidth">
+            <!--<input type="radio" name="user.sex" id="male" value="男" >-->
+            <el-checkbox-group size="mini" v-model="selectedTags">
+              <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
+            </el-checkbox-group>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+          <el-button type="primary" @click="confirmSku">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -87,6 +99,7 @@ import food from '@/components/food/food.vue'
 
 const ERR_OK = 0
 /* eslint-disable */
+import Vue from 'vue';
 export default {
   props: {
     seller: {
@@ -95,6 +108,7 @@ export default {
   },
   data() {
     return {
+      selectedSpec:'',
       goods: [],
       listHeight: [],
       scrollY: 0,
@@ -103,37 +117,19 @@ export default {
       divTop: "divTop",
       dishesCategory:[],
       SColor: 'SColor',
-
-      gridData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }],
+      specs:[],
       dialogTableVisible: false,
       dialogFormVisible: false,
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+      formLabelWidth: '50px',
+      getFoods:{},
+      confirmMessage: {
+        is: 0
       },
-      formLabelWidth: '120px'
+      selectedTags:[],
+      selectedSkuArr : [],
+      trueLabelofSpecs:[],
+      trueLabelofTags:[],
+      transformArryTag:[]
     };
   },
 
@@ -162,17 +158,8 @@ export default {
 
   },
   mounted(){
-
-  },
-  destroyed(){
-
-  },
-  mounted(){
     this._pullTable();
     this._pullSpec();
-    // this.goods = [
-    //   {"name": '1', "foods": []},{"name": '1', "foods": []},{"name": '1', "foods": []}
-    // ];
     if(!this.scroll){
           // this._initScroll();
         }else{
@@ -181,7 +168,7 @@ export default {
         this._calculateHeight();
 
     },
-    computed: {
+  computed: {
         currentIndex() {
           for (let i = 0; i < this.listHeight.length; i++) {
             let height1 = this.listHeight[i];
@@ -206,6 +193,143 @@ export default {
         }
       },
   methods: {
+    transformArrySku(){
+      let selectedSkuArr = []
+      for(var i=0;0<this.selectedSkuArr.length;i++){
+        if(this.selectedSkuArr.length === i){
+          return selectedSkuArr
+        }else {
+          for(var j=0;j<this.specs[i].attrs.length;j++){
+            // console.log(this.specs[i].attrs);
+            if(this.selectedSkuArr.length === i){
+              continue
+            }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
+              selectedSkuArr.push(this.specs[i].attrs[j].id)
+            }
+          }
+        }
+      }
+    },
+    transformArryTags(){
+      let selectedArryTags = []
+      let data = [
+        {
+          feild:'status',
+          value:'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
+        console.log(res);
+        let response = res.data.data
+        for(var i=0;0<this.selectedTags.length;i++){
+          if(this.selectedTags.length === i){
+            this.transformArryTag = selectedArryTags
+            return true
+          }else {
+            for(var j=0;j<this.response.length;j++){
+              // console.log(this.specs[i].attrs);
+              if(this.selectedTags.length === i){
+                continue
+              }else if(this.selectedTags[i] === this.response[j].name){
+                selectedArryTags.push(this.response[j].id)
+              }
+            }
+          }
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    confirmSku(){
+      // console.log(this.specs);
+      // console.log(this.selectedSkuArr);
+      console.log(this.selectedTags);
+      // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
+      // console.log(this.trueLabelofTags+'trueLabelofTags');
+      let attrJoin = this.transformArrySku().join('_');
+      // this.transformArryTags()
+      // console.log(this.transformArryTags());
+      let attrTags = this.selectedTags.join(',');
+      let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+      let data = {
+        num:1,
+        sid: selectedSkuObj.id,
+        did: this.getFoods.id,
+        rid: this.getFoods.rid,
+        tid: 12,
+        type: 'single',
+        tagIds: attrTags
+      }
+      this.$request(this.url.cart1,'json',data).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+      if (!this.getFoods.count) {
+        Vue.set(this.getFoods, 'count', 1);
+      } else {
+        this.getFoods.count++;
+      }
+      this.dialogFormVisible = !this.dialogFormVisible
+    },
+    incrementTotalAdd(g) {
+
+
+      console.log(g.event,g.food,'456546456456')
+      //体验优化,异步执行下落动画
+      if(g.specs){
+        this.dialogFormVisible = !this.dialogFormVisible
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        this.$nextTick(() => {
+          this.$refs['shop-cart'].drop(g.event);
+        });
+        let data = {
+          num: 1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: 12,
+          type: 'single',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+      }
+    },
+    incrementTotalDecre(g){
+      // console.log(g.event,g.food,'456546456456')
+      //体验优化,异步执行下落动画
+      if(g.specs){
+        this.dialogFormVisible = !this.dialogFormVisible
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        let data = {
+          num: -1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: 12,
+          type: 'single',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+      }
+    },
+    findSkuByAttrJoin(selectedJoinAttr){
+      for(let item of this.getFoods.skus){
+        if(item.attrJion === selectedJoinAttr){
+          return item;
+        }
+      }
+
+    },
     otouch() {
       this.show = false
     },
@@ -228,27 +352,6 @@ export default {
       };
       this.selectedFood = food;
       this.$refs['food'].show();
-    },
-    incrementTotal(g) {
-      console.log('1');
-      console.log(g.event,g.food,'456546456456')
-      //体验优化,异步执行下落动画
-      let data =[
-        {
-          feild: 'did',
-          did:g.food.id,
-          joinType:'eq'
-        }
-      ]
-
-      this.$request(this.url.sku1,'json',data).then((res)=>{
-        console.log(res);
-      }).catch((err)=>{
-        console.log(err);
-      })
-      this.$nextTick(() => {
-        this.$refs['shop-cart'].drop(g.event);
-      });
     },
     _initScroll() {
       this.menuScroll = new BScroll(this.$refs['menu-wrapper'], {
@@ -299,18 +402,7 @@ export default {
         }).then(function () {
           // _this.goods = goods;
         })
-
-      }).catch((err)=>{
-
-      }).then(()=>{
-
-
-
       })
-
-
-
-
     },
   //  拉取规格
     _pullSpec(){
@@ -623,5 +715,6 @@ export default {
     color: rgb(147, 153, 159)
 
 
-
+  .el-dialog__body
+    padding 7px 20px !important
 </style>

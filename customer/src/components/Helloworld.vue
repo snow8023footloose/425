@@ -90,6 +90,16 @@ export default {
     return {
       msg: 'Welcome to Your Vue.js App'
     }
+  },
+  methods:{
+    test(){
+      var url=document.location.href;
+      var cookieUser = document.cookie
+      var localStorage = JSON.parse(localStorage.mydata)
+      localStorage.setItem('rid',JSON.stringify(rid))
+      localStorage.getItem(key)
+      localStorage.removeItem(key)
+    }
   }
 }
 </script>

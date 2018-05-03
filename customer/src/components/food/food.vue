@@ -2,7 +2,7 @@
   <div v-show="showFlag" class="food" transition="move" ref="food">
     <div class="food-content">
       <div class="image-header">
-        <img :src="food.image" @click="hide">
+        <img :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.highDefinitionImg" @click="hide">
         <div class="back" @click="hide">
           <i class="icon-arrow_lift"></i>
         </div>
@@ -46,7 +46,6 @@
             </li>
           </ul>
           <div class="no-rating" v-show="!food.ratings || !food.ratings.length">暂无评价</div>
-
         </div>
       </div>
       <split></split>

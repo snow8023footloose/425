@@ -1,6 +1,6 @@
 <template>
   <div class="order" ref="ratings">
-    <div class="order-content">
+    <!--<div class="order-content">-->
       <!--<div class="overview">-->
         <!--<div class="overview-left">-->
           <!--<h1 class="score">{{seller.score}}</h1>-->
@@ -26,7 +26,6 @@
       <!--</div>-->
       <split></split>
       <ratingselect :select-type="selectType" :only-content="onlyContent" :ratings="ratings"></ratingselect>
-
       <!--历史订单详情-->
       <div class="order-wrapper">
         <ul>
@@ -34,20 +33,17 @@
             <div class="avatar">
               <img width="28" height="28" :src="rating.avatar">
             </div>
-            <div class="content">
+            <div class="content" @click="showDetils">
               <h1 class="order-code">订单编号{{rating.username}}</h1><span class="outdate">订单已经完成</span>
               <div style="clear:both"></div>
               <div class="order-content" v-show="rating.recommend && rating.recommend.length">
-                <span class="icon-thumb_up"></span>
+                <!--<span class="icon-thumb_up"></span>-->
                 <span class="item" v-for="(item,key) in rating.recommend" :key="key">{{item}}</span>
               </div>
               <p class="text">
                 点击查看订单详情
               </p>
-              <span class="button">再来一单</span>
-              <span class="button">申请退单</span>
-              <span class="button">去支付</span>
-
+              <!--<span class="button">申请退单</span>-->
               <div class="time">
                 {{rating.rateTime | formatDate}}
               </div>
@@ -55,6 +51,73 @@
           </li>
         </ul>
       </div>
+      <!--订单详情框-->
+      <transition name="fade" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
+        <div v-show="detailShow" class="detail animated">
+          <div class="detail-wrapper clearfix">
+            <div class="scroll" ref="s-scroll">
+              <div class="s-scroll">
+                <h1 class="name">{{seller.name}}</h1>
+                <!--<div class="favorite">
+                  <span class="icon-favorite" :class="{'active':favorite}" @click="toggleFavorite()"></span>
+                  <span class="text">{{favoriteText}}</span>
+                </div>-->
+                <div class="star-wrapper">
+                  <star :size="48" :score="seller.score"></star>
+                </div>
+                <div class="headertitle">
+                  <div class="line"></div>
+                  <div class="text">优惠信息</div>
+                  <div class="line"></div>
+                </div>
+                <ul v-if="seller.supports" class="supports">
+                  <li class="support-item" v-for="(item,index,key) in seller.supports" :key="key">
+                    <span class="icon" :class="classMap[seller.supports[index].type]"></span>
+                    <span class="text">{{seller.supports[index].description}}
+                </span>
+                  </li>
+                </ul>
+                <div class="headertitle">
+                  <div class="line"></div>
+                  <div class="text">店家信息</div>
+                  <div class="line"></div>
+                </div>
+                <div class="info">
+                  <ul>
+                    <li class="info-item" v-for="(info,key) in seller.infos" :key="key">{{info}}</li>
+                  </ul>
+                </div>
+                <div class="headertitle">
+                  <div class="line"></div>
+                  <div class="text">店家公告</div>
+                  <div class="line"></div>
+                </div>
+                <div class="bulletin">
+                  <p class="content">{{seller.bulletin}}</p>
+                </div>
+                <div class="headertitle">
+                  <div class="line"></div>
+                  <div class="text">店家实景</div>
+                  <div class="line"></div>
+                </div>
+                <div class="pics">
+                  <span class="seemore">向右滑动查看更多 ></span>
+                  <div class="pic-wrapper" ref="pic-wrapper">
+                    <ul class="pic-list" ref="pic-list">
+                      <li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">
+                        <img :src="pic" width="120" height="90">
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="detail-close" @click="hideDetail">
+            <i class="icon-close"></i>
+          </div>
+        </div>
+      </transition>
     </div>
   </div>
 </template>
@@ -79,11 +142,13 @@
     data() {
       return {
         ratings: [],
+        detailShow: false,
         selectType: ALL,
         onlyContent: true
       };
     },
     created() {
+      this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
       this.$http.get('/api/ratings').then((response) => {
         response = response.body;
         if (response.errno === ERR_OK) {
@@ -98,6 +163,40 @@
       this._pullOder()
     },
     methods: {
+      showDetils(event){
+        if (!event._constructed) {
+          return;
+        }
+
+        this.detailShow = true;
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs['s-scroll'], {
+              // scrollX: true,
+              // eventPassthrough: 'vertical'
+            });
+          } else {
+            this.scroll.refresh();
+          }
+        });
+
+        if (this.seller.pics) {
+          let picWidth = 120;
+          let margin = 6;
+          let width = (picWidth + margin) * this.seller.pics.length - margin;
+          this.$refs['pic-list'].style.width = width + 'px';
+          this.$nextTick(() => {
+            if (!this.picScroll) {
+              this.picScroll = new BScroll(this.$refs['pic-wrapper'], {
+                scrollX: true,
+                eventPassthrough: 'vertical'
+              });
+            } else {
+              this.picScroll.refresh();
+            }
+          });
+        }
+      },
       needShow(type, text) {
         if (this.onlyContent && !text) {
           return false;
@@ -120,6 +219,9 @@
         this.$request(this.url.order2, 'json', Data).then((res)=>{
           console.log(res)
         })
+      },
+      hideDetail() {
+        this.detailShow = false;
       }
     },
     events: {
@@ -151,7 +253,9 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-  @import "../../common/styles/mixin.styl"
+  @import "../../common/style.css";
+  @import "../../common/animate.css";
+  @import "../../common/styles/mixin.styl";
 
   .order
     position: absolute
@@ -295,4 +399,85 @@
             line-height: 12px
             font-size: 10px
             color: rgb(147, 153, 159)
+
+
+  .detail
+    position: fixed
+    z-index: 100
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    /*overflow: hidden*/
+    transition: all 0.5s
+    backdrop-filter: blur(10px)
+    background: rgba(7, 17, 27, 0.8)
+    .detail-wrapper
+      display flex
+      width: 100%
+      height: 589px
+      margin-top: 30px
+
+  .pics
+    padding: 0px 20px 18px 18px
+    .seemore
+      font-size 8px
+      float right
+      margin 5px 30px
+      opacity 0.5
+    .pic-wrapper
+      width: 82%
+      overflow: hidden
+      white-space: nowrap
+      margin 0 auto
+      .pic-list
+        font-size: 0
+        .pic-item
+          display: inline-block
+          margin-right: 6px
+          width: 120px
+          height: 90px
+          &:last-child
+            margin: 2px
+
+
+.name
+  line-height: 16px
+  text-align: center
+  font-size: 16px
+  font-weight: 700
+.star-wrapper
+  margin-top: 18px
+  padding: 2px 0
+  text-align: center
+.headertitle
+  display: flex
+  width: 80%
+  margin: 28px auto 24px auto
+  .line
+    flex: 1
+    position: relative
+    top: -6px
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2)
+  .text
+    padding: 0 12px
+    font-weight: 700
+    font-size: 14px
+
+.info
+  width 80%
+  margin 0 auto
+  color: white
+  .title
+    padding-bottom: 12px
+    line-height: 14px
+    border-1px(rgba(7, 17, 27, 0.1))
+    font-size: 14px
+  .info-item
+    padding: 7px
+    line-height: 16px
+    border-1px(rgba(7, 17, 27, 0.1))
+    font-size: 12px
+    &:last-child
+      border-none()
 </style>
