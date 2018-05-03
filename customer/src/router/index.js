@@ -7,6 +7,7 @@ import Order from '@/components/order/order'
 import Star from '@/components/star/star'
 import Test from '@/components/test/test'
 import sellerSearch from '@/components/test/seller-search'
+import Entrance from '@/components/entrance/entrance'
 
 Vue.use(Router)
 Vue.use(Resource)
@@ -14,6 +15,11 @@ Vue.use(Resource)
 export default new Router({
   mode: 'history',
   routes: [
+    {
+      path: '/entrance',
+      name: 'Entrance',
+      component: Entrance
+    },
     {
       path: '/',
       name: 'Goods',

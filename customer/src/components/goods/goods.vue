@@ -125,6 +125,7 @@ export default {
       confirmMessage: {
         is: 0
       },
+      getData:{},
       selectedTags:[],
       selectedSkuArr : [],
       trueLabelofSpecs:[],
@@ -154,20 +155,14 @@ export default {
         this.SColor = response1.data.sysColor[1].plan
       }
     });
+    this._pullTable();
+    this._pullSpec();
 
 
   },
   mounted(){
-    this._pullTable();
-    this._pullSpec();
-    if(!this.scroll){
-          // this._initScroll();
-        }else{
-          this.scroll.refresh();
-        }
-        this._calculateHeight();
 
-    },
+  },
   computed: {
         currentIndex() {
           for (let i = 0; i < this.listHeight.length; i++) {
@@ -182,6 +177,7 @@ export default {
         },
         selectFoods() {
           let foods = [];
+          if(this.goods){
           this.goods.forEach((good) => {
             good.foods.forEach((food) => {
               if (food.count) {
@@ -189,6 +185,7 @@ export default {
               }
             });
           });
+          }
           return foods;
         }
       },
@@ -271,11 +268,14 @@ export default {
       } else {
         this.getFoods.count++;
       }
+
       this.dialogFormVisible = !this.dialogFormVisible
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(this.getData.event);
+      });
     },
     incrementTotalAdd(g) {
-
-
+      this.getData = g
       console.log(g.event,g.food,'456546456456')
       //体验优化,异步执行下落动画
       if(g.specs){

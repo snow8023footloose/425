@@ -307,7 +307,7 @@
       <el-dialog top="4vh" title="餐厅信息" :visible.sync="dialogFormVisibleMsg" ref="showRestaurantData">
         <el-form :model="restaurantData" ref="confirmRestaurantData" :rules="rulesRestaurantData">
           <el-form-item v-if="addNewPerson === 1" label="法人姓名" :label-width="formLabelWidth">
-            <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="请填写法人姓名"></el-input>
+            <el-input autofocus="true" v-model="restaurantPerson.name" auto-complete="off" placeholder="请填写法人姓名"></el-input>
           </el-form-item>
           <el-form-item v-if="addNewRestaurant === 1" label="法人姓名" :label-width="formLabelWidth">
             <el-input v-model="restaurantPerson.name" auto-complete="off" placeholder="已注册用户，请完善法人姓名"></el-input>

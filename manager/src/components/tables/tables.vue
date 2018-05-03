@@ -276,13 +276,23 @@
     <el-dialog title="增加餐桌" :visible.sync="dialogFormVisibleTablePlus">
       <el-form :model="tableForm" :label-width="formLabelWidth">
         <el-form-item label="名称" >
-          <el-input v-model="tableForm.name" auto-complete="off" placeholder="请输入名称"></el-input>
+          <el-input
+            autofocus="true"
+            v-model="tableForm.name"
+            auto-complete="off"
+            @keyup="onkeyup(e)"
+            placeholder="请输入名称"></el-input>
         </el-form-item>
         <el-form-item label="桌号">
-          <el-input v-model.number="tableForm.num" auto-complete="off" placeholder="请输入桌号"></el-input>
+          <el-input
+            v-model.number="tableForm.num"
+            auto-complete="off"
+            placeholder="请输入桌号"></el-input>
         </el-form-item>
         <el-form-item label="容纳人数">
-          <el-input v-model.number="tableForm.seatNum" auto-complete="off" placeholder="请输入容纳人数"></el-input>
+          <el-input
+            v-model.number="tableForm.seatNum"
+            auto-complete="off" placeholder="请输入容纳人数"></el-input>
         </el-form-item>
         <el-form-item label="餐桌类型" style="text-align: left">
           <el-select
@@ -333,7 +343,9 @@
     <el-dialog title="修改餐桌" :visible.sync="dialogFormVisibleTableChange">
       <el-form :model="toAccountBox" :label-width="formLabelWidth">
         <el-form-item label="名称" >
-          <el-input v-model="toAccountBox.name" auto-complete="off" placeholder="请输入名称"></el-input>
+          <el-input
+            autofocus="true"
+            v-model="toAccountBox.name" auto-complete="off" placeholder="请输入名称"></el-input>
         </el-form-item>
         <el-form-item label="桌号">
           <el-input v-model.number="toAccountBox.money" auto-complete="off" placeholder="请输入桌号"></el-input>
@@ -638,6 +650,7 @@ export default {
     //   this.inputVisible1 = false;
     //   this.inputValue1 = '';
     // },
+
     selectFoodss(){
       let foods = [];
       this.goods.forEach((good) => {
@@ -737,7 +750,6 @@ export default {
         let data = {
           id:this.toAccountBox.id
         }
-
         this.$request(this.url.table3,'form',data).then((res)=>{
           this.$message({
             type: 'success',
@@ -746,6 +758,7 @@ export default {
           // this.dishesDataTable.push(data);
           // this.show3 = false
           this._pullTable()
+          this.tableShow = 0
         }).catch((err)=>{
           this.$message({
             type: 'info',
@@ -886,7 +899,7 @@ export default {
           message: '数据提交成功!'
         });
         // this.dishesDataTable.push(data);
-
+        console.log(res);
 
         this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
         this._pullTable()
@@ -1101,7 +1114,7 @@ export default {
   .el-row
     .table-container
       display: flex
-      height: 720px
+      height: 555px
       flex-wrap: wrap
       .transition-box
         margin-bottom: 8px

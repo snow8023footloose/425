@@ -143,8 +143,6 @@ export function goodsArr(self) {
   let _this = self
   let goodsArr = []
   let promiseArr = [];
-
-  console.log(_this.dishesCategory);
   for(let i = 0 ; i< _this.dishesCategory.length; i++) {
     promiseArr.push(request(urlColletion().dishes2, 'json', [
       {
@@ -162,7 +160,7 @@ export function goodsArr(self) {
       _this._calculateHeight()
     })
     _this.goods = goodsArr;
-    console.log(_this.goods);
+
   })
 }
 

@@ -1,33 +1,32 @@
 <template>
-  <div class="order" ref="ratings">
-    <!--<div class="order-content">-->
-      <!--<div class="overview">-->
-        <!--<div class="overview-left">-->
-          <!--<h1 class="score">{{seller.score}}</h1>-->
-          <!--<div class="title">综合评分</div>-->
-          <!--<div class="rank">高于周边商家{{seller.rankRate}}%</div>-->
-        <!--</div>-->
-        <!--<div class="overview-right">-->
-          <!--<div class="score-wrapper">-->
-            <!--<span class="title">服务态度</span>-->
-            <!--<star :size="36" :score="seller.serviceScore"></star>-->
-            <!--<span class="score">{{seller.serviceScore}}</span>-->
-          <!--</div>-->
-          <!--<div class="score-wrapper">-->
-            <!--<span class="title">商品评分</span>-->
-            <!--<star :size="36" :score="seller.foodScore"></star>-->
-            <!--<span class="score">{{seller.foodScore}}</span>-->
-          <!--</div>-->
-          <!--<div class="delivery-wrapper">-->
-            <!--<span class="title">送达时间</span>-->
-            <!--<span class="delivery">{{seller.deliveryTime}}分钟</span>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
-      <split></split>
+  <div class="order">
+    <!--<div class="order-content">
+      <div class="overview">
+        <div class="overview-left">
+          <h1 class="score">{{seller.score}}</h1>
+          <div class="title">综合评分</div>
+          <div class="rank">高于周边商家{{seller.rankRate}}%</div>
+        </div>
+        <div class="overview-right">
+          <div class="score-wrapper">
+            <span class="title">服务态度</span>
+            <star :size="36" :score="seller.serviceScore"></star>
+            <span class="score">{{seller.serviceScore}}</span>
+          </div>
+          <div class="score-wrapper">
+            <span class="title">商品评分</span>
+            <star :size="36" :score="seller.foodScore"></star>
+            <span class="score">{{seller.foodScore}}</span>
+          </div>
+          <div class="delivery-wrapper">
+            <span class="title">送达时间</span>
+            <span class="delivery">{{seller.deliveryTime}}分钟</span>
+          </div>
+        </div>
+      </div>-->
       <ratingselect :select-type="selectType" :only-content="onlyContent" :ratings="ratings"></ratingselect>
       <!--历史订单详情-->
-      <div class="order-wrapper">
+      <div style="overflow: hidden" class="order-wrapper" ref="ratings">
         <ul>
           <li v-for="(rating,key) in ratings" :key="key" v-show="needShow(rating.rateType, rating.text)" class="order-item">
             <div class="avatar">
@@ -57,29 +56,24 @@
           <div class="detail-wrapper clearfix">
             <div class="scroll" ref="s-scroll">
               <div class="s-scroll">
-                <h1 class="name">{{seller.name}}</h1>
-                <!--<div class="favorite">
-                  <span class="icon-favorite" :class="{'active':favorite}" @click="toggleFavorite()"></span>
-                  <span class="text">{{favoriteText}}</span>
-                </div>-->
-                <div class="star-wrapper">
-                  <star :size="48" :score="seller.score"></star>
-                </div>
+                <h1 class="name">订单已完成 <i class="el-icon-loading"></i></h1>
+                <p style="font-size: 12px;font-weight: lighter;margin-top: 10px" class="name">感谢您对新沃丰的信任，期待再次光临！</p>
                 <div class="headertitle">
                   <div class="line"></div>
                   <div class="text">优惠信息</div>
                   <div class="line"></div>
                 </div>
                 <ul v-if="seller.supports" class="supports">
-                  <li class="support-item" v-for="(item,index,key) in seller.supports" :key="key">
-                    <span class="icon" :class="classMap[seller.supports[index].type]"></span>
-                    <span class="text">{{seller.supports[index].description}}
-                </span>
+                  <li class="support-item">
+                    <div class="text">订单号：13245646465465465</div>
+                    <div class="text">支付方式：微信</div>
+                    <div class="text">下单时间：{{new Date()}}</div>
+                    <div class="text">联系商家：15773153167</div>
                   </li>
                 </ul>
                 <div class="headertitle">
                   <div class="line"></div>
-                  <div class="text">店家信息</div>
+                  <div class="text">菜品信息</div>
                   <div class="line"></div>
                 </div>
                 <div class="info">
@@ -89,27 +83,29 @@
                 </div>
                 <div class="headertitle">
                   <div class="line"></div>
-                  <div class="text">店家公告</div>
+                  <div class="text">评价</div>
                   <div class="line"></div>
                 </div>
                 <div class="bulletin">
-                  <p class="content">{{seller.bulletin}}</p>
-                </div>
-                <div class="headertitle">
-                  <div class="line"></div>
-                  <div class="text">店家实景</div>
-                  <div class="line"></div>
-                </div>
-                <div class="pics">
-                  <span class="seemore">向右滑动查看更多 ></span>
-                  <div class="pic-wrapper" ref="pic-wrapper">
-                    <ul class="pic-list" ref="pic-list">
-                      <li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">
-                        <img :src="pic" width="120" height="90">
-                      </li>
-                    </ul>
+                  <div class="star-wrapper">
+                    <star :size="48" :score="seller.score"></star>
                   </div>
                 </div>
+                <!--<div class="headertitle">-->
+                  <!--<div class="line"></div>-->
+                  <!--<div class="text">店家实景</div>-->
+                  <!--<div class="line"></div>-->
+                <!--</div>-->
+                <!--<div class="pics">-->
+                  <!--<span class="seemore">向右滑动查看更多 ></span>-->
+                  <!--<div class="pic-wrapper" ref="pic-wrapper">-->
+                    <!--<ul class="pic-list" ref="pic-list">-->
+                      <!--<li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">-->
+                        <!--<img :src="pic" width="120" height="90">-->
+                      <!--</li>-->
+                    <!--</ul>-->
+                  <!--</div>-->
+                <!--</div>-->
               </div>
             </div>
           </div>
@@ -184,17 +180,17 @@
           let picWidth = 120;
           let margin = 6;
           let width = (picWidth + margin) * this.seller.pics.length - margin;
-          this.$refs['pic-list'].style.width = width + 'px';
-          this.$nextTick(() => {
-            if (!this.picScroll) {
-              this.picScroll = new BScroll(this.$refs['pic-wrapper'], {
-                scrollX: true,
-                eventPassthrough: 'vertical'
-              });
-            } else {
-              this.picScroll.refresh();
-            }
-          });
+          // this.$refs['pic-list'].style.width = width + 'px';
+            // this.$nextTick(() => {
+            //   if (!this.picScroll) {
+            //     this.picScroll = new BScroll(this.$refs['pic-wrapper'], {
+            //       scrollX: true,
+            //       eventPassthrough: 'vertical'
+            //     });
+            //   } else {
+            //     this.picScroll.refresh();
+            //   }
+            // });
         }
       },
       needShow(type, text) {
@@ -328,6 +324,7 @@
             color: rgb(147, 153, 159)
     .order-wrapper
       padding: 0 18px
+      height 443px
       .order-item
         display: flex
         padding: 18px 0
@@ -412,6 +409,7 @@
     transition: all 0.5s
     backdrop-filter: blur(10px)
     background: rgba(7, 17, 27, 0.8)
+    color white
     .detail-wrapper
       display flex
       width: 100%

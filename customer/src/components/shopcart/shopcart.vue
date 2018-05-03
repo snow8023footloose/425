@@ -65,6 +65,34 @@
     <!--<transition name="fade">-->
       <!--<div class="list-mask" @click="hideList" v-show="listShow"></div>-->
     <!--</transition>-->
+
+    <el-dialog
+      width="95%"
+      title="规格"
+      :visible.sync="dialogFormVisible"
+      :append-to-body="true"
+      style="z-index: 9999"
+    >
+      <el-form v-for="(item,index) in specs" label-position="left">
+        <el-form-item :label="item.name" :label-width="formLabelWidth">
+          <el-radio-group size="mini" v-model="selectedSkuArr[index]">
+            <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-form label-position="left">
+        <el-form-item label="标签" :label-width="formLabelWidth">
+          <!--<input type="radio" name="user.sex" id="male" value="男" >-->
+          <el-checkbox-group size="mini" v-model="selectedTags">
+            <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmSku">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -81,7 +109,7 @@ const ERR_OK = 0
           return [
             {
               price: 4,
-              count: 1
+              count: 1,
             }
           ];
         }
@@ -123,7 +151,12 @@ const ERR_OK = 0
         confirmMessage: {
           is: 0
         },
-        getFoods:{}
+        getFoods:{},
+        specs:[],
+        selectedTags:[],
+        selectedSkuArr : [],
+        dialogFormVisible:false,
+        formLabelWidth: '50px',
       };
 
     },
@@ -189,6 +222,14 @@ const ERR_OK = 0
         }).catch((err)=>{
           console.log(err);
         })
+      },
+      findSkuByAttrJoin(selectedJoinAttr){
+        for(let item of this.getFoods.skus){
+          if(item.attrJion === selectedJoinAttr){
+            return item;
+          }
+        }
+
       },
       confirmSku(){
         // console.log(this.specs);
@@ -351,6 +392,7 @@ const ERR_OK = 0
         let total = 0;
         this.selectFoods.forEach((food) => {
           total += food.normalPrice * food.count;
+
         });
         return total;
       },

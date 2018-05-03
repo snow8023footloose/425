@@ -59,9 +59,9 @@
     },
     methods: {
       select(type, event) {
-        if (!event._constructed) {
-          return;
-        }
+        // if (!event._constructed) {
+        //   return;
+        // }
         this.selectType = type;
         this.$emit('ratingtype.select', type);
       },

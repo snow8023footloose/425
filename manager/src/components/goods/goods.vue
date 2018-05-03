@@ -494,7 +494,7 @@
         </span>
         <el-form :inline="true" :rules="rules2" ref="confirmDishesData" status-icon :model="dishes" :label-width="formLabelWidth">
           <el-form-item label="品名" width="227px" prop="name">
-            <el-input v-model="dishes.name" auto-complete="off" placeholder="请输入品名"></el-input>
+            <el-input autofocus="true" v-model="dishes.name" auto-complete="off" placeholder="请输入品名"></el-input>
           </el-form-item>
           <el-form-item label="数量" prop="stock">
             <el-input v-model.number="dishes.stock" auto-complete="off" placeholder="请输入数量"></el-input>

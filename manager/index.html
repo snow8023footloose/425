@@ -38,15 +38,13 @@
     soft_sub = false,
     display = jQuery('#total');
 
-
-
   /*
   ** tool functions
   */
 
   // console.log
   function write(x) {
-    console.log(x);
+    // console.log(x);
   }
   // add int to current display value
   function changeDisplayVal(i) {
@@ -87,7 +85,7 @@
     if ( is_a ) {
       // nothing if a duplicate decimal
       if ( i === '.' && a.toString().indexOf('.') !== -1 ) {
-        write('Duplicate Decimal');
+        // write('Duplicate Decimal');
         i = '';
       } else if ( i === '.' && first_a ) {
         i = '0.';
@@ -118,7 +116,7 @@
     if ( !is_a ) {
       // nothing if a duplicate decimal
       if ( i === '.' && b.toString().indexOf('.') !== -1 ) {
-        write('Duplicate Decimal!');
+        // write('Duplicate Decimal!');
         i = '';
       } else if ( i === '.' && first_b ) {
         i = '0.';
@@ -146,7 +144,7 @@
 
   // looping calculator
   function loop_calc(answer) {
-    write('Loop Calculator');
+    // write('Loop Calculator');
 
     a = answer;
     b = 0;
@@ -175,7 +173,7 @@
     if ( is_a ) { is_a = false; }
     if ( !is_b ) { is_b = true; }
 
-    write('Set "o" to ' + o);
+    // write('Set "o" to ' + o);
   }
 
   // soft submit calc
@@ -194,7 +192,7 @@
     // post result
     newResult(a,o,b,answer);
 
-    write(a + ' ' + o + ' ' + b + ' = ' + answer);
+    // write(a + ' ' + o + ' ' + b + ' = ' + answer);
 
     a = answer;
     b = 0;
@@ -208,12 +206,12 @@
 
     soft_sub = true;
 
-    write('Soft Submission');
+    // write('Soft Submission');
   }
 
   // submit calculator
   function submit_calc() {
-    write('Submission');
+    // write('Submission');
     if ( first_b === false ) {
       var preCalc = 0;
       if ( o === "^" ) {
@@ -236,9 +234,9 @@
       // post result
       newResult(a,o,b,answer);
 
-      write(a + ' ' + o + ' ' + b + ' = ' + answer);
+      // write(a + ' ' + o + ' ' + b + ' = ' + answer);
     } else {
-      write("You can't do that yet");
+      // write("You can't do that yet");
     }
   }
 
@@ -341,10 +339,10 @@
   */
 
   function sqrt(i) {
-    write('Square Root');
+    // write('Square Root');
     var s = Math.sqrt(i);
     answer = s;
-    write('u221A' + i + ' = ' + s);
+    // write('u221A' + i + ' = ' + s);
     loop_calc(s);
     newResult('','√',i,s);
     // submit answer to display
@@ -356,10 +354,10 @@
   }
 
   function square(i) {
-    write('Square');
+    // write('Square');
     var s = i * i;
     answer = s;
-    write(i + ' u005E 2 = ' + s );
+    // write(i + ' u005E 2 = ' + s );
     loop_calc(s);
     newResult(i,' &#94; 2','',s);
     // submit answer to display
@@ -371,10 +369,10 @@
   }
 
   function denom(i) {
-    write('Denominator');
+    // write('Denominator');
     var s = 1 / i;
     answer = s;
-    write('1 / ' + i + ' = ' + s );
+    // write('1 / ' + i + ' = ' + s );
     loop_calc(s);
     newResult(1,' / ',i,s);
     // submit answer to display
@@ -539,9 +537,9 @@
 
     // the character code
     var charCode = e.which;
-
+    // console.log(charCode);
     // backspace
-    if ( charCode === 8 ) {
+    if ( charCode === 37 ) {
       backspace();
       animateButton(jQuery('#calc_back'));
       return false;
