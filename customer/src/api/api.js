@@ -136,10 +136,7 @@ function handleRes(obj,res,goodsArr){
   }
 }
 
-
 export function goodsArr(self) {
-
-
   let _this = self
   let goodsArr = []
   let promiseArr = [];
@@ -159,8 +156,7 @@ export function goodsArr(self) {
       _this._initScroll()
       _this._calculateHeight()
     })
-    _this.goods = goodsArr;
-
+    _this.goods = goodsArr
   })
 }
 

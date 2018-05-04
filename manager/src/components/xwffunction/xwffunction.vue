@@ -4,8 +4,6 @@
         v-model="activeName"
         @tab-click="handleClick"
       >
-        <!--<el-tab-pane label="基本功能" name="first">-->
-        <!--</el-tab-pane>-->
         <el-tab-pane label="电话簿" name="second">
           <el-card class="box-card">
             <div v-for="item in telephoneBook" class="text item">

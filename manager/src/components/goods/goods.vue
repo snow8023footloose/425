@@ -217,6 +217,39 @@
             </span>
           </div>
 
+          <!--规格-->
+          <div class="categoryGroup">
+            <h6>请不要建立同名规格类</h6>
+            规格：
+            <el-tag
+              :key="tag.zindex"
+              v-for="(tag,index) in dynamicTags2"
+              closable
+              :disable-transitions="false"
+              @close="handleClose2(tag,index)"
+            >
+              <span>{{tag.name}}</span>
+              <el-button
+                type="primary"
+                style="padding: 5px"
+                size="mini"
+                icon="el-icon-edit"
+                circle
+                @click.native="editSpec(tag,index)"
+              ></el-button>
+            </el-tag>
+            <el-input
+              class="input-new-tag"
+              v-if="inputVisible2"
+              v-model="inputValue2"
+              ref="saveTagInput2"
+              @keyup.enter.native="handleInputConfirm2"
+              @blur="handleInputConfirm2"
+            >
+            </el-input>
+            <el-button v-else class="button-new-tag" @click="showInput2">+ 新一类规格</el-button>
+          </div>
+
           <!--标签-->
           <div class="tagGroup">
             <h6>请不要建立同名标签</h6>
@@ -251,39 +284,39 @@
             <el-button v-else class="button-new-tag" @click="showInput">+ 新标签</el-button>
           </div>
 
-          <!--规格-->
-          <div class="categoryGroup">
-            <h6>请不要建立同名规格类</h6>
-            规格：
+          <!--推广标签-->
+          <div class="tagGroup">
+            <h6>请不要建立同名标签</h6>
+            推广标签：
             <el-tag
-              :key="tag.zindex"
-              v-for="(tag,index) in dynamicTags2"
+              :key="tag.index"
+              v-for="(tag,index) in dynamicTagsPopularize"
               closable
               :disable-transitions="false"
-              @close="handleClose2(tag,index)"
+              @close="handleClosePopularize(tag,index)"
             >
-              <span>{{tag.name}}</span>
+              {{tag.name}}
               <el-button
                 type="primary"
                 style="padding: 5px"
                 size="mini"
                 icon="el-icon-edit"
                 circle
-                @click.native="editSpec(tag,index)"
+                @click.native="editTagsPopularize(tag,index)"
               ></el-button>
             </el-tag>
             <el-input
               class="input-new-tag"
-              v-if="inputVisible2"
-              v-model="inputValue2"
-              ref="saveTagInput2"
-              @keyup.enter.native="handleInputConfirm2"
-              @blur="handleInputConfirm2"
+              v-if="inputVisiblePopularize"
+              v-model="inputValuePopularize"
+              ref="saveTagInputPopularize"
+              @keyup.enter.native="handleInputConfirmPopularize"
+              @blur="handleInputConfirmPopularize"
+
             >
             </el-input>
-            <el-button v-else class="button-new-tag" @click="showInput2">+ 新一类规格</el-button>
+            <el-button v-else class="button-new-tag" @click="showInputPopularize">+ 新标签</el-button>
           </div>
-
         </el-tab-pane>
         <!--未开发功能-->
         <!--<el-tab-pane label="菜品统计" name="fourth">-->
@@ -338,6 +371,51 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+
+
+    <!--推广标签弹框-->
+    <el-dialog
+      width="80%" title="推广标签编辑"
+      :visible.sync="dialogFormVisiblePopularizeTagEdit"
+      ref="showTags">
+      <el-form  :label-width="formLabelWidth" status-icon :model="toDynamicTagsPopularize" :rules="rules" ref="DynamicTags">
+        <el-form-item label="排序" :label-width="formLabelWidth" prop="zindex">
+          <el-input v-model.number="toDynamicTagsPopularize.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
+        </el-form-item>
+        <el-form-item label="状态" style="text-align: left">
+          <el-select v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
+            <el-option
+              v-for="item in categoryStatus"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <!--<el-form-item label="标签类型" style="text-align: left">
+          <el-select v-model="toDynamicTagsPopularize.chargeType" placeholder="请选择标签类型">
+            <el-option
+              v-for="item in tagType"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>-->
+        <el-form-item label="标签类型" style="text-align: left">
+          <upload
+            v-on:ToUrl="listenUrlPopularizeTags"
+            :name="UID('/PopularizeTags/')"
+            :target="this.dynamicTagsPopularize.thumb"></upload>
+        </el-form-item>
+
+        <el-form-item style="display: flex;justify-content: flex-end;">
+          <el-button @click="dialogFormVisiblePopularizeTagEdit = false">取 消</el-button>
+          <el-button type="primary" @click="updatePopularizeTags('DynamicTags','showTags')">确 定</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
 
     <!--分类弹框-->
     <el-dialog
@@ -400,9 +478,6 @@
             <el-option label="打印机2" value="printer2"></el-option>
             <el-option label="打印机3" value="printer3"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item style="width: 50%" label="缩略图" :label-width="formLabelWidth">
-          <upload name="分类-缩略图"></upload>
         </el-form-item>
         <el-form-item style="display: flex;justify-content: flex-end;">
             <el-button @click="dialogFormVisibleCategoryEdit = false">取 消</el-button>
@@ -647,6 +722,20 @@
         </span>
         <el-form :label-width="formLabelWidth" :model="dishes" status-icon :rules="rules2">
 
+          <el-form-item label="推广标签">
+            <el-select
+              style="display: inline-block; width: 555px"
+              v-model="valueOfTagsPopularize"
+              multiple placeholder="请选择，默认无标签">
+              <el-option
+                v-for="(item,index) in dynamicTagsPopularize"
+                :key="index"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
           <el-form-item label="添加标签">
             <el-select
               style="display: inline-block; width: 555px"
@@ -817,6 +906,7 @@ export default {
       dialogFormVisibleSKUEdit: false,
       dialogFormVisibleCategoryEdit: false,
       dialogFormVisibleInSKUEdit: false,
+      dialogFormVisiblePopularizeTagEdit:false,
       activeName: 'first',
       checked1: true,
       checked2: false,
@@ -874,21 +964,26 @@ export default {
       dynamicTags: [],
       inputVisible: false,
       inputValue: '',
+
+      toDynamicTagsPopularize: [],
+      dynamicTagsPopularize: [],
+      inputVisiblePopularize: false,
+      inputValuePopularize: '',
       toDynamicTags1:[
 
       ],
       dynamicTags1: [
-        {
-          zindex:'0',
-          name:'其他',
-          type:'',
-          showTime:'',
-          showType:'',
-          pid: '',
-          rid: 0,
-          description: '',
-          status: '',
-        },
+        // {
+        //   zindex:'0',
+        //   name:'其他',
+        //   type:'',
+        //   showTime:'',
+        //   showType:'',
+        //   pid: '',
+        //   rid: 0,
+        //   description: '',
+        //   status: '',
+        // },
       ],
       categoryPid:[
         {
@@ -933,15 +1028,15 @@ export default {
       inputValue1: '',
       toDynamicTags2:[],
       dynamicTags2: [
-        {
-          zindex:'0',
-          name:'份量',
-          attrs: [
-            {
-              name:''
-            }
-          ],
-        },
+        // {
+        //   zindex:'0',
+        //   name:'份量',
+        //   attrs: [
+        //     {
+        //       name:''
+        //     }
+        //   ],
+        // },
       ],
       inputVisible2: false,
       inputValue2: '',
@@ -952,6 +1047,7 @@ export default {
       value4: '',
       valueOfSKU: [],
       valueOfTags: [],
+      valueOfTagsPopularize: [],
       normalPrice:12,
       value6: '',
       fileList2: [
@@ -1046,6 +1142,15 @@ export default {
       return promotionPrice.toFixed(2)
     },
 
+    repeatNumPopularize: function () {
+      let inputValuePopularize = this.inputValuePopularize;
+      for(var i=0; i<this.dynamicTagsPopularize.length; i++){
+        if(this.dynamicTagsPopularize[i].name === inputValuePopularize){
+
+          return false;
+        }
+      }
+    },
     repeatNum: function () {
       let inputValue = this.inputValue;
       for(var i=0; i<this.dynamicTags.length; i++){
@@ -1122,6 +1227,9 @@ export default {
     listenUrl3(data){
       this.dishes.banner = data.name
     },
+    listenUrlPopularizeTags(data){
+      this.dynamicTagsPopularize.thumb = data.name
+    },
     optsChange(){
       console.log('1');
       console.log(this.valueOfSKU);
@@ -1152,9 +1260,9 @@ export default {
     _pullTable(){
       var Data = [
         {
-          feild: 'time',
-          value: '',
-          joinType: 'time'
+          feild: 'rid',
+          value: localStorage.getItem('rid'),
+          joinType: 'eq'
         }
       ]
       this.$request(this.url.dishes2,'json',Data).then((res)=>{
@@ -1168,9 +1276,9 @@ export default {
     _pullTags(){
       var Data = [
         {
-          feild: 'time',
-          value: '',
-          joinType: 'time'
+          feild: 'rid',
+          value: localStorage.getItem('rid'),
+          joinType: 'eq'
         }
       ]
       this.$request(this.url.restaurantTag2,'json',Data).then((res)=>{
@@ -1237,9 +1345,9 @@ export default {
           joinType: 'eq'
         }
       ]
-      this.$request(this.url.PrePopularizeTag2,'json',Data).then((res)=>{
+      this.$request(this.url.restaurantPopularizeTag2,'json',Data).then((res)=>{
         let response = res.data.data
-        this.PrePopularizeTag = response
+        this.dynamicTagsPopularize = response
         // console.log(response,'拉取得到单位');
       }).catch((err)=>{
         console.log(err);
@@ -1248,8 +1356,8 @@ export default {
     _pullUnit(){
       var Data = [
         {
-          feild: 'status',
-          value: 'enable',
+          feild: 'rid',
+          value: localStorage.getItem('rid'),
           joinType: 'eq'
         }
       ]
@@ -1258,7 +1366,7 @@ export default {
         this.unit = response
         // console.log(response,'拉取得到单位');
       }).catch((err)=>{
-        console.log(err);
+        console.log('预设单位没有拉取到',err);
       })
     },
     _pullCategory(){
@@ -1292,8 +1400,9 @@ export default {
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
       this.dishes.specs = this.valueOfSKU
+      this.dishes.popularizeTags = this.valueOfTagsPopularize
       let rid = localStorage.getItem("rid");
-      this.dishes.rid = rid
+      this.dishes.rid = rid   //加入rid
 
       let data = {}
       data = Object.assign({},this.dishes);
@@ -1363,6 +1472,36 @@ export default {
         });
         this.dialogFormVisibleTagEdit = !this.dialogFormVisibleTagEdit
         this._pullCategory()
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    updatePopularizeTags(){
+      console.log('2222222222');
+      console.log(this.toDynamicTagsPopularize);
+      let index = this.categoryIndex
+      let updateObj = {
+        id:this.toDynamicTagsPopularize.id,
+      }
+      for(let key in this.toDynamicTagsPopularize){
+        if(this.toDynamicTagsPopularize[key] === this.dynamicTagsPopularize[index][key]){
+          continue;
+        }
+        updateObj[key] = this.toDynamicTagsPopularize[key];
+      }
+      console.log(updateObj,'updateTags');
+
+      this.$request(this.url.restaurantPopularizeTag4,'json',updateObj).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        this.dialogFormVisiblePopularizeTagEdit = !this.dialogFormVisiblePopularizeTagEdit
+        this._pullPrePopularizeTag()
       }).catch((err)=>{
         this.$message({
           type: 'info',
@@ -1559,6 +1698,59 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus();
       });
     },
+    showInputPopularize() {
+      this.inputVisiblePopularize = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInputPopularize.$refs.input.focus();
+      });
+    },
+    handleInputConfirmPopularize() {
+      let inputValuePopularize = this.inputValuePopularize;
+      let repeatNum  = this.repeatNumPopularize
+
+      var lastNumber = 0
+      if(this.dynamicTagsPopularize === null){
+        lastNumber = 1
+      }else{
+        lastNumber = this.dynamicTagsPopularize.length+1
+      }
+
+      console.log(this.dynamicTagsPopularize);
+      if (inputValuePopularize){
+        if(repeatNum === false){
+          alert('提示：同名项，不可建立')
+        }else {
+
+          let data = {
+            name: inputValuePopularize,
+            rid: localStorage.getItem("rid"),  //加入rid
+            status: 'enable'
+          }
+          console.log('推广标签——提交前的数据',data);
+          this.$request(this.url.restaurantPopularizeTag1,'json',data).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            console.log('推广标签——返回的数据',res);
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+          this.dynamicTagsPopularize.push(
+            {
+              zindex: lastNumber,
+              name: inputValuePopularize,
+            }
+          );
+        }
+      }
+      this.inputVisiblePopularize = false;
+      this.inputValuePopularize = '';
+    },
     handleInputConfirm() {
       let inputValue = this.inputValue;
       let repeatNum  = this.repeatNum
@@ -1614,7 +1806,46 @@ export default {
       console.log(this.toDynamicTags);
       this.dialogFormVisibleTagEdit = !this.dialogFormVisibleTagEdit
     },
+    editTagsPopularize(tag,index){
+      console.log(tag.id,'id是多少');
 
+      console.log(index);
+
+      this.toDynamicTagsPopularize = Object.assign({},tag);
+      this.categoryIndex = index;
+      console.log(this.toDynamicTagsPopularize);
+      this.dialogFormVisiblePopularizeTagEdit = !this.dialogFormVisiblePopularizeTagEdit
+    },
+
+    handleClosePopularize(tag,index) {
+      console.log(tag);
+      this.$confirm('是否删除该标签，与其的相关菜品标签将全部取消, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let data = {
+          id:tag.id
+        }
+        this.$request(this.url.restaurantPopularizeTag3,'form',data).then((res)=>{
+          this.$message({
+            type: 'success',
+            message: '数据提交成功!'
+          });
+          this.dynamicTagsPopularize.splice(this.dynamicTagsPopularize.indexOf(tag), 1);
+        }).catch((err)=>{
+          this.$message({
+            type: 'info',
+            message: '数据提交失败!'
+          });
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
     handleClose(tag,index) {
       console.log(tag);
       this.$confirm('是否删除该标签，与其的相关菜品标签将全部取消, 是否继续?', '提示', {
@@ -1661,7 +1892,6 @@ export default {
       }else{
         lastNumber = this.dynamicTags2.length+1
       }
-
       console.log(this.dynamicTags1);
       if (inputValue1){
         if(repeatNum1 === false){
@@ -1695,6 +1925,7 @@ export default {
       this.inputVisible1 = false;
       this.inputValue1 = '';
     },
+
     editCategory(tag,index){
       // console.log(tag.zindex);
 

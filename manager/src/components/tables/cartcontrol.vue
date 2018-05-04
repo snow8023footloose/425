@@ -6,42 +6,7 @@
       </div>
     </transition>
     <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.prevent.stop="addCart" ref="add"></i>
-
-    <dialog v-if="show === 1" class="skuselect animated" style="margin-top: 20px" >
-        <p>请选择</p>
-        <el-form label-width="50px" label-position="left">
-          <el-form-item label="份量">
-            <el-radio-group v-model="radio1" size="medium">
-              <el-radio-button label="上海" ></el-radio-button>
-              <el-radio-button label="北京"></el-radio-button>
-              <el-radio-button label="广州"></el-radio-button>
-              <el-radio-button label="深圳"></el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="温度">
-            <el-radio-group v-model="radio2" size="medium">
-              <el-radio-button label="上海" ></el-radio-button>
-              <el-radio-button label="北京"></el-radio-button>
-              <el-radio-button label="广州"></el-radio-button>
-              <el-radio-button label="深圳"></el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="颜色">
-            <el-radio-group v-model="radio3" size="medium">
-              <el-radio-button label="上海" ></el-radio-button>
-              <el-radio-button label="北京"></el-radio-button>
-              <el-radio-button label="广州"></el-radio-button>
-              <el-radio-button label="深圳"></el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-        <el-button style="margin-left: 100px" @click="delaySku" type="text" size="small" round>取消</el-button>
-        <el-button type="danger" size="small" @click="closeSku" round>确定</el-button>
-      </dialog>
-
-
-
+    <i class="el-icon-circle-plus cart-add icon-add_circle" @click="addCart" ref="add"></i>
   </div>
 </template>
 
@@ -57,20 +22,8 @@
     },
     data() {
       return {
-        radio1:'上海',
-        radio2:'上海',
-        radio3:'上海',
         show:0,
       }
-    },
-    created () {
-    },
-    beforeDestroy(){
-    },
-    mounted(){
-      // console.log(this.$refs.add);
-
-      window.removeEventListener('click' ,this.addCart)
     },
     methods: {
       closeSku(){
@@ -83,37 +36,31 @@
       addCart(event) {
         this.show = 1
 
-        // if (!event._constructed) {
-        //   return false;
-        // }
-        console.log(this.food);
-        if (!this.food.count) {
-          Vue.set(this.food, 'count', 1);
-        } else {
-          this.food.count++;
+        if (!event._constructed) {
+          return false;
         }
-        this.$emit('increment', event.target);
-
-
-        let data = {
-          did: this.food.id,
-          num: 1
+        if(this.food.specs){
+          this.$emit('increment', {event:event.target,food:this.food,specs:true});
+        }else{
+          if (!this.food.count) {
+            Vue.set(this.food, 'count', 1);
+          } else {
+            this.food.count++;
+          }
+          this.$emit('increment', {event:event.target,food:this.food,specs:false});
         }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-
-        }).catch((err)=>{
-
-          console.log(err);
-        })
 
       },
       decreaseCart(event) {
-        // if (!event._constructed) {
-        //   return false;
-        // }
-        if (this.food.count) {
+        if (!event._constructed) {
+          return false;
+        }
+        if (!this.food.count) {
+          Vue.set(this.food, 'count', 1);
+        } else {
           this.food.count--;
         }
+        this.$emit('incrementmi', {event:event.target,food:this.food});
       }
     }
   };

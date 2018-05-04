@@ -441,15 +441,15 @@ const ERR_OK = 0
       }
     },
     created () {
-      this.$axios.get('../api/seller').then((response) => {
-        var response = response.data
-        if (response.errno === ERR_OK) {
-          this.seller = response.data
-          this.SColor = this.seller.sysColor[1].plan
-          this.SColor2 = this.seller.sysColor[3].plan
-          this.SColor4 = this.seller.sysColor[4].plan
-        }
-      });
+      // this.$axios.get('../api/seller').then((response) => {
+      //   var response = response.data
+      //   if (response.errno === ERR_OK) {
+      //     this.seller = response.data
+      //     this.SColor = this.seller.sysColor[1].plan
+      //     this.SColor2 = this.seller.sysColor[3].plan
+      //     this.SColor4 = this.seller.sysColor[4].plan
+      //   }
+      // });
     },
     components: {
       cartcontrol

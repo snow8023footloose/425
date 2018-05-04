@@ -69,17 +69,17 @@
         :append-to-body="true"
         style="z-index: 9999"
       >
-        <el-form v-for="(item,index) in specs" label-position="left">
-          <el-form-item :label="item.name" :label-width="formLabelWidth">
-            <el-radio-group size="mini" v-model="selectedSkuArr[index]">
+        <el-form size="mini" :label-width="formLabelWidth" v-for="(item,index) in specs" label-position="left">
+          <el-form-item :label="item.name">
+            <el-radio-group v-model="selectedSkuArr[index]">
               <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
             </el-radio-group>
           </el-form-item>
         </el-form>
-        <el-form label-position="left">
-          <el-form-item label="标签" :label-width="formLabelWidth">
+        <el-form size="mini" label-position="left">
+          <el-form-item label="标签" label-width="50px">
             <!--<input type="radio" name="user.sex" id="male" value="男" >-->
-            <el-checkbox-group size="mini" v-model="selectedTags">
+            <el-checkbox-group v-model="selectedTags">
               <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
@@ -133,7 +133,6 @@ export default {
       transformArryTag:[]
     };
   },
-
   created () {
 
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
@@ -182,9 +181,9 @@ export default {
             good.foods.forEach((food) => {
               if (food.count) {
                 foods.push(food);
-              }
+                }
+              });
             });
-          });
           }
           return foods;
         }
@@ -242,6 +241,13 @@ export default {
       // console.log(this.specs);
       // console.log(this.selectedSkuArr);
       console.log(this.selectedTags);
+      if(!this.transformArrySku()){
+        this.$message({
+          type: 'info',
+          message: '亲，没有选择规格哦~'
+        });
+        return
+      }
       // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
       // console.log(this.trueLabelofTags+'trueLabelofTags');
       let attrJoin = this.transformArrySku().join('_');
@@ -249,6 +255,8 @@ export default {
       // console.log(this.transformArryTags());
       let attrTags = this.selectedTags.join(',');
       let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+
+
       let data = {
         num:1,
         sid: selectedSkuObj.id,
@@ -389,8 +397,6 @@ export default {
       this.$request(this.url.login2,'form',{
         thirdId:123456789
       }).then((res)=>{
-        console.log(res,'login-ressssssssssssssssss');
-
         _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
           _this.dishesCategory = res.data.data;
         }).catch((err)=>{
@@ -398,7 +404,6 @@ export default {
         }).then(function () {
           _this.goods = _this.goodsArr(_this);
           // console.log(55, _this.goods);
-
         }).then(function () {
           // _this.goods = goods;
         })

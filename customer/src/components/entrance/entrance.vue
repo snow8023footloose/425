@@ -40,13 +40,13 @@
           // 微信
           localStorage.setItem('clientType','weixin') //保存tid
           window.location.href =
-            'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7fdd9f5dd8f455f2&redirect_uri=http://wangyufeng.pagekite.me&response_type=code&scope=snsapi_userinfo&state=1'+ '#wechat_redirect';
+            'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7fdd9f5dd8f455f2&redirect_uri=http://xwfwl.vipgz1.idcfengye.com&response_type=code&scope=snsapi_userinfo&state=1'+ '#wechat_redirect';
 
         } else if (/AlipayClient/.test(window.navigator.userAgent)) {
           // 支付宝 
           localStorage.setItem('clientType','alipay') //保存tid
           window.location.href =
-            'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=2018012902106000&scope=auth_user&redirect_uri=http://wangyufeng.pagekite.me&state=1';
+            'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=2018012902106000&scope=auth_user&redirect_uri=http://xwfwl.vipgz1.idcfengye.com&state=1';
         }
         alert(localStorage.getItem('clientType'));
       },

@@ -61,11 +61,9 @@
         </el-form>
       </el-tab-pane>
       <el-tab-pane label="其他信息" name="second">
-
         <div>
           暂无信息
         </div>
-
       </el-tab-pane>
     </el-tabs>
   </div>

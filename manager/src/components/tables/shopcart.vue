@@ -63,7 +63,7 @@
             v-for="(item,index) in listGoods"
             :key="index"
             :label="item.name"
-            :value="item.zindex">
+            :value="index">
             <span style="">{{ item.name }}&nbsp;&nbsp;价格：</span>
             <span style=" color: #8492a6; font-size: 13px">{{ item.normalPrice }}元</span>
           </el-option>
@@ -134,6 +134,9 @@ const ERR_OK = 0
           ];
         }
       },
+      goods1:{
+        type:Array
+      },
       deliveryPrice: {
         type: Number,
         default: 0
@@ -171,7 +174,6 @@ const ERR_OK = 0
         SColor2:'SColor2',
         SColor4:'SColor4',
         dishesCategory:[],
-        goods1:[],
         value8: ''
       };
 
@@ -309,29 +311,14 @@ const ERR_OK = 0
       },
       listGoods(){
         let tempArr = [];
-        this.goods1.forEach((item)=>{
-          tempArr = tempArr.concat(item.foods);
-        })
+        if(this.goods1){
+          this.goods1.forEach((item)=>{
+            tempArr = tempArr.concat(item.foods);
+          })
+        }
+
         return tempArr;
       }
-    },
-    mounted(){
-      console.log(this.listGoods);
-    },
-
-    created () {
-      let data1 = [{
-        feild: 'status',
-        value: 'enable',
-        joinType: 'eq'
-      }]
-      this.$request(this.url.dishesCategory2,'json',data1).then((res)=>{
-        this.dishesCategory = res.data.data
-        console.log(this.dishesCategory);
-        this.goods1 = this.goodsArr(this)
-      }).catch((err)=>{
-        console.log(err);
-      })
     },
     components: {
       cartcontrol

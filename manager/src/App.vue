@@ -44,17 +44,17 @@
       v-loading.fullscreen.lock="fullscreenLoading"
     >
 
-      <el-switch
-        class="person-close person-close1"
-        style="display: block"
-        v-model="value4"
-        active-color="#13ce66"
-        inactive-color="#ff4949"
-        active-text="营业"
-        inactive-text="休息"
-        @click="atSwitch"
-      >
-      </el-switch>
+      <!--<el-switch-->
+        <!--class="person-close person-close1"-->
+        <!--style="display: block"-->
+        <!--v-model="value4"-->
+        <!--active-color="#13ce66"-->
+        <!--inactive-color="#ff4949"-->
+        <!--active-text="营业"-->
+        <!--inactive-text="休息"-->
+        <!--@click="atSwitch"-->
+      <!--&gt;-->
+      <!--</el-switch>-->
       <i style="color: #ff525b" class="el-icon-circle-close person-close" @click="loginOut"></i>
 
 
@@ -178,11 +178,27 @@ export default {
       mydata:{},
       fullscreenLoading: false,
       value5:100,
-      loginstate: true,
-      loginShow: false,
+
+      // // 客户登录
+      loginstate: false,
+      loginShow: true,
       owner: false,
-      manager: true,
-      // manager 为true 新沃丰公司内部登录
+      manager: false,
+
+      //
+      // 新沃丰公司内部登录 不需账号设置
+      // loginstate: true,
+      // loginShow: false,  //false不需账号设置
+      // owner: false,
+      // manager: true,
+
+      // 新沃丰公司内部登录 需账号设置
+      // loginstate: false,
+      // loginShow: true,  //true需账号设置
+      // owner: false,
+      // manager: true,
+
+
       // manager 为false 客户登录
       labelPosition: 'top',
       show2: true,
@@ -209,7 +225,51 @@ export default {
       }
     }
   },
+  mounted(){
+
+  },
   methods: {
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.value4,'value4');
+          let data = {
+            username:this.ruleForm2.username,
+            password:this.ruleForm2.password,
+            thirdId: 123154464
+          }
+          console.log(data,'提交时的登录信息');
+          this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
+            console.log(res.data,'这是登录返回的信息');
+            if(res.data.msg === 'username is not exist'){
+              this.$message({
+                duration: 1000,
+                type: 'info',
+                message: '用户名不存在'
+              });
+            }else if(res.data.msg === 'success'){
+              let rid = res.data.data.rid
+              localStorage.setItem('rid',JSON.stringify(rid))
+              this.manager = false
+              this.owner = true
+              this.loginstate = true
+              this.loginShow = false
+              this.$message({
+                duration: 1000,
+                type: 'success',
+                message: '欢迎登录新沃丰系统'
+              });
+              this.$router.push({path:'/'})
+            }
+          }).catch((res)=>{
+            console.log(res);
+          })
+        } else {
+          console.log('提交失败');
+          return false;
+        }
+      });
+    },
     clearLocalStorage(){
       localStorage.clear()
     },
@@ -287,73 +347,7 @@ export default {
         duration: 2000
       });
     },
-    submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
-        if (valid) {
-          console.log(this.value4);
-          let data = {
-            username:this.ruleForm2.username,
-            password:this.ruleForm2.password
-          }
-          console.log(data);
-          this.$request(this.url.login1,'form',data).then((res)=>{
-            console.log(res.data,'这是登录返回的信息');
-            if(res.data.msg === 'username is not exist'){
-              this.$message({
-                duration: 1000,
-                type: 'info',
-                message: '用户名不存在'
-              });
-            }else if(res.data.msg === 'success'){
-              let rid = res.data.data.rid
-              localStorage.setItem('rid',JSON.stringify(rid))
-              // document.cookie = 'userCookie =' + JSON.stringify(data);
-              if(this.ruleForm2.username.split('xwf').length === 1){
-                this.manager = true
-                this.owner = false
-                this.loginstate = true
-                this.loginShow = false
-                this.$message({
-                  duration: 1000,
-                  type: 'success',
-                  message: '新沃丰内部系统'
-                });
-                this.$router.push({path:'/XWFer/xwfcustom'})
-                this.manager = false
-                this.owner = true
-                this.loginstate = true
-                this.loginShow = false
-                this.$message({
-                  duration: 1000,
-                  type: 'success',
-                  message: '欢迎登录新沃丰系统'
-                });
-                this.$router.push({path:'/'})
 
-              }else {
-                // this.manager = false
-                // this.owner = true
-                // this.loginstate = true
-                // this.loginShow = false
-                // this.$message({
-                //   duration: 1000,
-                //   type: 'success',
-                //   message: '欢迎登录新沃丰系统'
-                // });
-                // this.$router.push({path:'/XWFs/order'})
-              }
-            }
-
-          }).catch((res)=>{
-            console.log(res);
-          })
-
-        } else {
-          console.log('提交失败');
-          return false;
-        }
-      });
-    },
     //设置cookie
 
     resetForm(formName) {
@@ -367,26 +361,22 @@ export default {
   },
   created() {
     this.owner = !this.manager
-    if (localStorage.mydata){
-      this.ruleForm2 = JSON.parse(localStorage.mydata)
-      this.$message({
-        duration: 1500,
-        type: 'success',
-        message: '读取到本地用户！'
-      });
+    if (localStorage.rid){
+      this.ruleForm2.username = 17375636967
+      this.ruleForm2.password = 17375636967
     }
+    //开启
+    //this.$router.push({path:'/XWFer/xwfcustom'})
   },
   mounted() {
     this.Height();
-    // if(this.mydata){
-    //   this.ruleForm2 = this.mydata
-    // }
+  },
+  destroyed(){
+    this.submitForm();
   },
   components: {
     computer
   }
-
-
 }
 </script>
 

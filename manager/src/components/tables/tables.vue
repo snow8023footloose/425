@@ -1,6 +1,5 @@
 <template>
   <div class="tables">
-
     <!--table模块-->
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="餐桌信息" name="first">
@@ -78,10 +77,8 @@
         </div>
       </el-tab-pane>-->
     </el-tabs>
-
     <!--table遮罩-->
     <div class="mask-black" v-if="tableShow === 1"></div>
-
     <!--table操作按钮-->
     <div class="tableButtonGroup" v-if="tableShow === 1" v-show="true">
       <el-button type="danger" @click="handleDelete" icon="el-icon-delete" circle></el-button>
@@ -90,7 +87,6 @@
       <el-button @click="refreshTable" v-loading.fullscreen.lock="fullscreenLoading" icon="el-icon-refresh" circle></el-button>
       <el-button @click="closeTable" class="closeTable" icon="el-icon-close" circle></el-button>
     </div>
-
     <!--table订单按钮：个人订单详请-->
     <div class="tableButtonGroup1" v-if="tableShow === 1" v-show="true">
       <span class="singleContainer">
@@ -130,9 +126,7 @@
                 <el-button size="mini" type="text" @click="minusCustomer">删除</el-button>
                 <el-button type="success" size="mini" @click="singleAccounts">结账</el-button>
               </div>
-
               <el-radio-button slot="reference" icon="el-icon-document" @click.native.stop="selectOrder(item,$event)" :label="index">订单{{index+1}}</el-radio-button>
-
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
             <el-badge :value="selectFoods.count" class="item">
@@ -140,16 +134,13 @@
           </span>
         </el-radio-group>
       </span>
-
       <el-button
         @click="plusOrder"
         icon="el-icon-plus"
         round
       >下单</el-button>
     </div>
-
     <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
-
     <transition >
         <div class="goodse" id="goods" ref="goods-top" v-if="tableShow === 1">
         <el-popover
@@ -165,8 +156,6 @@
           </div>
           <div slot="reference" class="tableNumber">{{tableTitle}}</div>
         </el-popover>
-
-
         <!--分类-->
         <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
           <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
@@ -188,7 +177,7 @@
         <div @click="show=!show" class="menu-button">
         </div>
         <!--菜品展示-->
-        <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
+        <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
             <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
               <h1 class="goods-title">{{goods.name}}</h1>
@@ -207,7 +196,12 @@
                       <span class="now">￥{{food.normalPrice}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                     </div>
                     <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
-                      <cartcontrol :food="food" @increment="incrementTotal"></cartcontrol>
+                      <cartcontrol
+                        :confirmMessage="confirmMessage"
+                        :food="food"
+                        @incrementmi="incrementTotalDecre"
+                        @increment="incrementTotalAdd">
+                      </cartcontrol>
                     </div>
                   </div>
                 </li>
@@ -215,13 +209,10 @@
             </li>
           </ul>
         </div>
-
         <!--加入购物车-->
-        <shopcart ref="shop-cart" :select-foods="selectFoods"></shopcart>
+        <shopcart ref="shop-cart" :select-foods="selectFoods" :goods1="goods"></shopcart>
       </div>
       </transition>
-
-
     <!--丢弃弹框-->
     <el-dialog :title="tableTitle" :model="tableForm" :visible.sync="dialogFormVisibleTable" width="70%">
       <!--此处省略搜索输入框-->
@@ -398,11 +389,40 @@
 
     <!--添加组件-->
     <editcontrol @plusMethods="plusMethodsThis"></editcontrol>
+
+    <el-dialog
+      width="70%"
+      title="规格"
+      :visible.sync="dialogFormVisible"
+      :append-to-body="true"
+      style="z-index: 9999"
+    >
+      <el-form v-for="(item,index) in specs" label-position="left" :label-width="formLabelWidth1">
+        <el-form-item :label="item.name">
+          <el-radio-group v-model="selectedSkuArr[index]">
+            <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-form label-position="left" label-width="50px">
+        <el-form-item label="标签">
+          <!--<input type="radio" name="user.sex" id="male" value="男" >-->
+          <el-checkbox-group v-model="selectedTags">
+            <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmSku">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import BScroll from 'better-scroll'
+import Vue from 'vue';
 import shopcart from '@/components/tables/shopcart.vue'
 import cartcontrol from '@/components/tables/cartcontrol.vue'
 import editcontrol from '@/components/editcontrol/editcontrol';
@@ -412,6 +432,18 @@ export default {
   name: 'tables',
   data: () => ({
     tableShow:0,
+    confirmMessage: {
+      is: 0
+    },
+    specs:[],
+    getFoods:{},
+    selectedSpec:'',
+    getData:{},
+    selectedTags:[],
+    selectedSkuArr : [],
+    trueLabelofSpecs:[],
+    trueLabelofTags:[],
+    transformArryTag:[],
     popperClass:'popperClass',
     show3: false,
     inputCustomer:'',
@@ -430,6 +462,7 @@ export default {
     SColor: 'SColor',
     show2: false,
     activeName: 'first',
+    dialogFormVisible:false,
     dialogFormVisibleTable: false,
     dialogFormVisibleTablePlus: false,
     dialogFormVisibleTableChange: false,
@@ -459,8 +492,10 @@ export default {
         typeIndex: '特供',
       }
     ],
+    tid:0,
     currentDate: new Date(),
     formLabelWidth:'80px',
+    formLabelWidth1:'50px',
     tableTitle:"",
     toCustomer:'',
     visible2: false,
@@ -470,21 +505,7 @@ export default {
     food1:[],
     orderCollection:[
     ],
-    tableForm:
-    {
-      id:'',
-      tid:'',
-      name: '',
-      zindex: '',
-      orderType: '',
-      chargeType: '',
-      num:'',
-      seatNum:'',
-      money:'',
-      description:'',
-      status:'enable',
-
-    },
+    tableForm: {},
     chargeType:[
       {
         name:'免费',
@@ -544,19 +565,172 @@ export default {
     },
     selectFoods() {
       let foods = [];
-      this.goods.forEach((good) => {
-        good.foods.forEach((food) => {
-          if (food.count) {
-            foods.push(food);
-          }
+      if(this.goods){
+        this.goods.forEach((good) => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food);
+            }
+          });
         });
-      });
-      this.singleOrder = foods
+        this.singleOrder = foods
+      }
       return foods;
     }
   },
 
   methods: {
+    transformArrySku(){
+      let selectedSkuArr = []
+      for(var i=0;0<this.selectedSkuArr.length;i++){
+        if(this.selectedSkuArr.length === i){
+          return selectedSkuArr
+        }else {
+          for(var j=0;j<this.specs[i].attrs.length;j++){
+            // console.log(this.specs[i].attrs);
+            if(this.selectedSkuArr.length === i){
+              continue
+            }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
+              selectedSkuArr.push(this.specs[i].attrs[j].id)
+            }
+          }
+        }
+      }
+    },
+    transformArryTags(){
+      let selectedArryTags = []
+      let data = [
+        {
+          feild:'status',
+          value:'enable',
+          joinType: 'eq'
+        }
+      ]
+      this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
+        console.log(res);
+        let response = res.data.data
+        for(var i=0;0<this.selectedTags.length;i++){
+          if(this.selectedTags.length === i){
+            this.transformArryTag = selectedArryTags
+            return true
+          }else {
+            for(var j=0;j<this.response.length;j++){
+              // console.log(this.specs[i].attrs);
+              if(this.selectedTags.length === i){
+                continue
+              }else if(this.selectedTags[i] === this.response[j].name){
+                selectedArryTags.push(this.response[j].id)
+              }
+            }
+          }
+        }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    confirmSku(){
+      // console.log(this.specs);
+      // console.log(this.selectedSkuArr);
+      console.log(this.selectedTags);
+
+      if(!this.transformArrySku()){
+        this.$message({
+          type: 'info',
+          message: '亲，没有选择规格哦~'
+        });
+        return
+      }
+      // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
+      // console.log(this.trueLabelofTags+'trueLabelofTags');
+      let attrJoin = this.transformArrySku().join('_');
+      // this.transformArryTags()
+      // console.log(this.transformArryTags());
+      let attrTags = this.selectedTags.join(',');
+      let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+
+      let data = {
+        num:1,
+        sid: selectedSkuObj.id,
+        did: this.getFoods.id,
+        rid: this.getFoods.rid,
+        tid: this.tid,
+        type: 'single',
+        tagIds: attrTags
+      }
+      this.$request(this.url.cart1,'json',data).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+      if (!this.getFoods.count) {
+        Vue.set(this.getFoods, 'count', 1);
+      } else {
+        this.getFoods.count++;
+      }
+
+      this.dialogFormVisible = !this.dialogFormVisible
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(this.getData.event);
+      });
+    },
+    incrementTotalAdd(g) {
+      console.log('餐桌',this.tableForm);
+      this.getData = g
+      console.log(g.event,g.food,'456546456456')
+      //体验优化,异步执行下落动画
+      if(g.specs){
+        this.dialogFormVisible = !this.dialogFormVisible
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        this.$nextTick(() => {
+          this.$refs['shop-cart'].drop(g.event);
+        });
+        let data = {
+          num: 1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: this.tid,
+          type: 'single',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+      }
+    },
+    incrementTotalDecre(g){
+      // console.log(g.event,g.food,'456546456456')
+      //体验优化,异步执行下落动画
+      if(g.specs){
+        this.dialogFormVisible = !this.dialogFormVisible
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        let data = {
+          num: -1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: this.tid,
+          type: 'single',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
+      }
+    },
+    findSkuByAttrJoin(selectedJoinAttr){
+      for(let item of this.getFoods.skus){
+        if(item.attrJion === selectedJoinAttr){
+          return item;
+        }
+      }
+
+    },
+
     // 餐桌特性暂存
     // handleClose1(tag,index) {
     //   console.log(tag);
@@ -650,7 +824,6 @@ export default {
     //   this.inputVisible1 = false;
     //   this.inputValue1 = '';
     // },
-
     selectFoodss(){
       let foods = [];
       this.goods.forEach((good) => {
@@ -682,7 +855,7 @@ export default {
     },
     plusOrder(){
       let i = this.orderCollection.length
-      console.log(this.selectFoods,'111111111111');
+      // console.log(this.selectFoods,'获得选择li');
       var dish = Object.assign([],this.selectFoods);
 
       this.orderCollection.push(
@@ -692,16 +865,12 @@ export default {
           dishes: dish
         }
       )
-
-
       let data = {
         restaurantId:'1231564654679',
         payType:'underline',//wechat-online,underline
         orderType:'multi',
         tableId: this.toAccountBox.id,
       }
-
-
       let json = [
         {
           feild:'time',
@@ -713,9 +882,7 @@ export default {
           value:'disable',
           joinType:'eq'
         },
-
       ]
-
       this.$request(this.url.orderComputer,'form',data).then((res)=> {
         this.$message({
           type: 'success',
@@ -891,7 +1058,16 @@ export default {
     },
     plusTable(){
       this.tableForm.rid = localStorage.getItem("rid");
-      let data = this.tableForm
+      let data = {
+        chargeType: "free",
+        description: "第一个餐桌",
+        name: "新2",
+        num: "1",
+        orderType: "free",
+        rid: 1524988356660049,
+        seatNum: 12,
+        status: "enable",
+      }
       console.log(data);
       this.$request(this.url.table1, 'json', data).then((res)=>{
         this.$message({
@@ -952,7 +1128,7 @@ export default {
       })
     },
     plusMethodsThis(data){
-
+      this.tableForm = {}
       this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
     },
     handleEdit(){
@@ -977,8 +1153,35 @@ export default {
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
     selectTable(item,index){
-      this.goods = this.goodsArr(this)
+      this.tid = item.id
+      console.log('选中餐桌数据',item);
+      var _this = this;
+      var Data = [
+        {
+          feild: '',
+          value: '',
+          joinType: ''
+        }
+      ];
+      this.$request(this.url.loginRestaurantManager,'form',{
+        thirdId:123456789
+      }).then((res)=>{
+        _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
+          _this.dishesCategory = res.data.data;
+        }).catch((err)=>{
+          console.log(err)
+        }).then(function () {
+          _this.goods = _this.goodsArr(_this);
+          console.log(55, _this.goods);
+          _this.$nextTick(()=>{
+            _this._initScroll()
+            _this._calculateHeight()
+          })
 
+        }).then(function () {
+          // _this.goods = goods;
+        })
+      })
       console.log(this.goods,'1231321345646546456465456');
       this.tableVisible = !this.tableVisible
       this.tableShow = 1
@@ -987,7 +1190,6 @@ export default {
       this.tableForm.type = item.recommend
       var Title = new Array("桌号"+(index+1))
       this.tableTitle = Title.join('——')
-
     },
     handleClick(tab, event) {
     },
@@ -1065,13 +1267,8 @@ export default {
     this.list = this.states.map(item => {
       return { value: item, label: item };
     });
-
-
-
-
   },
   created() {
-
     console.log('1');
     let data1 = [{
       feild: 'status',
@@ -1103,12 +1300,8 @@ export default {
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-
 @import "mixin.styl"
 @import "animate.css";
-
-
-
 .tables
   margin:0 3% 0
   .el-row
@@ -1196,7 +1389,7 @@ export default {
     >button
       margin-left 2px
       position fixed
-      right 17%
+      right 13%
       bottom: 35px
 
 

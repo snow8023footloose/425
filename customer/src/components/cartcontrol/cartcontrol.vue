@@ -58,15 +58,12 @@
         if (!event._constructed) {
           return;
         }
-
-
           if (!this.food.count) {
             Vue.set(this.food, 'count', 1);
           } else {
             this.food.count--;
           }
           this.$emit('incrementmi', {event:event.target,food:this.food});
-
       },
       //  拉取规格
       _pullSpec(){

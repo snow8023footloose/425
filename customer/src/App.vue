@@ -11,16 +11,10 @@
         </div>
       </router-link>
       <router-link to="/order" @click.native="active($event)">
-
         <div class="tab-item">
           订单
         </div>
       </router-link>
-      <!--<router-link to="/seller" @click.native="active($event)">
-        <div class="tab-item">
-          优惠券
-        </div>
-      </router-link>-->
       <div class="service"></div>
     </div>
     <router-view :seller="seller"></router-view>
@@ -122,12 +116,7 @@ body
         @-webkit-keyframes masked-animation
           0%{ background-position: 0 0;}
           100% { background-position: -100% 0;}
-/*
-.header
-  display none
 
-.seller,.goods,.ratings
-  top 20px !important*/
 
 .hello
   display block
