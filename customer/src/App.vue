@@ -22,7 +22,12 @@
 </template>
 
 <script type="text/ecmascript-6">
+/* eslint-disable */
 import header from './components/header/header.vue'
+
+window.onload = function () {
+
+}
 const ERR_OK = 0
 // ERR_OK定义却没有用过，ES6会报错
 /* eslint-disable */
@@ -34,22 +39,55 @@ export default {
     }
   },
   mounted() {
+    alert('进入app2',window.location.href,document.location.href);
   },
   created () {
-    this.$axios.get('../api/seller').then((response) => {
-      var response = response.data
-      if (response.errno === ERR_OK) {
-        this.seller = response.data
-        this.SColor = this.seller.sysColor[1].plan
-      }
-    });
+    // let dataTest={
+    //   thirdId:2088112484988593
+    // }
+    //   this.$request(this.url.login2,'form',dataTest).then((res)=>{
+    //     console.log(res);
+    //   }).catch((err)=>{
+    //   console.log(err);
+    // })
 
-    // document.getElementById('order').className = "theme"
+
+    alert(this.$route.query.auth_code);
+    alert(this.$route.query.state);
+    let dataLogin = {
+      auth_code: this.$route.query.auth_code,
+      state: this.$route.query.state
+    }
+    this.$request(this.url.loginAlipay,'form',dataLogin).then((res)=>{
+      alert('欢迎光临'+res.data.data.nickname);
+    }).catch((err)=>{
+      console.log(err);
+    })
+    this.$request(this.url.restaurant2,'json',[{
+      feild:'id',
+      value:1524988356660049,
+      joinType:'eq'
+    }]).then((res)=>{
+      console.log('res111111111',res.data.data[0]);
+      this.seller = res.data.data[0]
+    }).catch((err)=>{
+      console.log(err);
+    })
   },
   methods: {
     active(event) {
       console.log(this.SColor)
       // event.target.style = "color:black"
+    },
+    getParamByName(paramsArr,paramName){
+      if(!paramsArr || paramsArr.length == 0){
+        return;
+      }
+      for (let paramArr of paramsArr) {
+        if(paramArr[0] == paramName){
+          return paramArr[1];
+        }
+      }
     }
   },
   components: {

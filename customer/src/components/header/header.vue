@@ -2,7 +2,7 @@
   <div class="header">
     <div class="content-wrapper">
       <div class="avatar">
-        <img width="64" height="64" :src="seller.avatar">
+        <img width="64" height="64" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + seller.brandLogo">
       </div>
       <div class="content">
         <div class="brand-title">
@@ -10,7 +10,7 @@
           <span class="name">{{seller.name}}</span>
         </div>
         <div class="description">
-          {{seller.description}}/已有{{seller.deliveryTime}}个赞
+          点击查看商家信息：{{seller.description}}
         </div>
         <div v-if="seller.supports" class="support">
           <span class="icon" :class="classMap[seller.supports[0].type]"></span>
@@ -24,8 +24,9 @@
     </div>
     <div class="bulletin-wrapper" @click="showDetail">
       <span class="bulletin-headertitle"></span><marquee
+      style="margin: 0px !important;"
       direction="left" behavior="scroll" loop="1" scrollamount="4" scrolldelay="10" align="top" hspace="20" vspace="10" onmouseover=this.stop() onmouseout=this.start()
-      class="bulletin-text">{{seller.bulletin}}</marquee>
+      class="bulletin-text">{{seller.description}}</marquee>
       <i class="icon-keyboard_arrow_right"></i>
     </div>
     <div class="background">
@@ -36,8 +37,8 @@
       <div v-show="detailShow" class="detail animated">
         <div class="detail-wrapper clearfix">
 
-          <div class="scroll" ref="s-scroll">
-            <div class="s-scroll">
+          <div class="scroll" style="height: 490px" ref="s-scroll">
+            <div class="s-scroll" style="background: rgba(255,255,255,0);width: 100%;margin: 0px auto;">
               <h1 class="name">{{seller.name}}</h1>
               <!--<div class="favorite">
                 <span class="icon-favorite" :class="{'active':favorite}" @click="toggleFavorite()"></span>
@@ -46,18 +47,29 @@
               <div class="star-wrapper">
                 <star :size="48" :score="seller.score"></star>
               </div>
+
               <div class="headertitle">
                 <div class="line"></div>
-                <div class="text">优惠信息</div>
+                <div class="text">活动信息</div>
                 <div class="line"></div>
               </div>
-              <ul v-if="seller.supports" class="supports">
-                <li class="support-item" v-for="(item,index,key) in seller.supports" :key="key">
-                  <span class="icon" :class="classMap[seller.supports[index].type]"></span>
-                  <span class="text">{{seller.supports[index].description}}
-              </span>
-                </li>
-              </ul>
+
+              <div class="info">
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+
+                <ul>
+                  <li class="info-item" v-for="(info,key) in seller.infos" :key="key">{{info}}</li>
+                </ul>
+              </div>
+
               <div class="headertitle">
                 <div class="line"></div>
                 <div class="text">店家信息</div>
@@ -65,6 +77,16 @@
               </div>
 
               <div class="info">
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+
                 <ul>
                   <li class="info-item" v-for="(info,key) in seller.infos" :key="key">{{info}}</li>
                 </ul>
@@ -77,7 +99,15 @@
               </div>
 
               <div class="bulletin">
-                <p class="content">{{seller.bulletin}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
+                <p class="content">{{seller.description}}</p>
               </div>
 
               <div class="headertitle">
@@ -87,13 +117,11 @@
               </div>
 
               <div class="pics">
-                <span class="seemore">向右滑动查看更多 ></span>
-                <div class="pic-wrapper" ref="pic-wrapper">
-                  <ul class="pic-list" ref="pic-list">
-                    <li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">
-                      <img :src="pic" width="120" height="90">
-                    </li>
-                  </ul>
+                <!--<span class="seemore">向右滑动查看更多 ></span>-->
+                <div class="pic-wrapper" style="width: auto">
+                  <img style="height: 60px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + seller.sceneImgOne">
+                  <img style="height: 60px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + seller.sceneImgTwo">
+                  <img style="height: 60px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + seller.sceneImgThree">
                 </div>
               </div>
 
@@ -152,22 +180,22 @@ export default {
         }
       });
 
-      if (this.seller.pics) {
-        let picWidth = 120;
-        let margin = 6;
-        let width = (picWidth + margin) * this.seller.pics.length - margin;
-        this.$refs['pic-list'].style.width = width + 'px';
-        this.$nextTick(() => {
-          if (!this.picScroll) {
-            this.picScroll = new BScroll(this.$refs['pic-wrapper'], {
-              scrollX: true,
-              eventPassthrough: 'vertical'
-            });
-          } else {
-            this.picScroll.refresh();
-          }
-        });
-      }
+      // if (this.seller.pics) {
+      //   let picWidth = 120;
+      //   let margin = 6;
+      //   let width = (picWidth + margin) * this.seller.pics.length - margin;
+      //   this.$refs['pic-list'].style.width = width + 'px';
+      //   this.$nextTick(() => {
+      //     if (!this.picScroll) {
+      //       this.picScroll = new BScroll(this.$refs['pic-wrapper'], {
+      //         scrollX: true,
+      //         eventPassthrough: 'vertical'
+      //       });
+      //     } else {
+      //       this.picScroll.refresh();
+      //     }
+      //   });
+      // }
     },
     hideDetail() {
       this.detailShow = false;
@@ -191,8 +219,7 @@ export default {
   overflow hidden
   width 100%
   .s-scroll
-    width 100%
-    /*background red*/
+    width 100% !important
 .header
   position: relative
   overflow: hidden
@@ -254,7 +281,6 @@ export default {
   margin-bottom: 10px
   line-height: 12px
   font-size: 12px
-  display none
 .support
   .icon
     display: inline-block
@@ -323,7 +349,6 @@ export default {
 
 .bulletin-text
   vertical-align: top
-  margin: 0 4px
   font-size: 10px
   text-overflow: ellipsis
 
@@ -353,6 +378,7 @@ export default {
     width: 100%
     height: 589px
     margin-top: 30px
+    justify-content center
 
 .pics
   padding: 0px 20px 18px 18px
@@ -362,7 +388,7 @@ export default {
     margin 5px 30px
     opacity 0.5
   .pic-wrapper
-    width: 82%
+    width: 250px
     overflow: hidden
     white-space: nowrap
     margin 0 auto

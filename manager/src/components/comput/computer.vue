@@ -3,7 +3,7 @@
     <div class="computer">
       <div @click="close" class="mask" v-show="container">11111111</div>
       <button style="font-size: 16px;opacity: 0" id="calc_clear" class="closeComputer" value="C/E" >清空</button>
-      <el-button id="calc_clear_button" class="closeComputer" icon="el-icon-tickets" circle @click="close"></el-button>
+      <!--<el-button id="calc_clear_button" class="closeComputer" icon="el-icon-tickets" circle @click="close"></el-button>-->
       <div id="container" v-show="container">
         <div id="the-calculator">
           <div id="the-display">

@@ -26,6 +26,7 @@
           <el-button size="mini" @click="radioChange1">柱状图</el-button>
           <el-button size="mini" @click="radioChange2">折线图</el-button>
         </el-button-group>
+        <el-button type="success" @click="withDraw" round>提现</el-button>
       </el-tab-pane>
       <el-tab-pane label="消费统计详情" name="second">
         <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
@@ -33,8 +34,33 @@
           <el-tab-pane label="菜品" name="second">暂无信息……</el-tab-pane>
           <el-tab-pane label="时段" name="third">暂无信息……</el-tab-pane>
         </el-tabs>
+
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog title="请输入提现密码" :visible.sync="dialogFormVisible">
+      <div class="withDraw" v-show="loginShow">
+        <!--<img class="loginPic" src="../logo.png" alt="">-->
+        <el-form
+          label-width="100px"
+          :label-position="labelPosition"
+          class="demo-ruleForm withDraw"
+          status-icon
+          ref="ruleForm"
+          :rules="rules2">
+          <el-form-item label="密码" prop="password">
+            <el-input
+              type="password"
+              v-model="ruleForm"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button style="float: right;margin-left: 10px" type="primary" @click="submitConfirmPassWord">确定</el-button>
+            <el-button style="float: right" @click="resetForm('ruleForm')">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -42,6 +68,13 @@
 export default {
   name: 'collect',
   data:() => ({
+    rules2: {
+      password: [
+        {required: true, message:'请输入密码', trigger:'blur'},
+      ],
+    },
+    ruleForm:'',
+    labelPosition: 'top',
     msg: '财务信息！',
     activeName: 'first',
     activeName2: 'first',
@@ -49,6 +82,8 @@ export default {
     type: 'bar',
     width: 500,
     height: 400,
+    loginShow:true,
+    dialogFormVisible:false,
     radio: '1',
     data: [
       {name: '3.24', value: 742},
@@ -79,6 +114,16 @@ export default {
     },
     radioChange2(){
       this.type = 'line'
+    },
+    resetForm(formName) {
+      this.ruleForm = ''
+      this.$refs[formName].resetFields();
+    },
+    submitConfirmPassWord(){
+      console.log(this.password);
+    },
+    withDraw(){
+      this.dialogFormVisible = !this.dialogFormVisible
     }
   },
   computed:{

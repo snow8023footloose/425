@@ -111,6 +111,9 @@ export  function urlColletion() {
     preTableType4: BURL +'/predefineTableType/update',
 
 
+    //订单确认
+    confirmOrder: BURL +'/userOrder/computePrepayInfo',
+
     //pre标签
     preTag1: BURL +'/predefineTag/add',
     preTag2: BURL +'/predefineTag/complexPageQuery',
@@ -124,17 +127,33 @@ export  function urlColletion() {
     table4: BURL + '/restaurantTable/update',
 
     //订单
-    order1: BURL + '/userOrder/add',
-    order2: BURL + '/userOrder/complexPageQuery',
-    order3: BURL + '/userOrder/delete',
-    order4: BURL + '/userOrder/update',
-    orderComputer: BURL + '/userOrder/computePrepayInfo',
+    orderAdd: BURL + '/userOrder/add',
+    orderComplexPageQuery: BURL + '/userOrder/complexPageQuery',
+    orderDelete: BURL + '/userOrder/delete',
+    orderUpdate: BURL + '/userOrder/update',
+    orderComputePrepayInfo: BURL + '/userOrder/computePrepayInfo',
 
     //订单菜品
     orderDishes1: BURL + '/orderDishes/add',
     orderDishes2: BURL + '/orderDishes/complexPageQuery',
     orderDishes3: BURL + '/orderDishes/delete',
     orderDishes4: BURL + '/orderDishes/update',
+
+    //打印机
+    printerAdd: BURL + '/printer/add',
+    printerComplexPageQuery: BURL + '/printer/complexPageQuery',
+    printerDelete: BURL + '/printer/delete',
+    printerUpdate: BURL + '/printer/update',
+
+    //模板
+    printerTemplateAdd: BURL + '/printerTemplate/add',
+    printerTemplateComplexPageQuery: BURL + '/printerTemplate/complexPageQuery',
+    printerTemplateDelete: BURL + '/printerTemplate/delete',
+    printerTemplateUpdate: BURL + '/printerTemplate/update',
+
+    //餐厅设置
+    restaurantSetting:BURL + '/restaurantSetting/complexPageQuery',
+    restaurantUpdate:BURL + '/restaurantSetting/update',
   }
 }
 

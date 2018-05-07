@@ -15,7 +15,7 @@
       <div @click="show=!show" class="menu-button">
         <i class="icon-keyboard_arrow_right button-icon"></i>
       </div>
-      <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
+      <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
         <ul class="foods-ul">
           <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
             <h1 class="goods-title">{{item.name}}</h1>
@@ -31,7 +31,7 @@
                 <div class="icon">
                   <img width="70px" height="70px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.highDefinitionImg">
                 </div>
-                <div class="goods-content">
+                <div class="goods-content" style="padding-left: 12px">
                   <h2 class="goods-name">{{food.name}}</h2>
                   <p class="desc">{{food.description}}</p>
                   <div class="extra">
@@ -80,7 +80,7 @@
           <el-form-item label="标签" label-width="50px">
             <!--<input type="radio" name="user.sex" id="male" value="男" >-->
             <el-checkbox-group v-model="selectedTags">
-              <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
+              <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.name" border></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-form>
@@ -100,6 +100,8 @@ import food from '@/components/food/food.vue'
 const ERR_OK = 0
 /* eslint-disable */
 import Vue from 'vue';
+
+var once = 0
 export default {
   props: {
     seller: {
@@ -111,6 +113,7 @@ export default {
       selectedSpec:'',
       goods: [],
       listHeight: [],
+      tid: 12,
       scrollY: 0,
       selectedFood: {},
       show: false,
@@ -126,7 +129,7 @@ export default {
         is: 0
       },
       getData:{},
-      selectedTags:[],
+      selectedTags:[], //得到name
       selectedSkuArr : [],
       trueLabelofSpecs:[],
       trueLabelofTags:[],
@@ -134,60 +137,37 @@ export default {
     };
   },
   created () {
-
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-    // this.$axios.get('./api/goods').then((response) => {
-    //   var response = response.data
-    //   console.log(1, response)
-    //   if (response.errno === ERR_OK) {
-    //     // this.goods = response.data
-    //     this.$nextTick(() => {
-    //       this._initScroll();
-    //       this._calculateHeight();
-    //     })
-    //   }
-    // })
-    this.$axios.get('../api/seller').then((response1) => {
-      var response1 = response1.data;
-      console.log('11',response1)
-      if (response1.errno === ERR_OK) {
-        this.SColor = response1.data.sysColor[1].plan
-      }
-    });
     this._pullTable();
     this._pullSpec();
-
-
-  },
-  mounted(){
-
+    // this.tid = localStorage.getItem('tid')
   },
   computed: {
-        currentIndex() {
-          for (let i = 0; i < this.listHeight.length; i++) {
-            let height1 = this.listHeight[i];
-            let height2 = this.listHeight[i + 1];
-            if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-              console.log(44, i)
-              return i;
-            }
-          }
-          return 0;
-        },
-        selectFoods() {
-          let foods = [];
-          if(this.goods){
-          this.goods.forEach((good) => {
-            good.foods.forEach((food) => {
-              if (food.count) {
-                foods.push(food);
-                }
-              });
-            });
-          }
-          return foods;
+    currentIndex() {
+      for (let i = 0; i < this.listHeight.length; i++) {
+        let height1 = this.listHeight[i];
+        let height2 = this.listHeight[i + 1];
+        if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
+          console.log(44, i)
+          return i;
         }
-      },
+      }
+      return 0;
+    },
+    selectFoods() {
+      let foods = [];
+      if(this.goods){
+      this.goods.forEach((good) => {
+        good.foods.forEach((food) => {
+          if (food.count) {
+            foods.push(food);
+            }
+          });
+        });
+      }
+      return foods;
+    }
+  },
   methods: {
     transformArrySku(){
       let selectedSkuArr = []
@@ -207,28 +187,53 @@ export default {
       }
     },
     transformArryTags(){
+
       let selectedArryTags = []
-      let data = [
+      let data1 = [
         {
           feild:'status',
           value:'enable',
           joinType: 'eq'
         }
       ]
-      this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
-        console.log(res);
-        let response = res.data.data
-        for(var i=0;0<this.selectedTags.length;i++){
+      let _this = this
+      console.log('请求tags', data1);
+      this.$request(this.url.restaurantTag2,'json',data1).then((res)=>{
+        var response = res.data.data
+
+        for(var i=0;0<this.selectedTags.length;i++) {
           if(this.selectedTags.length === i){
-            this.transformArryTag = selectedArryTags
-            return true
-          }else {
-            for(var j=0;j<this.response.length;j++){
-              // console.log(this.specs[i].attrs);
-              if(this.selectedTags.length === i){
-                continue
-              }else if(this.selectedTags[i] === this.response[j].name){
-                selectedArryTags.push(this.response[j].id)
+            _this.restaurantTagRes = selectedArryTags
+            console.log('selectedArryTags111111111111111',selectedArryTags);
+            let attrTags = selectedArryTags.join(',');
+            let attrJoin = _this.transformArrySku().join('_');
+            let selectedSkuObj = _this.findSkuByAttrJoin(attrJoin);
+            console.log('selectedSkuObj===================',selectedSkuObj);
+
+            //删掉相关联的规格都会引起id出现问题
+            //删掉相关联的分类都会引起forEach出现问题
+
+            let data = {
+              num:1,
+              sid: selectedSkuObj.id,
+              did: _this.getFoods.id,
+              rid: _this.getFoods.rid,
+              tid: _this.tid,
+              type: 'single',
+              tagIds: attrTags
+            }
+            console.log('加入标签，加入SKU',data);
+            _this.$request(_this.url.cart1,'json',data).then((res)=>{
+              console.log(res);
+            }).catch((err)=>{
+              console.log(err);
+            })
+            return
+          }else{
+            for (var j = 0; j < response.length; j++) {
+              if(this.selectedTags[i] === response[j].name) {
+                selectedArryTags.push(response[j].id)
+                console.log('response[j].id',response[j].id);
               }
             }
           }
@@ -238,9 +243,6 @@ export default {
       })
     },
     confirmSku(){
-      // console.log(this.specs);
-      // console.log(this.selectedSkuArr);
-      console.log(this.selectedTags);
       if(!this.transformArrySku()){
         this.$message({
           type: 'info',
@@ -248,29 +250,32 @@ export default {
         });
         return
       }
-      // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
-      // console.log(this.trueLabelofTags+'trueLabelofTags');
-      let attrJoin = this.transformArrySku().join('_');
-      // this.transformArryTags()
-      // console.log(this.transformArryTags());
-      let attrTags = this.selectedTags.join(',');
-      let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+      if(this.selectedTags){
+        this.transformArryTags()
+      }else {
+        let attrJoin = this.transformArrySku().join('_');
+        // this.transformArryTags()
 
+        console.log('transformArryTags',this.transformArryTags());
+        console.log(attrJoin,'SKU-Tags',attrTags);
+        let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
 
-      let data = {
-        num:1,
-        sid: selectedSkuObj.id,
-        did: this.getFoods.id,
-        rid: this.getFoods.rid,
-        tid: 12,
-        type: 'single',
-        tagIds: attrTags
+        let data = {
+          num:1,
+          sid: selectedSkuObj.id,
+          did: this.getFoods.id,
+          rid: this.getFoods.rid,
+          tid: this.tid,
+          type: 'single',
+          tagIds: attrTags
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+        }).catch((err)=>{
+          console.log(err);
+        })
       }
-      this.$request(this.url.cart1,'json',data).then((res)=>{
-        console.log(res);
-      }).catch((err)=>{
-        console.log(err);
-      })
+
       if (!this.getFoods.count) {
         Vue.set(this.getFoods, 'count', 1);
       } else {
@@ -281,6 +286,47 @@ export default {
       this.$nextTick(() => {
         this.$refs['shop-cart'].drop(this.getData.event);
       });
+      // // console.log(this.specs);
+      // // console.log(this.selectedSkuArr);
+      // console.log(this.selectedTags);
+      // if(!this.transformArrySku()){
+      //   this.$message({
+      //     type: 'info',
+      //     message: '亲，没有选择规格哦~'
+      //   });
+      //   return
+      // }
+      // // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
+      // // console.log(this.trueLabelofTags+'trueLabelofTags');
+      // let attrJoin = this.transformArrySku().join('_');
+      // // this.transformArryTags()
+      // // console.log(this.transformArryTags());
+      // let attrTags = this.selectedTags.join(',');
+      // let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+      // let data = {
+      //   num:1,
+      //   sid: selectedSkuObj.id,
+      //   did: this.getFoods.id,
+      //   rid: this.getFoods.rid,
+      //   tid: 12,
+      //   type: 'single',
+      //   tagIds: attrTags
+      // }
+      // this.$request(this.url.cart1,'json',data).then((res)=>{
+      //   console.log(res);
+      // }).catch((err)=>{
+      //   console.log(err);
+      // })
+      // if (!this.getFoods.count) {
+      //   Vue.set(this.getFoods, 'count', 1);
+      // } else {
+      //   this.getFoods.count++;
+      // }
+      //
+      // this.dialogFormVisible = !this.dialogFormVisible
+      // this.$nextTick(() => {
+      //   this.$refs['shop-cart'].drop(this.getData.event);
+      // });
     },
     incrementTotalAdd(g) {
       this.getData = g
@@ -298,7 +344,7 @@ export default {
           num: 1,
           did: g.food.id,
           rid: g.food.rid,
-          tid: 12,
+          tid: this.tid,
           type: 'single',
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
@@ -320,7 +366,7 @@ export default {
           num: -1,
           did: g.food.id,
           rid: g.food.rid,
-          tid: 12,
+          tid: this.tid,
           type: 'single',
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
@@ -359,6 +405,15 @@ export default {
         return;
       };
       this.selectedFood = food;
+      if(once === 0){
+        this.$message({
+          type: 'info',
+          message: '点击图片也可以关闭哦~',
+          showClose:true
+        });
+        once++;
+      }
+
       this.$refs['food'].show();
     },
     _initScroll() {
@@ -395,7 +450,7 @@ export default {
         }
       ];
       this.$request(this.url.login2,'form',{
-        thirdId:123456789
+        thirdId:2088112484988593
       }).then((res)=>{
         _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
           _this.dishesCategory = res.data.data;
@@ -578,9 +633,10 @@ export default {
   z-index 30
   width: 100%
   overflow: hidden
+  height: 100%
   .menu-button
     position absolute
-    margin-top 147%
+    margin-top 130%
     left 5%
     width 44px
     height 44px
@@ -596,13 +652,16 @@ export default {
   .menu-wrapper
     flex: 0 0 80px
     position: absolute
-    bottom 12%
+    bottom 30%
+    width 350px
+    left -175px
+    margin-left 50%
     padding 12px
     background: rgba(255,255,255,0.9)
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3)
     z-index 30
     overflow hidden
-    border-radius 20% 20% 20% 20% / 40% 40% 40% 40%
+    border-radius 10px
     ul
       display flex
       flex-wrap wrap
@@ -620,16 +679,6 @@ export default {
           margin-right: 2px
           background-size: 12px 12px
           background-repeat: no-repeat
-          &.decrease
-            bg-image('decrease_3')
-          &.discount
-            bg-image('discount_3')
-          &.guarantee
-            bg-image('guarantee_3')
-          &.invoice
-            bg-image('invoice_3')
-          &.special
-            bg-image('special_3')/**/
         .text
           vertical-align: middle
           border-1px(rgba(7, 17, 27, 0.1))
@@ -695,8 +744,10 @@ export default {
               height 50%
               display block
               img
-                width 93%
-                height 93%
+                width auto !important
+                height 100px !important
+      &:last-child
+        margin-bottom 94px
 
 
 

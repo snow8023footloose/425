@@ -546,6 +546,7 @@
       computed: {},
       data (){
         return{
+
           restaurantDatapid:0,
           picCollection: {
             brandLogo: 'restaurant/brandLogo/',

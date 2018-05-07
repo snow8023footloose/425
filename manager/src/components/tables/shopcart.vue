@@ -58,16 +58,16 @@
         </div>
         <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
-        <el-select size="small" multiple collapse-tags v-model="value8" filterable placeholder="点击搜索" class="search">
-          <el-option
-            v-for="(item,index) in listGoods"
-            :key="index"
-            :label="item.name"
-            :value="index">
-            <span style="">{{ item.name }}&nbsp;&nbsp;价格：</span>
-            <span style=" color: #8492a6; font-size: 13px">{{ item.normalPrice }}元</span>
-          </el-option>
-        </el-select>
+        <!--<el-select size="small" multiple collapse-tags v-model="value8" filterable placeholder="点击搜索" class="search">-->
+          <!--<el-option-->
+            <!--v-for="(item,index) in listGoods"-->
+            <!--:key="index"-->
+            <!--:label="item.name"-->
+            <!--:value="index">-->
+            <!--<span style="">{{ item.name }}&nbsp;&nbsp;价格：</span>-->
+            <!--<span style=" color: #8492a6; font-size: 13px">{{ item.normalPrice }}元</span>-->
+          <!--</el-option>-->
+        <!--</el-select>-->
         <!-- <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div> -->
       </div>
       <div class="content-right" @click.stop.prevent="payConfirm">

@@ -24,6 +24,7 @@ export  function urlColletion() {
     //餐厅请求接口
 
     login2: BURL + '/xwfUser/login',
+    loginAlipay: BURL + '/xwfUser/alipayLogin',
 
     restaurant1: BURL + '/restaurant/add',
     restaurant2: BURL + '/restaurant/complexPageQuery',
@@ -73,6 +74,14 @@ export  function urlColletion() {
     cart4: BURL + '/cart/update',
 
 
+    //订单确认
+    confirmOrder: BURL +'/userOrder/computePrepayInfo',
+
+    //订单确认
+    payOrder: BURL +'/userOrder/submit',
+
+
+
     //购物车
     table1: BURL + '/restaurantTable/add',
     table2: BURL + '/restaurantTable/complexPageQuery',
@@ -114,6 +123,22 @@ export function request(url,format,data) {
 }
 
 
+
+export function formatDateTime(inputTime) {
+  var date = new Date(inputTime);
+  var y = date.getFullYear();
+  var m = date.getMonth() + 1;
+  m = m < 10 ? ('0' + m) : m;
+  var d = date.getDate();
+  d = d < 10 ? ('0' + d) : d;
+  var h = date.getHours();
+  h = h < 10 ? ('0' + h) : h;
+  var minute = date.getMinutes();
+  var second = date.getSeconds();
+  minute = minute < 10 ? ('0' + minute) : minute;
+  second = second < 10 ? ('0' + second) : second;
+  return y + '-' + m + '-' + d+' '+h+':'+minute+':'+second;
+}
 
 
 export function getUID() {

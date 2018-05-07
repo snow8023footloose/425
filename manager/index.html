@@ -7,6 +7,7 @@
     <title>新沃丰后台管理系统</title>
     <script src="https://gosspublic.alicdn.com/aliyun-oss-sdk-4.4.4.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <script src="http://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js"></script>
 
   </head>
   <body>
@@ -44,7 +45,7 @@
 
   // console.log
   function write(x) {
-    // console.log(x);
+    console.log(x);
   }
   // add int to current display value
   function changeDisplayVal(i) {
@@ -537,9 +538,9 @@
 
     // the character code
     var charCode = e.which;
-    // console.log(charCode);
+    console.log(charCode);
     // backspace
-    if ( charCode === 37 ) {
+    if ( charCode === 40 ) {
       backspace();
       animateButton(jQuery('#calc_back'));
       return false;

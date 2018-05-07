@@ -6,9 +6,8 @@
       v-model="activeName"
       @tab-click="handleClick"
     >
-      <el-tab-pane label="外卖订单" name="first">
+      <!--<el-tab-pane label="外卖订单" name="first">
         <template>
-          <!-- <span>{{msg}}</span> -->
           <el-table
             :data="listGoods"
             style="width: 100%"
@@ -51,123 +50,415 @@
               prop="rating"
               label="评价">
             </el-table-column>
-
-            <!--<el-table-column
-              fixed="right"
-              prop="name"
-              label="标签"
-              width="180"
-              :filters="[
-              { text: '热销榜', value: '热销榜' },
-              { text: '单人精彩套餐', value: '单人精彩套餐' },
-              { text: '冰爽饮品限时特惠', value: '冰爽饮品限时特惠' },
-              { text: '爽口凉菜', value: '爽口凉菜' },
-              { text: '精选套餐', value: '精选套餐' },
-              { text: '果拼果汁', value: '果拼果汁' },
-              { text: '小吃主食', value: '小吃主食' },
-              { text: '特色粥品', value: '特色粥品' }
-              ]"
-              :filter-method="filterTag"
-              filter-placement="bottom-end">
-              <template slot-scope="scope">
-                <el-tag
-                  :type="scope.row.tag === '家' ? 'primary' : 'success'"
-                  close-transition>{{scope.row.tag}}</el-tag>
-              </template>
-            </el-table-column>-->
           </el-table>
         </template>
-      </el-tab-pane>
+      </el-tab-pane>-->
 
-      <el-tab-pane label="历史订单" name="second">
+      <el-tab-pane label="历史订单" name="first">
         <template>
           <!-- <span>{{msg}}</span> -->
+
+          <!--<el-button-group>-->
+            <!--<el-button type="primary" icon="el-icon-document">订单类型</el-button>-->
+            <!--<el-button type="primary" icon="el-icon-share"></el-button>-->
+            <!--<el-button type="primary" icon="el-icon-delete"></el-button>-->
+          <!--</el-button-group>-->
+          <div class="filter" style="display: flex;justify-content: space-around">
+            <el-select
+              style="margin-right: 5px"
+              v-model="filterOrderType"
+              @change="filterOrderTypeFun"
+              placeholder="请选择订单类型">
+              <el-option
+                v-for="(item,index) in optionsOrder"
+                :key="index"
+                :label="item.label"
+
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-select
+              style="margin-right: 5px"
+              v-model="filterPayType"
+              @change="filterPayTypeFun"
+              placeholder="请选择支付类型">
+              <el-option
+                v-for="(item,index) in optionsPay"
+                :key="index"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-date-picker
+              style="margin-right: 5px"
+              v-model="filterOrderDate"
+              type="daterange"
+              align="right"
+              unlink-panels
+              @change="filterDateTypeFun"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions">
+            </el-date-picker>
+            <el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>
+          </div>
+
           <el-table
-            :data="listGoods"
+            :data="userOrder"
             style="width: 100%"
             height="600"
           >
-            <el-table-column
-              fixed="left"
-              type="selection"
-              width="30">
+            <el-table-column type="expand" fixed="right">
+              <template slot-scope="props">
+                <el-form label-position="right" class="demo-table-expand">
+                  <el-form-item label="商品名称">
+                    <span>{{ props.row.name }}</span>
+                  </el-form-item>
+
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                  <el-form-item label="商品 ID">
+                    <span>{{ props.row.id }}</span>
+                  </el-form-item>
+                </el-form>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               fixed="left"
-              prop="name"
-              label="品名"
-              width="180"
+              prop="id"
+              label="序号"
+              width="80"
             >
             </el-table-column>
             <el-table-column
               sortable
-              prop="sellCount"
-              label="售卖情况"
+              fixed="left"
+              prop="order_sn"
+              label="订单编号"
+              width="150"
+            >
+            </el-table-column>
+            <el-table-column
+              sortable
+              prop="needPay"
+              label="应付金额"
               width="150">
             </el-table-column>
             <el-table-column
               sortable
               width="150"
-              prop="price"
-              label="价格">
+              prop="realPay"
+              label="实付金额">
             </el-table-column>
             <el-table-column
               sortable
               width="150"
               prop="oldPrice"
-              label="原价">
+              label="下单时间">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="discountMoney"
+              label="优惠金额">
             </el-table-column>
             <el-table-column
               sortable
               width="100"
               prop="rating"
-              label="评价">
+              label="退款金额">
             </el-table-column>
-
-            <!--<el-table-column
-              fixed="right"
-              prop="name"
-              label="标签"
-              width="180"
-              :filters="[
-              { text: '热销榜', value: '热销榜' },
-              { text: '单人精彩套餐', value: '单人精彩套餐' },
-              { text: '冰爽饮品限时特惠', value: '冰爽饮品限时特惠' },
-              { text: '爽口凉菜', value: '爽口凉菜' },
-              { text: '精选套餐', value: '精选套餐' },
-              { text: '果拼果汁', value: '果拼果汁' },
-              { text: '小吃主食', value: '小吃主食' },
-              { text: '特色粥品', value: '特色粥品' }
-              ]"
-              :filter-method="filterTag"
-              filter-placement="bottom-end">
-              <template slot-scope="scope">
-                <el-tag
-                  :type="scope.row.tag === '家' ? 'primary' : 'success'"
-                  close-transition>{{scope.row.tag}}</el-tag>
-              </template>
-            </el-table-column>-->
+            <el-table-column
+              sortable
+              width="100"
+              prop="discountType"
+              label="打折类型">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="payType"
+              label="支付方式">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="orderType"
+              label="订单类型">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="thirdPartCode"
+              label="第三方code">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="thirdPartName"
+              label="第三方名称">
+            </el-table-column>
           </el-table>
         </template>
+        {{filters}}
       </el-tab-pane>
     </el-tabs>
-    <editcontrol></editcontrol>
   </div>
 </template>
 <script>
-  import editcontrol from '@/components/editcontrol/editcontrol';
 
   const ERR_OK = 0
   export default {
     name: 'New',
     data:() => ({
+      start:{
+        feild:'startTime',
+        value: '',
+        joinType:'startTime'
+      },
+      end:{
+        feild:'endTime',
+        value: '',
+        joinType:'endTime'
+      },
+      optionsPay: [
+        {
+          value: {
+            feild: 'cid',
+            value: 51,
+            joinType: 'eq',
+          },
+          label: '全部'
+        },
+
+        {
+          value: {
+            feild: 'normalPrice',
+            value:18,
+            joinType:'lt',
+          },
+          label: '微信支付'
+        },
+        {
+          value: {
+            feild: 'payType',
+            value:'Alipay',
+            joinType:'eq',
+          },
+          label: '支付宝支付'
+        }
+      ],
+      optionsOrder: [
+        {
+          value: {
+            feild: 'id',
+            value:96,
+            joinType:'eq',
+          },
+          label: '全选'
+        },
+          {
+          value: {
+            feild: 'orderType',
+            value:'single',
+            joinType:'eq',
+          },
+          label: '单人点餐'
+        },
+          {
+          value: {
+            feild: 'orderType',
+            value:'multi',
+            joinType:'eq',
+          },
+          label: '多人点餐/服务员点餐'
+        }
+      ],
+      filterOrderType: {
+        feild:'time',
+        value: '',
+        joinType:'time'
+      },
+      filterPayType:{
+        feild:'time',
+        value: '',
+        joinType:'time'
+      },
+      filters:[
+        {
+          feild: 'cid',
+          value:'',
+          joinType:'eq',
+        },
+        {
+          feild: 'id',
+          value:'',
+          joinType:'eq',
+        },
+        {
+          feild: 'startTime',
+          value:'',
+          joinType:'startTime',
+        },
+        {
+          feild: 'endTime',
+          value:'',
+          joinType:'endTime',
+        }
+      ],
       currentPage1:5,
       activeName: 'first',
-      goods:[],
-      loading: true
+      userOrder:[],
+      loading: true,
+      filterOrderDate:'',
+      pickerOptions: {
+        shortcuts: [{
+          text: '今天',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+            picker.$emit('pick', [start, end]);
+          }
+        },
+
+          {
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
     }),
+    watch:{
+      filters:{
+        handler:function(val,oldval){
+          console.log('watch',val);
+          this.$request(this.url.dishes2,'json',val).then((res)=>{
+            console.log(res);
+            this.userOrder = res.data.data
+          }).catch((err)=>{
+          })
+        },
+        deep:true//深度监听
+      }
+    },
     methods: {
+      resetFilters(){
+        this.filters = [
+          {
+            feild: 'cid',
+            value:'',
+            joinType:'eq',
+          },
+          {
+            feild: 'id',
+            value:'',
+            joinType:'eq',
+          },
+          {
+            feild: 'startTime',
+            value:'',
+            joinType:'startTime',
+          },
+          {
+            feild: 'endTime',
+            value:'',
+            joinType:'endTime',
+          }
+        ]
+        this.filterOrderType = {
+          feild:'time',
+          value: '',
+          joinType:'time'
+        }
+        this.filterPayType = {
+          feild:'time',
+          value: '',
+          joinType:'time'
+        }
+        this.start = {
+          feild:'startTime',
+          value: '',
+          joinType:'startTime'
+        }
+        this.end = {
+          feild:'endTime',
+            value: '',
+            joinType:'endTime'
+        }
+      },
+      filterOrderTypeFun(){
+        this.filters =[]
+        console.log('filterOrderTypeFun',this.filterOrderType);
+        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
+      },
+      filterPayTypeFun(){
+        this.filters =[]
+        console.log('filterPayTypeFun',this.filterPayType);
+        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
+      },
+      filterDateTypeFun(){
+        this.filters =[]
+        console.log('filterDateTypeFun',this.filterOrderDate);
+        let startTime =
+          this.filterOrderDate[0].getFullYear()+
+        '-'+(this.filterOrderDate[0].getMonth()+1)+
+        '-'+this.filterOrderDate[0].getDate()
+        let endTime = this.filterOrderDate[1].getFullYear()+
+        '-'+(this.filterOrderDate[1].getMonth()+1)+
+        '-'+this.filterOrderDate[1].getDate()
+        console.log('得到时间段',startTime,endTime);
+
+        this.start = {
+          feild:'startTime',
+          value: startTime,
+          joinType:'startTime'
+        }
+        this.end = {
+          feild:'endTime',
+          value: endTime,
+          joinType:'endTime'
+        }
+        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
+      },
       formatter(row, column) {
         return row.address;
       },
@@ -185,33 +476,35 @@
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
-      }
-    },
-    computed:{
-      listGoods(){
-        let tempArr = [];
-        this.goods.forEach((item)=>{
-          tempArr = tempArr.concat(item.foods);
+      },
+      _pullUserOrder(){
+        // let data = [
+        //   {
+        //     feild:'status',
+        //     value: 'enable',
+        //     joinType:'eq'
+        //   }
+        // ]
+
+        let data = [
+          {
+            feild:'rid',
+            value: localStorage.getItem('rid'),
+            joinType:'eq'
+          }
+        ]
+        this.$request(this.url.dishes2,'json',data).then((res)=>{
+          console.log('orderComplexPageQuery',res);
+          this.userOrder = res.data.data
+          this.loading = false
+        }).catch((err)=>{
+
         })
-        return tempArr;
       }
     },
     created() {
-      this.$axios.get('../api/goods').then((response) => {
-        var response = response.data
-        if (response.errno === ERR_OK) {
-          this.goods = response.data
-          setTimeout(this.loading = !this.loading,2000)
-        }
-      })
-      // this.$nextTick(()=>{
-      //   this.scroll = new BScroll(this.$refs['goods-classes'],{
-      //   })
-      // })
+      this._pullUserOrder()
     },
-    components: {
-      editcontrol
-    }
   }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">

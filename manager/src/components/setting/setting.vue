@@ -6,18 +6,43 @@
       >
         <!--营业设置模块-->
         <el-tab-pane style="padding-top: 15px" label="营业设置" name="first">
-          <el-form ref="form" :model="form" label-width="80px">
-
-            <el-form-item label="营业时间">
-              <el-col :span="11">
-                <el-date-picker type="date" placeholder="选择日期" v-model="date1" style="width: 100%;"></el-date-picker>
-              </el-col>
-              <el-col class="line" :span="2" style="text-align: center">-</el-col>
-              <el-col :span="11">
-                <el-time-picker type="fixed-time" placeholder="选择时间" v-model="date2" style="width: 100%;"></el-time-picker>
-              </el-col>
+          <el-form ref="form" label-width="80px">
+            <el-form-item class="save-part">
+              <el-switch
+                class="person-close person-close1"
+                style="display: block"
+                v-model="settingForm.serviceStatus"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                active-text="营业"
+                inactive-text="休息"
+                active-value="open"
+                inactive-value="close"
+              >
+              </el-switch>
+              <el-button style="position: fixed;right: 79px;bottom: 53px;" type="primary"
+                         @click="onSubmitSetting"
+                         :loading="saveSetting">
+                保存</el-button>
             </el-form-item>
+            <!--<div style="display: flex;flex-wrap: nowrap">
+              <el-form-item label="App配色方案" label-width="100px" style="margin-bottom: 0px;margin-right: 5px">
+                <el-color-picker v-model="settingForm.theme" show-alpha></el-color-picker>
+              </el-form-item>
 
+
+              <el-form-item label-width="100px" style="margin-right: 5px;margin-bottom: 0px" label="首页背景图" prop="bannerImg">
+                <upload
+                  style="background: url('')"
+                  v-on:ToUrl="listenUrlIndexBg"
+                  :name="UID('/indexBg/')"
+                  :target="this.settingForm.indexBg"></upload>
+                <transition name="el-zoom-in-center">
+                  <img v-show="showIndexBg" class="transition-box" style="box-shadow: 2px 2px 2px rgba(0,0,0,0.25);position: fixed;z-index: 100;right: 40px;border-radius: 10px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + this.settingForm.indexBg" alt="">
+                </transition>
+              </el-form-item>
+              <i style="font-size: 30px;margin-left: 5px;padding-top: 10px" class="el-icon-view" @click="showIndexBg = !showIndexBg" circle></i>
+            </div>
             <el-form-item label="外卖推送">
               美团推送
               <el-tooltip :content="'Switch value: ' + value5" placement="top">
@@ -39,146 +64,383 @@
                   inactive-value="0">
                 </el-switch>
               </el-tooltip>
-              <el-button style="position: absolute;right: -147px;top: 6px;" size="mini" round>外卖接口验证</el-button>
+              <el-button style="position: absolute;right: 50%;top: 8px;" size="mini" round>验证</el-button>
+            </el-form-item>
+            <el-form-item v-model="settingForm.BusinessTime" label="营业时间" :label-width="formLabelWidth">
+              <el-time-picker
+                style="width: 170px"
+                v-model="startTimeSetting"
+                :picker-options="{
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+                :placeholder="startTimePreSetting">
+              </el-time-picker>
+              <el-col class="line" style="text-align: center; display: inline-block; float: none" :span="2">-</el-col>
+              <el-time-picker
+                style="width: 170px"
+                arrow-control
+                v-model="endTimeSetting"
+                @change="endTimeSettingFun"
+                :picker-options="{
+                selectableRange: '06:30:00 - 23:30:00'
+              }"
+                :placeholder="endTimePreSetting">
+              </el-time-picker>
+            </el-form-item>-->
+
+
+
+            <el-form-item label="打印类型">
+              <el-select v-model="settingForm.printType" placeholder="请选择打印类型">
+                <el-option label="整单打印" value="whole"></el-option>
+                <el-option label="分类打印" value="part"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="促销状态">
+              <el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">
+                <el-option label="未促销" value="close"></el-option>
+                <el-option label="会员促销" value="member"></el-option>
+                <el-option label="活动促销" value="promotion"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="提现类型">
+              <el-select v-model="settingForm.withdrawType" placeholder="请选择提现类型">
+                <el-option label="实时到账" value="realtime"></el-option>
+                <el-option label="主动提现" value="withdraw"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="服务提现类型" label-width="100px">
+              <el-select v-model="settingForm.serviceRemindType" placeholder="请选择提现类型">
+                <el-option label="文字提醒" value="text"></el-option>
+                <el-option label="音频+文字提醒" value="audioText"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="会员生日优惠" label-width="100px">
+              <el-select v-model="settingForm.birthdayDiscountStatus" placeholder="请选择会员优惠方式">
+                <el-option label="开启" value="open"></el-option>
+                <el-option label="关闭" value="close"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="生日优惠方式" label-width="100px">
+              <el-select v-model="settingForm.birthdayDiscountType" placeholder="请选择生日优惠方式">
+                <el-option label="会员价优惠" value="memberPrice"></el-option>
+                <el-option label="活动价优惠" value="promotionPrice"></el-option>
+                <el-option label="折扣" value="discount"></el-option>
+                <el-option label="满减" value="full-cut"></el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="生日优惠数额" label-width="100px">
+              <el-input
+                v-model="settingForm.birthdayDiscountNum"
+                placeholder="请输入金额"></el-input>
+            </el-form-item>
+            <el-form-item label="生日优惠门槛" label-width="100px">
+              <el-input
+                v-model="settingForm.birthdayMinimumCharge"
+                placeholder="请输入金额"></el-input>
             </el-form-item>
             <el-form-item label="店铺公告">
               <el-input type="textarea" v-model="form.desc"></el-input>
-            </el-form-item>
-            <el-form-item label="店铺色调">
-              <el-color-picker v-model="color3" show-alpha></el-color-picker>
-            </el-form-item>
-            <el-form-item class="save-part">
-              <el-switch
-                class="person-close person-close1"
-                style="display: block"
-                v-model="value4"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                active-text="营业"
-                inactive-text="休息"
-                @click="atSwitch"
-              >
-              </el-switch>
-              <el-button type="primary" @click="onSubmit">保存</el-button>
-              <el-button>取消</el-button>
             </el-form-item>
           </el-form>
         </el-tab-pane>
 
         <!--素材模块-->
-        <el-tab-pane style="padding-top: 15px" label="店铺素材" name="second">
-          <div>
-            <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              list-type="picture">
-              <span class="spa-title">头像</span><el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
-          </div>
-          <div>
-            <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :file-list="fileList2"
-              list-type="picture">
-              <span class="spa-title">店铺门店实景</span><el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
-          </div>
-          <div>
-            <el-upload
-              class="upload-demo"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :on-preview="handlePreview"
-              :on-remove="handleRemove"
-              :file-list="fileList2"
-              list-type="picture">
-              <span class="spa-title">前端背景</span><el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
-            </el-upload>
-          </div>
-        </el-tab-pane>
+        <!--<el-tab-pane style="padding-top: 15px" label="店铺素材" name="second">-->
+          <!--<div>-->
+            <!--<el-upload-->
+              <!--class="upload-demo"-->
+              <!--action="https://jsonplaceholder.typicode.com/posts/"-->
+              <!--:on-preview="handlePreview"-->
+              <!--:on-remove="handleRemove"-->
+              <!--list-type="picture">-->
+              <!--<span class="spa-title">头像</span><el-button size="small" type="primary">点击上传</el-button>-->
+              <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+            <!--</el-upload>-->
+          <!--</div>-->
+          <!--<div>-->
+            <!--<el-upload-->
+              <!--class="upload-demo"-->
+              <!--action="https://jsonplaceholder.typicode.com/posts/"-->
+              <!--:on-preview="handlePreview"-->
+              <!--:on-remove="handleRemove"-->
+              <!--:file-list="fileList2"-->
+              <!--list-type="picture">-->
+              <!--<span class="spa-title">店铺门店实景</span><el-button size="small" type="primary">点击上传</el-button>-->
+              <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+            <!--</el-upload>-->
+          <!--</div>-->
+          <!--<div>-->
+            <!--<el-upload-->
+              <!--class="upload-demo"-->
+              <!--action="https://jsonplaceholder.typicode.com/posts/"-->
+              <!--:on-preview="handlePreview"-->
+              <!--:on-remove="handleRemove"-->
+              <!--:file-list="fileList2"-->
+              <!--list-type="picture">-->
+              <!--<span class="spa-title">前端背景</span><el-button size="small" type="primary">点击上传</el-button>-->
+              <!--<div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>-->
+            <!--</el-upload>-->
+          <!--</div>-->
+        <!--</el-tab-pane>-->
 
-        <!--打印模块-->
+        <!--打印机-->
         <el-tab-pane style="padding-top: 15px" label="打印设置" name="third">
-          <el-form :model="form">
-            <h4>收银台打印设置</h4>
-            <el-form-item label="打印机名" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="打印机一" value="shanghai"></el-option>
-                <el-option label="打印机二" value="beijing"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="驱动名" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off" placeholder="请输入驱动名"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="机子介绍" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off" placeholder="请输入驱动名"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="打印模板" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择活动区域">
-                <el-option label="模板1" value="Param_one"></el-option>
-                <el-option label="模板2" value="Param_two"></el-option>
-                <el-option label="模板3" value="Param_three"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
+          <template>
+            <el-table
+              :data="printerTable"
+              style="width: 100%"
+              height="600"
+            >
+              <el-table-column
+                sortable
+                fixed="left"
+                prop="name"
+                label="打印机名"
+                width="120">
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="status"
+                label="状态">
+              </el-table-column>
+              <el-table-column
+                sortable
+                prop="driverName"
+                label="驱动名"
+                width="200">
+              </el-table-column>
+              <el-table-column
+                sortable
+                prop="remark"
+                label="备注"
+                width="100">
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="description"
+                label="描述/介绍">
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="deletePrinter(scope.row)"
+                    type="text"
+                    size="small">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
 
-          <el-form :model="form">
-            <h4>厨房打印设置</h4>
-            <el-form-item label="打印机名" :label-width="formLabelWidth">
-
-              <el-select v-model="form.region" placeholder="请选择打印机名字">
-                <el-option label="打印机一" value="shanghai"></el-option>
-                <el-option label="打印机二" value="beijing"></el-option>
-              </el-select>
-
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="驱动名" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off" placeholder="请输入驱动名"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="机子介绍" :label-width="formLabelWidth">
-              <el-input v-model="form.name" auto-complete="off" placeholder="请输入驱动名"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-form :model="form">
-            <el-form-item label="打印模板" :label-width="formLabelWidth">
-              <el-select v-model="form.region" placeholder="请选择打印模块">
-                <el-option label="模板1" value="Param_one"></el-option>
-                <el-option label="模板2" value="Param_two"></el-option>
-                <el-option label="模板3" value="Param_three"></el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
+          </template>
+          <el-button type="primary" @click="plusPrinter" style="position: fixed;right: 50px">添加打印机</el-button>
         </el-tab-pane>
+
+        <!--打印模板-->
+        <el-tab-pane style="padding-top: 15px" label="打印模板" name="fourth">
+          <template>
+            <el-table
+              :data="printerTemplateTable"
+              style="width: 100%"
+              height="600"
+            >
+              <el-table-column
+                sortable
+                fixed="left"
+                prop="name"
+                label="模板名"
+                width="120">
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="status"
+                label="状态">
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="printWidth"
+                label="打印宽度">
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="description"
+                label="描述/介绍">
+              </el-table-column>
+              <el-table-column
+                sortable
+                prop="code"
+                label="模板代码"
+                width="150">
+              </el-table-column>
+              <el-table-column
+                fixed="right"
+                label="操作"
+                width="100">
+                <template slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="deletePrinterTemplate(scope.row)"
+                    type="text"
+                    size="small">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </template>
+          <el-button type="primary" @click="plusPrinterTemplate" style="position: fixed;right: 50px">添加打印模板</el-button>
+        </el-tab-pane>
+
+        <!--账户-->
+        <el-tab-pane style="padding-top: 15px" label="账户设置" name="fifth">
+          <div style="margin-top: 15px;">
+            <el-input style="margin: 10px 0px" placeholder="请输入支付宝账号" v-model="alipayAccount">
+              <template slot="append">
+                <svg class="icon" style="color:#0c9fe4;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1037 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2424"><path d="M665.600029 614.4c70.4-128 96-249.6 96-249.6l-12.8 0 0 0L640.000029 364.8 524.800029 364.8 524.800029 275.2l281.6 0L806.400029 236.8 524.800029 236.8 524.800029 102.4l-128 0 0 134.4-256 0 0 38.4 256 0 0 89.6L179.200029 364.8l0 38.4 441.6 0c0 6.4 0 6.4-6.4 12.8C614.400029 460.8 582.400029 524.8 556.800029 576 230.400029 448 134.400029 524.8 108.800029 537.6c-217.6 153.6-12.8 345.6 19.2 339.2 230.4 51.2 377.6-44.8 480-166.4 6.4 6.4 12.8 6.4 19.2 6.4 70.4 38.4 409.6 198.4 409.6 198.4s0-140.8 0-192C985.600029 723.2 800.000029 659.2 665.600029 614.4zM499.200029 672c-160 204.8-352 140.8-384 128C38.400029 780.8 12.800029 640 108.800029 595.2c160-51.2 300.8 6.4 403.2 57.6C505.600029 665.6 499.200029 672 499.200029 672z" p-id="2425"></path></svg>              </template>
+            </el-input>
+            <el-input placeholder="点击刷新二维码，若没有反应请刷新页面，" @focus="WeChatFocus" v-model="WeChatAccount">
+              <template slot="append">
+                <svg class="icon" style="color: #62b900;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2292"><path d="M403.26656 621.184c-54.78912 30.41792-62.9248-17.08032-62.9248-17.08032L271.6672 444.48256c-26.42432-75.8528 22.87104-34.20672 22.87104-34.20672s42.30144 31.86688 74.39872 51.29728c32.08192 19.42528 68.64896 5.69344 68.64896 5.69344l448.96256-206.40768c-82.8416-102.66112-219.66848-169.78944-374.5792-169.78944-252.80512 0-457.71776 178.64704-457.71776 399.02208 0 126.76608 67.85536 239.58016 173.54752 312.70912l-19.05664 109.1328c0 0-9.28256 31.872 22.912 17.09056 21.94432-10.07616 77.88032-46.18752 111.1808-68.15232 52.352 18.176 109.37856 28.26752 169.17504 28.26752 252.77952 0 457.74336-178.64192 457.74336-399.02208 0-63.83616-17.26464-124.11904-47.86688-177.61792C778.83904 398.19776 446.14656 597.41696 403.26656 621.184L403.26656 621.184 403.26656 621.184 403.26656 621.184z" p-id="2293"></path></svg>              </template>
+            </el-input>
+
+          </div>
+          <div id="qcode" style="text-align: center"></div>
+        </el-tab-pane>
+
+
       </el-tabs>
+      <!--增加打印模板-->
+      <el-dialog title="增加打印机" :visible.sync="dialogFormVisiblePrinterPlus">
+        <el-form :model="printerForm" :label-width="formLabelWidth">
+          <el-form-item label="名称" >
+            <el-input
+              autofocus="true"
+              v-model="printerForm.name"
+              auto-complete="off"
+              @keyup="onkeyup(e)"
+              placeholder="请输入打印机名称"></el-input>
+          </el-form-item>
+          <el-form-item label="驱动">
+            <el-input
+              v-model="printerForm.driverName"
+              auto-complete="off"
+              placeholder="请输入驱动"></el-input>
+          </el-form-item>
+          <el-form-item label="状态" style="text-align: left">
+            <el-select
+              style="display: inline-block"
+              v-model="printerForm.status"
+              @change="printerTypeChange"
+              placeholder="请选择状态">
+              <el-option
+                v-for="(item,index) in printerStatus"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="描述">
+            <el-input v-model="printerForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input v-model="printerForm.remark" auto-complete="off" placeholder="请输入备注"></el-input>
+          </el-form-item>
+
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisiblePrinterPlus = false;">取 消</el-button>
+          <el-button type="primary" @click="plusPrinterConfirm">确定</el-button>
+        </div>
+      </el-dialog>
+      <!--增加打印模板-->
+      <el-dialog title="增加打印模板" :visible.sync="dialogFormVisiblePrinterTemplatePlus">
+        <el-form :model="printerTemplateForm" :label-width="formLabelWidth">
+          <el-form-item label="模板名" >
+            <el-input
+              autofocus="true"
+              v-model="printerTemplateForm.name"
+              placeholder="请输入打印机模板名"></el-input>
+          </el-form-item>
+          <el-form-item label="介绍" >
+            <el-input
+              autofocus="true"
+              v-model="printerTemplateForm.description"
+              placeholder="请输入打印机模板介绍"></el-input>
+          </el-form-item>
+          <el-form-item label="打印宽度">
+            <el-input
+              v-model="printerTemplateForm.printWidth"
+              auto-complete="off"
+              placeholder="请输入打印宽度"></el-input>
+          </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="dialogFormVisiblePrinterTemplatePlus = false;">取 消</el-button>
+          <el-button type="primary" @click="plusPrinterTemplateConfirm">确定</el-button>
+        </div>
+      </el-dialog>
     </div>
 </template>
 <script type="text/ecmascript-6">
+  import upload from '@/components/upload/upload'
 export default {
+  components: {
+    upload
+  },
   data() {
     return {
+      alipayAccount:'',
+      WeChatAccount:'',
       activeName: 'first',
+      printerTable:[],
+      printerTemplateTable:[],
+      printerTemplateForm:{},
+      startTimeSetting:'',
+      endTimeSetting:'',
+      startTimePreSetting:'',
+      endTimePreSetting:'',
+
+      printerStatus:[
+        {
+          label:'可用',
+          value:'enable'
+        },
+        {
+          label:'不可用',
+          value:'disable'
+        },
+      ],
       value4: true,
       value5: 100,
+      printerForm:{},
+      dialogFormVisiblePrinterPlus:false,
+      dialogFormVisiblePrinterTemplatePlus:false,
+      settingForm:{},
       value6: 100,
-      date1: '',
-      date2: '',
+      serviceStatus:'',
+      serviceRemindType:'',
+      indexBg:'',
+      BusinessTime:'',
+      appColor:'',
+      withDrawType:'',
+      printType:'',
+      promotionStatus:'',
+      birthdayDiscountStatus:'',
+      birthdayDiscountType:'',
+      birthdayDiscountNum:'',
+      birthdayMinimumChar:'',
+      saveSetting: false,
+      showIndexBg:false,
       form: {
         name: '',
         region: '',
@@ -188,208 +450,6 @@ export default {
         desc: ''
       },
       formLabelWidth: '80px',
-      options: [{
-        value: 'zhinan',
-        label: '指南',
-        children: [{
-          value: 'shejiyuanze',
-          label: '设计原则',
-          children: [{
-            value: 'yizhi',
-            label: '一致'
-            }, {
-            value: 'fankui',
-            label: '反馈'
-            }, {
-            value: 'xiaolv',
-            label: '效率'
-            }, {
-            value: 'kekong',
-            label: '可控'
-          }]
-        },{
-          value: 'daohang',
-          label: '导航',
-          children: [{
-            value: 'cexiangdaohang',
-            label: '侧向导航'
-            }, {
-            value: 'dingbudaohang',
-            label: '顶部导航'
-          }]
-        }]
-       },{
-        value: 'zujian',
-        label: '组件',
-        children: [{
-          value: 'basic',
-          label: 'Basic',
-          children: [{
-            value: 'layout',
-            label: 'Layout 布局'
-            }, {
-            value: 'color',
-            label: 'Color 色彩'
-            }, {
-            value: 'typography',
-            label: 'Typography 字体'
-            }, {
-            value: 'icon',
-            label: 'Icon 图标'
-            }, {
-            value: 'button',
-            label: 'Button 按钮'
-          }]
-        },{
-          value: 'form',
-          label: 'Form',
-          children: [{
-            value: 'radio',
-            label: 'Radio 单选框'
-            }, {
-            value: 'checkbox',
-            label: 'Checkbox 多选框'
-            }, {
-            value: 'input',
-            label: 'Input 输入框'
-            }, {
-            value: 'input-number',
-            label: 'InputNumber 计数器'
-            }, {
-            value: 'select',
-            label: 'Select 选择器'
-            }, {
-            value: 'cascader',
-            label: 'Cascader 级联选择器'
-            }, {
-            value: 'switch',
-            label: 'Switch 开关'
-            }, {
-            value: 'slider',
-            label: 'Slider 滑块'
-            }, {
-            value: 'time-picker',
-            label: 'TimePicker 时间选择器'
-            },{
-            value: 'date-picker',
-            label: 'DatePicker 日期选择器'
-            }, {
-            value: 'datetime-picker',
-            label: 'DateTimePicker 日期时间选择器'
-            }, {
-            value: 'upload',
-            label: 'Upload 上传'
-            }, {
-            value: 'rate',
-            label: 'Rate 评分'
-            }, {
-            value: 'form',
-            label: 'Form 表单'
-            }
-        ]
-          },{
-          value: 'data',
-          label: 'Data',
-          children: [
-            {
-            value: 'table',
-            label: 'Table 表格'
-            }, {
-            value: 'tag',
-            label: 'Tag 标签'
-            }, {
-            value: 'progress',
-            label: 'Progress 进度条'
-            }, {
-            value: 'tree',
-            label: 'Tree 树形控件'
-            }, {
-            value: 'pagination',
-            label: 'Pagination 分页'
-            }, {
-            value: 'badge',
-            label: 'Badge 标记'
-          }]
-        },{
-          value: 'notice',
-          label: 'Notice',
-          children: [{
-            value: 'alert',
-            label: 'Alert 警告'
-          }, {
-            value: 'loading',
-            label: 'Loading 加载'
-            }, {
-            value: 'message',
-            label: 'Message 消息提示'
-            }, {
-            value: 'message-box',
-            label: 'MessageBox 弹框'
-            }, {
-            value: 'notification',
-            label: 'Notification 通知'
-          }]
-        },{
-          value: 'navigation',
-          label: 'Navigation',
-          children: [{
-            value: 'menu',
-            label: 'NavMenu 导航菜单'
-            }, {
-            value: 'tabs',
-            label: 'Tabs 标签页'
-            }, {
-            value: 'breadcrumb',
-            label: 'Breadcrumb 面包屑'
-            }, {
-            value: 'dropdown',
-            label: 'Dropdown 下拉菜单'
-            }, {
-            value: 'steps',
-            label: 'Steps 步骤条'
-          }
-          ]
-        },{
-          value: 'others',
-          label: 'Others',
-          children: [{
-            value: 'dialog',
-            label: 'Dialog 对话框'
-            }, {
-            value: 'tooltip',
-            label: 'Tooltip 文字提示'
-            }, {
-            value: 'popover',
-            label: 'Popover 弹出框'
-            }, {
-            value: 'card',
-            label: 'Card 卡片'
-            }, {
-            value: 'carousel',
-            label: 'Carousel 走马灯'
-            }, {
-            value: 'collapse',
-            label: 'Collapse 折叠面板'
-          }
-          ]
-        }
-      ]
-      },{
-        value: 'ziyuan',
-        label: '资源',
-        children: [{
-          value: 'axure',
-          label: 'Axure Components'
-          }, {
-          value: 'sketch',
-          label: 'Sketch Templates'
-          }, {
-          value: 'jiaohu',
-          label: '组件交互文档'
-        }
-        ]
-      }
-    ],
       fileList2: [
         {
         name: 'food.jpeg',
@@ -400,30 +460,152 @@ export default {
     };
 
   },
-
+  created(){
+    this._pullPrinter()
+    this._pullPrinterTemplate()
+    this._pullSetting()
+  },
   methods:{
+    WeChatFocus(){
+      var obj = new WxLogin({
+        id:"qcode",    //div的id
+        appid: "wx687467655647657e",
+        scope: "snsapi_login",
+        redirect_uri: "http://y1975i1826.imwork.net/wechatCallback/bind",        //回调地址
+        state: "123456789",　　　　　　//参数，可带可不带
+        style: "",　　　　　　　//样式  提供"black"、"white"可选，默认为黑色文字描述
+        href: ""              //自定义样式链接，第三方可根据实际需求覆盖默认样式。
+      });
+    },
+    UID(n){
+      var name = n + this.getUID()
+      return name
+    },
+    listenUrlIndexBg(data){
+      this.settingForm.indexBg = data.name
+    },
+    endTimeSettingFun(){
+      this.BusinessTime = this.startTimeSetting.getHours()+
+        ':'+this.startTimeSetting.getMinutes()+
+        '-'+this.endTimeSetting.getHours()+
+        ':'+this.endTimeSetting.getMinutes()
+      console.log(this.BusinessTime);
+    },
+    _pullSetting(){
+      this.$request(this.url.restaurantSetting,'json',[{
+        feild: 'rid',
+        value: localStorage.getItem('rid'),
+        joinType: 'eq'
+      }]).then((res)=>{
+        this.settingForm = res.data.data[0]
+        console.log('this.settingForm',res.data.data[0]);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPrinter(){
+      let data=[
+        {
+          feild:'rid',
+          value:1524988356660049,
+          joinType:'eq'
+        }
+      ]
+      this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
+        console.log(res);
+        this.printerTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPrinterTemplate(){
+      let data=[
+        {
+          feild:'status',
+          value:'enable',
+          joinType:'eq'
+        }
+      ]
+      this.$request(this.url.printerTemplateComplexPageQuery,'json',data).then((res)=>{
+        console.log(res);
+        this.printerTemplateTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    printerTypeChange(){},
+    plusPrinterConfirm(){
+      this.printerForm.rid = localStorage.getItem('rid')
+      console.log('提交打印机数据',this.printerForm);
+      this.$request(this.url.printerAdd,'json',this.printerForm).then((res)=>{
+        console.log(res);
+        this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
+        this._pullPrinter()
+
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    plusPrinter(){
+      this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
+    },
+    plusPrinterTemplateConfirm(){
+      this.printerTemplateForm.rid = localStorage.getItem('rid')
+      console.log('提交打印机数据',this.printerTemplateForm);
+      this.$request(this.url.printerTemplateAdd,'json',this.printerTemplateForm).then((res)=>{
+        console.log(res);
+        this.dialogFormVisiblePrinterTemplatePlus = !this.dialogFormVisiblePrinterTemplatePlus;
+        this._pullPrinterTemplate()
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    plusPrinterTemplate(){
+      this.dialogFormVisiblePrinterTemplatePlus = !this.dialogFormVisiblePrinterTemplatePlus;
+    },
+    deletePrinterTemplate(row){
+      let data = {
+        id: row.id
+      }
+      this.$request(this.url.printerTemplateDelete,'form',data).then((res)=>{
+        console.log(res);
+        this._pullPrinterTemplate()
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    deletePrinter(row){
+      let data = {
+        id: row.id
+      }
+      console.log(data);
+      this.$request(this.url.printerDelete,'form',data).then((res)=>{
+        console.log(res);
+        this._pullPrinter()
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+
     handleClick(tab, event) {
     },
-    atSwitch(){
-      console.log("1");
-      const loading = this.$loading({
-        lock: true,
-        text: '正在暂停该餐桌服务……',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-
-      });
+    onSubmitSetting() {
       setTimeout(() => {
-        loading.close();
+        this.saveSetting = false
+      }, 3000);
+      let data = this.settingForm
+      this.$request(this.url.restaurantUpdate,'json',data).then((res)=>{
+        console.log(res);
         this.$message({
-          showClose: true,
-          message: '该餐桌二维码已经失效！',
-          type: 'success'
+          type: 'success',
+          message: '数据提交成功!'
         });
-      }, 2000);
-    },
-    onSubmit() {
-      console.log('submit!');
+        this._pullSetting()
+      }).catch((err)=>{
+        console.log(err);
+      })
+      console.log('this.settingForm!',this.settingForm);
+      this.saveSetting =!this.saveSetting
     },
     handleRemove(file, fileList) {
       console.log(file, fileList);
@@ -473,4 +655,8 @@ export default {
     width 618px
     right 94px
     bottom 25px
+
+
+  .el-tab-pane[data-v-60204f04]
+    width 100% !important
 </style>

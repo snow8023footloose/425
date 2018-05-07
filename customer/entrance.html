@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+</html>
+<script>
+  window.onload = function () {
+    console.log(window.location.href);
+    var URLentrance = window.location.href.split('?')[1].split(',');
+    localStorage.setItem('rid',JSON.stringify(URLentrance[0])) //保存rid
+    alert(localStorage.getItem('rid'));
+    localStorage.setItem('tid',JSON.stringify(URLentrance[1])) //保存tid
+    alert(localStorage.getItem('tid'));
+    if (/MicroMessenger/.test(window.navigator.userAgent)) {
+      // 微信
+      localStorage.setItem('clientType','weixin') //保存tid
+      window.location.href =
+        'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx7fdd9f5dd8f455f2&redirect_uri=http://xwfwlkj.natapp1.cc/&response_type=code&scope=snsapi_userinfo&state=1'+ '#wechat_redirect';
+
+    } else if (/AlipayClient/.test(window.navigator.userAgent)) {
+      // 支付宝 
+      localStorage.setItem('clientType','alipay') //保存tid
+      window.location.href =
+        'https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=2018011901975513&scope=auth_user&redirect_uri=http://xwfwlkj.natapp1.cc&state=1';
+    }
+    alert(localStorage.getItem('clientType'));
+  }
+</script>

@@ -1,12 +1,12 @@
 <template>
   <div class="shopcart">
-    <div class="message" :style="{background:SColor4}">使用优惠券支付更加便宜
+    <div class="message">使用优惠券支付更加便宜
       <u @click="serveCall">呼叫服务</u>>
     </div>
     <div class="cart-content">
       <div class="content-left" @click="cookBook($event)">
         <div class="logo-wrapper" @click.stop="toggleList">
-          <div class="logo" :class="{'highlight':totalCount<0}" :style="{background:SColor}">
+          <div class="logo" :class="{'highlight':totalCount<0}">
             <i class="icon-shopping_cart" :class="{'highlight':totalCount>0}"></i>
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
@@ -15,21 +15,22 @@
         <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空，嘤~</div>
       </div>
-      <div class="content-right" @click.stop.prevent="pay">
-        <div class="pay" :class="payClass" :style="{background:SColor2}">
+      <div class="content-right" @click.stop.prevent="prePay">
+        <div class="pay" :class="payClass" >
           {{payDesc}}
         </div>
       </div>
     </div>
     <div class="ball-container">
-      <transition name="drop"
-                  v-for="(ball,key) in balls"
-                  @before-enter="beforeDrop"
-                  @enter="dropping"
-                  :key="key"
-                  @after-enter="afterDrop">
+      <transition
+        name="drop"
+        v-for="(ball,key) in balls"
+        @before-enter="beforeDrop"
+        @enter="dropping"
+        :key="key"
+        @after-enter="afterDrop">
         <div v-show="ball.show" class="ball" v-bind:css="false">
-          <div class="inner inner-hook" :style="{background:SColor}"></div>
+          <div class="inner inner-hook"></div>
         </div>
       </transition>
     </div>
@@ -62,37 +63,105 @@
       </div>
     </div>
     </transition>
-    <!--<transition name="fade">-->
-      <!--<div class="list-mask" @click="hideList" v-show="listShow"></div>-->
-    <!--</transition>-->
+    <transition name="fade" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
+      <div style="color: white" v-show="prePayShow" class="detail animated">
+        <div class="detail-wrapper clearfix">
 
-    <el-dialog
-      width="95%"
-      title="规格"
-      :visible.sync="dialogFormVisible"
-      :append-to-body="true"
-      style="z-index: 9999"
-    >
-      <el-form v-for="(item,index) in specs" label-position="left">
-        <el-form-item :label="item.name" :label-width="formLabelWidth">
-          <el-radio-group size="mini" v-model="selectedSkuArr[index]">
-            <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
-          </el-radio-group>
-        </el-form-item>
-      </el-form>
-      <el-form label-position="left">
-        <el-form-item label="标签" :label-width="formLabelWidth">
-          <!--<input type="radio" name="user.sex" id="male" value="男" >-->
-          <el-checkbox-group size="mini" v-model="selectedTags">
-            <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.id" border></el-checkbox>
-          </el-checkbox-group>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="confirmSku">确 定</el-button>
+          <div class="scroll" style="height: 490px" ref="s-scroll">
+            <div class="s-scroll" style="background: rgba(255,255,255,0);width: 100%;margin: 0px auto;">
+              <h1 class="name">确认订单</h1>
+              <!--<div class="favorite">
+                <span class="icon-favorite" :class="{'active':favorite}" @click="toggleFavorite()"></span>
+                <span class="text">{{favoriteText}}</span>
+              </div>-->
+              <!--<div class="star-wrapper">-->
+              <!--<star :size="48" :score="seller.score"></star>-->
+              <!--</div>-->
+              <div class="headertitle">
+                <div class="line"></div>
+                <div class="text">备注</div>
+                <div class="line"></div>
+              </div>
+
+              <div class="bulletin">
+                <el-input
+                  type="textarea"
+                  :rows="2"
+                  placeholder="请输入备注信息"
+                  v-model="markTxt">
+                </el-input>
+              </div>
+
+
+
+              <div class="headertitle">
+                <div class="line"></div>
+                <div class="text">账单信息</div>
+                <div class="line"></div>
+              </div>
+
+              <div class="info">
+
+                <p class="content">优惠金额：{{discountMoney}}￥</p>
+                <p class="content">应付金额：{{needPay}}￥</p>
+                <p class="content">实付金额：{{realPay}}￥</p>
+                <p class="content">节省：{{needPay-realPay}}￥</p>
+                <ul>
+                  <li class="info-item"></li>
+                </ul>
+              </div>
+
+              <div class="headertitle">
+                <div class="line"></div>
+                <div class="text">优惠信息</div>
+                <div class="line"></div>
+              </div>
+
+              <div class="info">
+                <ul>
+                  <li class="info-item"></li>
+                </ul>
+              </div>
+
+
+              <div class="headertitle">
+                <div class="line"></div>
+                <div class="text">订单详情</div>
+                <div class="line"></div>
+              </div>
+
+              <div class="info">
+
+                <!--<p class="content">订单状态：{{seller.description}}</p>-->
+                <!--<p class="content">订单号：{{seller.description}}</p>-->
+                <!--<p class="content">支付方式：{{seller.description}}</p>-->
+                <!--<p class="content">下单时间：{{seller.description}}</p>-->
+
+                <ul>
+                  <li class="info-item" v-for="item in cartList">
+                    <p> {{item.dishes.name}} </p>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="confirmPayBox"
+             style="
+             background: rgba(255,255,255,0);
+             text-align: center;
+             width: 100%;
+             position: fixed;
+             bottom: 30px;
+          ">
+          <i style="font-size: 27px;position: fixed;right: 30px;top: 30px;" @click="hidePrePayShow" class="icon-close"></i>
+
+          <el-button style="margin-left: 20px; width: 280px" type="success" @click="confirmPay" round>确认支付</el-button>
+        </div>
       </div>
-    </el-dialog>
+
+    </transition>
   </div>
 </template>
 
@@ -101,9 +170,11 @@
   import BScroll from 'better-scroll';
   import cartcontrol from '@/components/cartcontrol/cartcontrol';
 const ERR_OK = 0
+
   export default {
     props: {
       selectFoods: {
+
         type: Array,
         default() {
           return [
@@ -125,6 +196,13 @@ const ERR_OK = 0
     },
     data() {
       return {
+        markTxt:'',
+        confirmOnce:0,
+        cartList:[],
+        discountMoney:'',
+        needPay:'',
+        realPay:'',
+        prePayShow:false,
         balls: [
           {
             show: false
@@ -145,22 +223,98 @@ const ERR_OK = 0
         dropBalls: [],
         fold: true,
         book: false,
-        SColor:'SColor',
-        SColor2:'SColor2',
-        SColor4:'SColor4',
         confirmMessage: {
           is: 0
         },
         getFoods:{},
+
         specs:[],
         selectedTags:[],
         selectedSkuArr : [],
         dialogFormVisible:false,
         formLabelWidth: '50px',
       };
-
+    },
+    watch:{
+      selectFoods(val){
+        this.confirmOnce = 0
+      }
     },
     methods: {
+      prePay() {
+        // if (this.totalPrice < this.minPrice) {
+        //   return;
+        // }
+
+        // if(this.confirmOnce === 0){
+          this.prePayShow = !this.prePayShow
+          let data= {
+            // restaurantId: localStorage.getItem('rid'),
+            restaurantId: 1524988356660049,
+            orderType:'single',
+            // tableId: localStorage.getItem('tid')
+            tableId: 12
+          }
+
+          this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+            this.cartList = res.data.data.cartList
+            console.log('this.cartList',this.cartList);
+            this.discountMoney = res.data.data.discountMoney
+            this.needPay = res.data.data.needPay
+            this.realPay = res.data.data.realPay
+            console.log('confirmOrder',res);
+
+            alert(this.needPay)
+
+            this.$nextTick(() => {
+              if (!this.scroll) {
+                this.scroll = new BScroll(this.$refs['list-content'], {
+                  click: true
+                });
+              } else {
+                this.scroll.refresh();
+              }
+            });
+            // window.alert(`支付${this.totalPrice}元`);
+          }).catch((err)=>{
+            console.log(err);
+          })
+        //   this.confirmOnce ++;
+        // }else {
+        //   this.prePayShow = !this.prePayShow
+        // }
+        // window.alert(`支付${this.totalPrice}元`);
+      },
+      confirmPay(){
+
+        let data= {
+          // restaurantId: localStorage.getItem('rid'),
+          restaurantId: 1524988356660049,
+          orderType:'single',
+          payType:'alipay-online',
+          serverType:'real-time',
+          // tableId: localStorage.getItem('tid')
+          tableId: 12
+        }
+        this.$request(this.url.payOrder,'form',data).then((res)=>{
+          console.log('confirmOrder',res);
+          console.log(res.data);
+          this.$message({
+            type: 'success',
+            message: '安全支付'
+          });
+
+          const div = document.createElement('div');
+          div.innerHTML = res.data;
+          document.body.appendChild(div);
+          div.children[0].submit();
+        }).catch((err)=>{
+          console.log(err);
+        })
+      },
+      hidePrePayShow(){
+        this.prePayShow = !this.prePayShow
+      },
       deleteSelect(){
         let data = {
           did: this.getFoods.id,
@@ -380,12 +534,7 @@ const ERR_OK = 0
           food.count = 0;
         });
       },
-      pay() {
-        if (this.totalPrice < this.minPrice) {
-          return;
-        }
-        window.alert(`支付${this.totalPrice}元`);
-      }
+
     },
     computed: {
       totalPrice() {
@@ -441,15 +590,7 @@ const ERR_OK = 0
       }
     },
     created () {
-      // this.$axios.get('../api/seller').then((response) => {
-      //   var response = response.data
-      //   if (response.errno === ERR_OK) {
-      //     this.seller = response.data
-      //     this.SColor = this.seller.sysColor[1].plan
-      //     this.SColor2 = this.seller.sysColor[3].plan
-      //     this.SColor4 = this.seller.sysColor[4].plan
-      //   }
-      // });
+
     },
     components: {
       cartcontrol
@@ -637,4 +778,22 @@ const ERR_OK = 0
       background-color rgb(0,160,220)
       transition all 0.4s linear
 
+
+.detail
+  position: fixed
+  z-index: 100
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  /*overflow: hidden*/
+  transition: all 0.5s
+  backdrop-filter: blur(10px)
+  background: rgba(7, 17, 27, 0.8)
+  .detail-wrapper
+    display flex
+    width: 100%
+    height: 589px
+    margin-top: 30px
+    justify-content center
 </style>

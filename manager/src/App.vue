@@ -457,7 +457,7 @@ td
 
 .person-close1
   right 156px !important
-  top 23px !important
+  top -34px !important
 
 .el-menu-item [class^=el-icon-]
   margin-right -5px
@@ -618,12 +618,25 @@ td
         overflow-y scroll
 
   .goodse
-    top: 15px !important
-    left: 34px !important
+    top: 0px !important
+    left: 0px !important
+
+  .tableButtonGroup[data-v-19dca008]
+    top 10px !important
+
+  .tableButtonGroup1
+    button[data-v-19dca008]
+      margin-left: 2px !important
+      position: fixed !important
+      right: 5% !important
+      bottom: 8px !important
+
+  .singleContainer[data-v-19dca008]
+    height auto
 
   .tableButtonGroup1
     left: 34px !important
-    bottom: 10px !important
+    bottom: -10px !important
 
   .transition-box
     margin-bottom: 10px
