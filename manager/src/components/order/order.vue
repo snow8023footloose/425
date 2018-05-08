@@ -145,7 +145,7 @@
               fixed="left"
               prop="id"
               label="序号"
-              width="80"
+              width="100"
             >
             </el-table-column>
             <el-table-column

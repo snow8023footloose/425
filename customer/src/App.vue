@@ -38,31 +38,36 @@ export default {
       SColor: 'SColor'
     }
   },
-  mounted() {
-    alert('进入app2',window.location.href,document.location.href);
-  },
   created () {
-    // let dataTest={
-    //   thirdId:2088112484988593
+    // alert(this.$route.query.auth_code);
+    // alert(this.$route.query.state);
+    // let dataLoginAli = {
+    //   auth_code: this.$route.query.auth_code,
+    //   state: this.$route.query.state
     // }
-    //   this.$request(this.url.login2,'form',dataTest).then((res)=>{
-    //     console.log(res);
-    //   }).catch((err)=>{
-    //   console.log(err);
-    // })
+    let loginData = {};
 
-
-    alert(this.$route.query.auth_code);
-    alert(this.$route.query.state);
-    let dataLogin = {
-      auth_code: this.$route.query.auth_code,
-      state: this.$route.query.state
+    let clientType = localStorage.getItem('clientType');
+    if(clientType && clientType == 'wechat'){
+      loginData.auth_code = this.$route.query.code;
+      loginData.state = this.$route.query.state;
+      alert(loginData.auth_code);
+      alert(loginData.state)
+      this.$request(this.url.loginWechat,'form',loginData).then((res)=>{
+        alert(res)
+        alert('欢迎光临'+res.data.data.nickname);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    } else {
+      loginData.auth_code=this.$route.query.auth_code;
+      loginData.state=this.$route.query.state;
+      this.$request(this.url.loginAlipay,'form',loginData).then((res)=>{
+        alert('欢迎光临'+res.data.data.nickname);
+      }).catch((err)=>{
+        console.log(err);
+      })
     }
-    this.$request(this.url.loginAlipay,'form',dataLogin).then((res)=>{
-      alert('欢迎光临'+res.data.data.nickname);
-    }).catch((err)=>{
-      console.log(err);
-    })
     this.$request(this.url.restaurant2,'json',[{
       feild:'id',
       value:1524988356660049,

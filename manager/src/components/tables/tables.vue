@@ -144,17 +144,19 @@
                         class="food"
                         v-for="(food,key) in item.dishes"
                         :key="key">
-                        <h4 style="text-align: left;font-weight: lighter; width: 100px" class="name">{{food.name}}</h4>
+                        <h4 style="text-align: left;font-weight: lighter; width: 100px" class="name">{{food.dishes.name}}</h4>
+
+                        x{{food.num}}
                         <div class="price">
-                          <span>￥{{food.normalPrice*food.count}}</span>
+                          <span>￥{{food.totalPrice}}</span>
                         </div>
                       </li>
                     </ul>
                   </div>
                 </div>
-                <span class="price" style="font-size: 20px;font-weight: bolder;margin-right: 85px" :class="{'highlight':item.needPay>0}">总计 ￥{{item.needPay}}</span>
+                <span class="price" style="font-size: 20px;font-weight: bolder;margin-right: 85px">总计 ￥{{item.needPay.toFixed(2)}}</span>
                 <!--<el-button size="mini" type="text" @click="minusCustomer">删除</el-button>-->
-                <el-button type="success" size="mini" @click="singleAccounts">结账</el-button>
+                <el-button type="success" @click="singleAccounts">结账</el-button>
               </div>
               <el-radio-button slot="reference" icon="el-icon-document" @click.native.stop="selectOrder(item,$event)" :label="index">订单{{index+1}}</el-radio-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
@@ -165,7 +167,9 @@
         </el-radio-group>
       </span>
       <el-button
+        id="splusOrder"
         @click="plusOrder"
+        type="success"
         icon="el-icon-plus"
         round
       >下单</el-button>
@@ -210,7 +214,7 @@
         <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
             <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
-              <h1 class="goods-title">{{goods.name}}</h1>
+              <h1 class="goods-title">{{item.name}}</h1>
               <ul class="goodsUl">
                 <li ref="food-li" v-for="(food,key) in item.foods" :key="key" class="food-item border-1px">
                   <div class="icon">
@@ -300,7 +304,7 @@
       close-on-press-escape
       append-to-body
       title="订单确认" :visible.sync="dialogConfirmOrder">
-      <div class="shopcart-list animated" v-show="listShow">
+      <div class="shopcart-list animated" v-show="dialogConfirmOrder">
         <!--<div class="list-header" @click.stop="toggleList">
           <h1 class="title">购物车</h1>
           <span class="empty" @click="empty">清空</span>
@@ -313,25 +317,21 @@
         </el-input>
 
         <div class="list-content" ref="list-content">
-          <ul style="padding: 0px">
-            <li style="display: flex;align-items:baseline" class="food" v-for="(food,key) in selectFoods" :key="key">
-              <h3 class="name" style="font-weight: lighter;flex-grow: 1; width: 200px">{{food.name}}</h3>
-              <div class="price" style="flex-grow: 1;">
-                <span>￥{{food.normalPrice*food.count}}</span>
-              </div>
-              <div class="cartcontrol-wrapper" >
-                <cartcontrol :food="food"></cartcontrol>
-              </div>
+          <ul>
+            <li class="orderList info-item" v-for="item in cartList">
+              <span> {{item.dishes.name}} </span> <span>x{{item.num}} </span><span style="text-align: right">￥{{item.totalPrice}} </span>
             </li>
           </ul>
         </div>
         <div class="list-header" @click.stop="toggleList" style="display: flex;justify-content: flex-end;padding: 0px 6px;margin-bottom: 20px">
           <span class="empty" @click="empty">清空</span>
         </div>
-        <div style="display: flex;justify-content: space-between">
-          <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{totalPrice}}</span>
+        <div>
+          <div class="price" style="font-size: 20px;text-align: center">优惠 ￥{{discountMoney}}</div>
+          <div class="price" style="font-size: 20px;text-align: center">需付 ￥{{needPay}}</div>
+          <div class="price" style="font-size: 20px;font-weight: bolder;text-align: center">总计 ￥{{realPay}}</div>
           <el-button-group>
-            <el-button type="success" round @click="pay">结&nbsp;&nbsp;&nbsp;算</el-button>
+            <el-button style="position: fixed;bottom: 30px;left: 50%;width: 30%;margin-left: -15%" type="success" round @click="confirmOrder">确认下单</el-button>
           </el-button-group>
         </div>
       </div>
@@ -509,6 +509,10 @@ const ERR_OK = 0
 export default {
   name: 'tables',
   data: () => ({
+    cartList:[],
+    discountMoney:'',
+    needPay:'',
+    realPay:'',
     tableShow:0,
     confirmMessage: {
       is: 0
@@ -516,6 +520,7 @@ export default {
     specs:[],
     getFoods:{},
     selectedSpec:'',
+    screenWidth: document.body.clientWidth,
     getData:{},
     selectedTags:[],
     selectedSkuArr : [],
@@ -591,6 +596,7 @@ export default {
     ],
     value6:'',
     options4: [],
+
     restaurantTagRes:[],
     selectSingleOrder: 0,
     singleOrder:[],
@@ -710,15 +716,19 @@ export default {
         if(this.selectedSkuArr.length === i){
           return selectedSkuArr
         }else {
-          console.log('attrs',this.specs.attrs);
-          for(var j=0;j<this.specs[i].attrs.length;j++){
-            // console.log(this.specs[i].attrs);
-            if(this.selectedSkuArr.length === i){
-              continue
-            }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
-              selectedSkuArr.push(this.specs[i].attrs[j].id)
+          console.log(this.specs.attrs);
+          if(this.specs.attrs === undefined){
+          }else{
+            for(var j=0;j<this.specs[i].attrs.length;j++){
+              // console.log(this.specs[i].attrs);
+              if(this.selectedSkuArr.length === i){
+                continue
+              }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
+                selectedSkuArr.push(this.specs[i].attrs[j].id)
+              }
             }
-          }
+          };
+
         }
       }
     },
@@ -878,99 +888,7 @@ export default {
       }
 
     },
-    // 餐桌特性暂存
-    // handleClose1(tag,index) {
-    //   console.log(tag);
-    //   this.$confirm('是否删除该分类，此类菜品将无分类, 是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     let data = {
-    //       id:tag.id
-    //     }
-    //     this.$request(this.url.dishesCategory3,'form',data).then((res)=>{
-    //       this.$message({
-    //         type: 'success',
-    //         message: '数据提交成功!'
-    //       });
-    //       this.dynamicTags1.splice(this.dynamicTags1.indexOf(tag), 1);
-    //     }).catch((err)=>{
-    //       this.$message({
-    //         type: 'info',
-    //         message: '数据提交失败!'
-    //       });
-    //     })
-    //
-    //     this.$message({
-    //       type: 'success',
-    //       message: '删除成功!'
-    //     });
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已取消删除'
-    //     });
-    //   });
-    // },
-    // showInput1() {
-    //   this.inputVisible1 = true;
-    //   this.$nextTick(_ => {
-    //     this.$refs.saveTagInput1.$refs.input.focus();
-    //   });
-    // },
-    // editCategory(tag,index){
-    //   // console.log(tag.zindex);
-    //
-    //   console.log(index);
-    //
-    //   this.toDynamicTags1 = Object.assign({},tag);
-    //   this.categoryIndex = index;
-    //   console.log(this.toDynamicTags1);
-    //   this.dialogFormVisibleCategoryEdit = !this.dialogFormVisibleCategoryEdit
-    // },
-    // handleInputConfirm1() {
-    //   let inputValue1 = this.inputValue1;
-    //   let repeatNum1  = this.repeatNum1
-    //
-    //   var lastNumber = 0
-    //   if(this.dynamicTags2 === null){
-    //     lastNumber = 1
-    //   }else{
-    //     lastNumber = this.dynamicTags2.length+1
-    //   }
-    //   console.log(this.dynamicTags1);
-    //   if (inputValue1){
-    //     if(repeatNum1 === false){
-    //       alert('提示：同名项，不可建立')
-    //     }else {
-    //       let data = {
-    //         zindex: lastNumber,
-    //         name: inputValue1,
-    //       }
-    //       this.$request(this.url.dishesCategory1,'json',data).then((res)=>{
-    //         this.$message({
-    //           type: 'success',
-    //           message: '数据提交成功!'
-    //         });
-    //       }).catch((err)=>{
-    //         this.$message({
-    //           type: 'info',
-    //           message: '数据提交失败!'
-    //         });
-    //         console.log(err);
-    //       })
-    //       this.dynamicTags1.push(
-    //         {
-    //           zindex: lastNumber,
-    //           name: inputValue1,
-    //         }
-    //       );
-    //     }
-    //   }
-    //   this.inputVisible1 = false;
-    //   this.inputValue1 = '';
-    // },
+
     selectFoodss(){
       let foods = [];
       this.goods.forEach((good) => {
@@ -1001,51 +919,50 @@ export default {
       }
     },
     plusOrder(){
-      let i = this.orderCollection.length
-      // console.log(this.selectFoods,'获得选择li');
-      var dish = Object.assign([],this.selectFoods);
-      this.orderCollection.push(
-        {
-          id:i+1,
-          needPay:this.totalPrice,
-          dishes: dish
-        }
-      )
-      this.selectFoods.forEach((food) => {
-        food.count = 0;
-      });
-      console.log('this.orderCollection',this.orderCollection);
-      console.log('this.orderCollection',this.selectFoods);
-      // let data = {
-      //   restaurantId:'1231564654679',
-      //   payType:'underline',//wechat-online,underline
-      //   orderType:'multi',
-      //   tableId: this.toAccountBox.id,
-      // }
-      // let json = [
-      //   {
-      //     feild:'time',
-      //     value:'2018-04-04',
-      //     joinType:'eq'
-      //   },
-      //   {
-      //     feild:'status',
-      //     value:'disable',
-      //     joinType:'eq'
-      //   },
-      // ]
-      // this.$request(this.url.orderComputer,'form',data).then((res)=> {
-      //   this.$message({
-      //     type: 'success',
-      //     message: '数据提交成功!'
-      //   });
-      //   console.log(res);
-      // }).catch((err)=>{
+      console.log(this.selectFoods);
+      // if(){
       //   this.$message({
       //     type: 'info',
-      //     message: '数据提交失败!'
+      //     message: '未选中菜品!'
       //   });
-      // })
+      // }
+      let i = this.orderCollection.length
+      // console.log(this.selectFoods,'获得选择li');
+      this.dialogConfirmOrder = !this.dialogConfirmOrder
+      let data= {
+        // restaurantId: localStorage.getItem('rid'),
+        restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        // tableId: localStorage.getItem('tid')
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        this.cartList = res.data.data.cartList
+        console.log('this.cartList',this.cartList);
+        this.discountMoney = res.data.data.discountMoney.toFixed(2)
+        this.needPay = res.data.data.needPay.toFixed(2)
+        this.realPay = res.data.data.realPay.toFixed(2)
+        console.log('confirmOrder',res);
+        // alert(this.needPay)
+        // this.$nextTick(() => {
+        //   if (!this.scroll) {
+        //     this.scroll = new BScroll(this.$refs['s-scroll'], {
+        //       click: true
+        //     });
+        //   } else {
+        //     this.scroll.refresh();
+        //   }
+        // });
+        // window.alert(`支付${this.totalPrice}元`);
+      }).catch((err)=>{
+        console.log(err);
+      })
+
+      // this.selectFoods.forEach((food) => {
+      //   food.count = 0;
+      // });
+      console.log('this.orderCollection',this.orderCollection);
+      console.log('this.orderCollection',this.selectFoods);
     },
 
     selectOrder(item,event){
@@ -1157,6 +1074,21 @@ export default {
       this._pullTable()
     },
 
+    confirmOrder(){
+      let i = this.orderCollection.length
+      this.dialogConfirmOrder = !this.dialogConfirmOrder
+      var dish = Object.assign([],this.cartList);
+      this.orderCollection.push(
+        {
+          id:i+1,
+          needPay:this.totalPrice,
+          dishes: dish
+        }
+      )
+      this.selectFoods.forEach((food) => {
+        food.count = 0;
+      });
+    },
 
     singleAccounts(){
       this.dialogConfirmOrder = !this.dialogConfirmOrder
@@ -1280,6 +1212,7 @@ export default {
     },
     changeTable(){
       this.toAccountBox.status = 'enable'
+      console.log(this.toAccountBox);
       let data = this.toAccountBox
       console.log(data);
       this.$request(this.url.table4, 'json', data).then((res)=>{
@@ -1288,7 +1221,7 @@ export default {
           message: '数据提交成功!'
         });
         this._pullTable()
-        this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange
+        // this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange
         // this.dishesDataTable.push(data);
         // console.log(res);
       }).catch((err)=>{
@@ -1327,27 +1260,15 @@ export default {
       this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
     },
     handleEdit(){
-      // let data = this.tableForm
-      // console.log(data);
-      // this.$request(this.url.table4, 'json', data).then((res)=>{
-      //   this.$message({
-      //     type: 'success',
-      //     message: '数据提交成功!'
-      //   });
-      //   // this.dishesDataTable.push(data);
-      //
-      //   this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
-      //   console.log(res);
-      // }).catch((err)=>{
-      //   this.$message({
-      //     type: 'info',
-      //     message: '数据提交失败!'
-      //   });
-      //   console.log(err);
-      // })
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
     selectTable(item,index){
+
+      if(this.screenWidth < 760){
+        var splusOrder = document.getElementById('splusOrder')
+        console.log(splusOrder);
+
+      }
       this.toAccountBox = item;
       this.tableForm = item
       this.tid = item.id
@@ -1463,8 +1384,13 @@ export default {
     this.list = this.states.map(item => {
       return { value: item, label: item };
     });
+
+
   },
   created() {
+
+
+
     console.log('1');
     let data1 = [{
       feild: 'status',
@@ -1801,5 +1727,22 @@ export default {
     background-color: #fff
 
 
-
+.orderList
+  display: flex
+  justify-content: space-between
+  span:nth-child(1)
+    font-size 18px
+    font-weight bolder
+    display block
+    width 65%
+  span:nth-child(2)
+    font-size 18px
+    font-weight bolder
+    display block
+    width 20%
+  span:nth-child(3)
+    font-size 18px
+    font-weight bolder
+    display block
+    width 25%
 </style>

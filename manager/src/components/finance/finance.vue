@@ -4,7 +4,7 @@
       v-model="activeName"
       @tab-click="handleClick"
     >
-      <el-tab-pane label="收益统计概要" name="first">
+      <el-tab-pane label="收益统计" name="first">
 
         <!--Schart 表格-->
         <schart :canvasId="canvasId"
@@ -22,13 +22,13 @@
           <span class="total">{{mouthTotal}}</span>元</span>
 
 
-        <el-button-group class="radio">
+        <el-button-group v-if="buttonShow === 0" class="radio">
           <el-button size="mini" @click="radioChange1">柱状图</el-button>
           <el-button size="mini" @click="radioChange2">折线图</el-button>
         </el-button-group>
         <el-button type="success" @click="withDraw" round>提现</el-button>
       </el-tab-pane>
-      <el-tab-pane label="消费统计详情" name="second">
+      <el-tab-pane label="消费统计" name="second" :disabled="true">
         <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
           <el-tab-pane label="餐桌" name="first">暂无信息……</el-tab-pane>
           <el-tab-pane label="菜品" name="second">暂无信息……</el-tab-pane>
@@ -78,10 +78,12 @@ export default {
     msg: '财务信息！',
     activeName: 'first',
     activeName2: 'first',
+    screenWidth: document.body.clientWidth,
     canvasId: 'myCanvas',
     type: 'bar',
     width: 500,
-    height: 400,
+    buttonShow:0,
+    height: 300,
     loginShow:true,
     dialogFormVisible:false,
     radio: '1',
@@ -103,9 +105,44 @@ export default {
       fillColor: '#1E9FFF',           // 默认填充颜色
       contentColor: '#eeeeee',        // 内容横线颜色
       axisColor: '#666666',           // 坐标轴颜色
-
     }
   }),
+  mounted () {
+    const that = this
+    window.onresize = () => {
+      return (() => {
+        window.screenWidth = document.body.clientWidth
+        that.screenWidth = window.screenWidth
+      })()
+    }
+  },
+  watch: {
+    screenWidth (val) {
+      if (!this.timer) {
+        this.screenWidth = val
+        this.timer = true
+        let that = this
+        setTimeout(function () {
+          // that.screenWidth = that.$store.state.canvasWidth
+          console.log(that.screenWidth)
+          if(that.screenWidth<721){
+            console.log('1');
+
+          }
+          // that.init()
+          that.timer = false
+        }, 400)
+      }
+    }
+  },
+  created(){
+    if(this.screenWidth < 721){
+      this.height = 220
+      this.width = 450
+      this.type = 'line'
+      this.buttonShow = 1
+    }
+  },
   methods: {
     handleClick(tab, event) {
     },

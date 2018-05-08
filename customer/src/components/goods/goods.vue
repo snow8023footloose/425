@@ -16,7 +16,7 @@
         <i class="icon-keyboard_arrow_right button-icon"></i>
       </div>
       <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
-        <ul class="foods-ul">
+        <ul class="foods-ul" id="foods-ul">
           <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
             <h1 class="goods-title">{{item.name}}</h1>
             <ul>
@@ -78,7 +78,6 @@
         </el-form>
         <el-form size="mini" label-position="left">
           <el-form-item label="标签" label-width="50px">
-            <!--<input type="radio" name="user.sex" id="male" value="男" >-->
             <el-checkbox-group v-model="selectedTags">
               <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.name" border></el-checkbox>
             </el-checkbox-group>
@@ -286,47 +285,6 @@ export default {
       this.$nextTick(() => {
         this.$refs['shop-cart'].drop(this.getData.event);
       });
-      // // console.log(this.specs);
-      // // console.log(this.selectedSkuArr);
-      // console.log(this.selectedTags);
-      // if(!this.transformArrySku()){
-      //   this.$message({
-      //     type: 'info',
-      //     message: '亲，没有选择规格哦~'
-      //   });
-      //   return
-      // }
-      // // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
-      // // console.log(this.trueLabelofTags+'trueLabelofTags');
-      // let attrJoin = this.transformArrySku().join('_');
-      // // this.transformArryTags()
-      // // console.log(this.transformArryTags());
-      // let attrTags = this.selectedTags.join(',');
-      // let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
-      // let data = {
-      //   num:1,
-      //   sid: selectedSkuObj.id,
-      //   did: this.getFoods.id,
-      //   rid: this.getFoods.rid,
-      //   tid: 12,
-      //   type: 'single',
-      //   tagIds: attrTags
-      // }
-      // this.$request(this.url.cart1,'json',data).then((res)=>{
-      //   console.log(res);
-      // }).catch((err)=>{
-      //   console.log(err);
-      // })
-      // if (!this.getFoods.count) {
-      //   Vue.set(this.getFoods, 'count', 1);
-      // } else {
-      //   this.getFoods.count++;
-      // }
-      //
-      // this.dialogFormVisible = !this.dialogFormVisible
-      // this.$nextTick(() => {
-      //   this.$refs['shop-cart'].drop(this.getData.event);
-      // });
     },
     incrementTotalAdd(g) {
       this.getData = g
@@ -653,10 +611,10 @@ export default {
     flex: 0 0 80px
     position: absolute
     bottom 30%
-    width 350px
-    left -175px
+    width 90%
+    left -47%
     margin-left 50%
-    padding 12px
+    padding 8px
     background: rgba(255,255,255,0.9)
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3)
     z-index 30
@@ -670,7 +628,7 @@ export default {
         float left
         padding: 0 5px
         line-height: 14px
-        margin 10px
+        margin 6px
         .icon
           display: inline-block
           vertical-align: top
@@ -687,15 +645,13 @@ export default {
 
 
   .foods-wrapper
-    background url("bg-1.jpg")
     flex: 1
     .foods-ul
-      background url("bg-1.jpg")
       background-size 100%
       .food-list
         padding-top 20px
         margin-top 25px
-        background rgba(255,255,255,0.7)
+        background rgba(255,255,255,0.75)
         border-radius 10px
         .goods-title
           left 0
@@ -773,4 +729,8 @@ export default {
 
   .el-dialog__body
     padding 7px 20px !important
+
+
+
+
 </style>

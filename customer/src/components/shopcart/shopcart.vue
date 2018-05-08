@@ -1,7 +1,7 @@
 <template>
   <div class="shopcart">
     <div class="message">使用优惠券支付更加便宜
-      <u @click="serveCall">呼叫服务</u>>
+      <!--<u @click="serveCall">呼叫服务</u>>-->
     </div>
     <div class="cart-content">
       <div class="content-left" @click="cookBook($event)">
@@ -13,7 +13,7 @@
         </div>
         <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
         <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>
-        <div class="desc" v-show="totalCount===0">亲，购物车为空，嘤~</div>
+        <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
       </div>
       <div class="content-right" @click.stop.prevent="prePay">
         <div class="pay" :class="payClass" >
@@ -102,16 +102,20 @@
 
               <div class="info">
 
-                <p class="content">优惠金额：{{discountMoney}}￥</p>
-                <p class="content">应付金额：{{needPay}}￥</p>
-                <p class="content">实付金额：{{realPay}}￥</p>
-                <p class="content">节省：{{needPay-realPay}}￥</p>
                 <ul>
-                  <li class="info-item"></li>
+                  <li class="orderList info-item">
+                    <span> 优惠金额 </span> <span> </span><span>￥{{discountMoney}} </span>
+                  </li>
+                  <li class="orderList info-item">
+                    <span> 应付金额 </span> <span> </span><span>￥{{needPay}} </span>
+                  </li>
+                  <li class="orderList info-item">
+                    <span> 实付金额 </span> <span></span><span style="font-size: 16px;font-weight: bolder">￥{{realPay}} </span>
+                  </li>
                 </ul>
               </div>
 
-              <div class="headertitle">
+              <!--<div class="headertitle">
                 <div class="line"></div>
                 <div class="text">优惠信息</div>
                 <div class="line"></div>
@@ -121,7 +125,7 @@
                 <ul>
                   <li class="info-item"></li>
                 </ul>
-              </div>
+              </div>-->
 
 
               <div class="headertitle">
@@ -138,12 +142,11 @@
                 <!--<p class="content">下单时间：{{seller.description}}</p>-->
 
                 <ul>
-                  <li class="info-item" v-for="item in cartList">
-                    <p> {{item.dishes.name}} </p>
+                  <li class="orderList info-item" v-for="item in cartList">
+                    <span> {{item.dishes.name}} </span> <span>x{{item.num}} </span><span>￥{{item.totalPrice}} </span>
                   </li>
                 </ul>
               </div>
-
             </div>
           </div>
         </div>
@@ -157,7 +160,7 @@
           ">
           <i style="font-size: 27px;position: fixed;right: 30px;top: 30px;" @click="hidePrePayShow" class="icon-close"></i>
 
-          <el-button style="margin-left: 20px; width: 280px" type="success" @click="confirmPay" round>确认支付</el-button>
+          <el-button style=" width: 280px" type="success" @click="confirmPay" round>确认支付</el-button>
         </div>
       </div>
 
@@ -255,20 +258,17 @@ const ERR_OK = 0
             // tableId: localStorage.getItem('tid')
             tableId: 12
           }
-
           this.$request(this.url.confirmOrder,'form',data).then((res)=>{
             this.cartList = res.data.data.cartList
             console.log('this.cartList',this.cartList);
-            this.discountMoney = res.data.data.discountMoney
-            this.needPay = res.data.data.needPay
-            this.realPay = res.data.data.realPay
+            this.discountMoney = res.data.data.discountMoney.toFixed(1)
+            this.needPay = res.data.data.needPay.toFixed(1)
+            this.realPay = res.data.data.realPay.toFixed(1)
             console.log('confirmOrder',res);
-
-            alert(this.needPay)
-
+            // alert(this.needPay)
             this.$nextTick(() => {
               if (!this.scroll) {
-                this.scroll = new BScroll(this.$refs['list-content'], {
+                this.scroll = new BScroll(this.$refs['s-scroll'], {
                   click: true
                 });
               } else {
@@ -286,31 +286,65 @@ const ERR_OK = 0
         // window.alert(`支付${this.totalPrice}元`);
       },
       confirmPay(){
-
         let data= {
-          // restaurantId: localStorage.getItem('rid'),
-          restaurantId: 1524988356660049,
+          restaurantId: localStorage.getItem('rid'),
+          // restaurantId: 1524988356660049,
           orderType:'single',
-          payType:'alipay-online',
+          // payType:'alipay-online',
           serverType:'real-time',
-          // tableId: localStorage.getItem('tid')
-          tableId: 12
+          tableId: localStorage.getItem('tid')
+          // tableId: 12
         }
-        this.$request(this.url.payOrder,'form',data).then((res)=>{
-          console.log('confirmOrder',res);
-          console.log(res.data);
-          this.$message({
-            type: 'success',
-            message: '安全支付'
-          });
-
-          const div = document.createElement('div');
-          div.innerHTML = res.data;
-          document.body.appendChild(div);
-          div.children[0].submit();
-        }).catch((err)=>{
-          console.log(err);
-        })
+        let clientType = localStorage.getItem('clientType');
+        if(clientType && clientType == 'wechat'){
+          data.payType = 'wechat-online';
+          this.$request(this.url.payOrder, 'form', data).then((res) => {
+            wx.config({
+              //debug : true,
+              appId: res.data.data.appid, // 必填，公众号的唯一标识
+              timestamp: res.data.data.timeStamp + "", // 必填，生成签名的时间戳
+              nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
+              signature: res.data.data.paySign, // 必填，签名，见附录1
+              jsApiList: ['chooseWXPay']
+              // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+            });
+            wx.ready(function () {
+              wx.chooseWXPay({
+                timestamp: res.data.data.timeStamp + "", // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
+                nonceStr: res.data.data.nonceStr, // 支付签名随机串，不长于 32 位
+                package: res.data.data.package, // 统一支付接口返回的prepay_id参数值，提交格式如：prepay_id=\*\*\*）
+                signType: 'MD5', // 签名方式，默认为'SHA1'，使用新版支付需传入'MD5'
+                paySign: res.data.data.paySign, // 支付签名
+                success: function (response) {
+                  if(response.errMsg == "chooseWXPay:ok"){
+                    alert('支付成功')
+                  }
+                }
+              });
+            });
+            wx.error(function (res) {
+              alert('签名错误');
+            });
+          }).catch((err) => {
+            console.log(err);
+          })
+        } else {
+          data.payType = 'alipay-online'
+          this.$request(this.url.payOrder, 'form', data).then((res) => {
+            console.log('confirmOrder', res);
+            console.log(res.data);
+            this.$message({
+              type: 'success',
+              message: '安全支付'
+            });
+            const div = document.createElement('div');
+            div.innerHTML = res.data;
+            document.body.appendChild(div);
+            div.children[0].submit();
+          }).catch((err) => {
+            console.log(err);
+          })
+        }
       },
       hidePrePayShow(){
         this.prePayShow = !this.prePayShow
@@ -519,6 +553,13 @@ const ERR_OK = 0
         }else if(!this.book){
           Goods.className = "goods"
         }
+        let BgOfBook = document.getElementById('foods-wrapper')
+        let BgOfBookUl = document.getElementById('foods-ul')
+        BgOfBook.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com/restaurant/860ad5a4-6a07-4ce1-a90f-4f12988abb84)'
+        BgOfBookUl.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com/restaurant/860ad5a4-6a07-4ce1-a90f-4f12988abb84)'
+        BgOfBook.style.backgroundSize = '100%'
+        BgOfBookUl.style.backgroundSize = '100%'
+
       },
       toggleList() {
         if (!this.totalCount) {
@@ -796,4 +837,18 @@ const ERR_OK = 0
     height: 589px
     margin-top: 30px
     justify-content center
+
+
+.orderList
+  display: flex
+  justify-content: space-between
+  span:nth-child(1)
+    display block
+    width 60%
+  span:nth-child(2)
+    display block
+    width 20%
+  span:nth-child(3)
+    display block
+    width 25%
 </style>

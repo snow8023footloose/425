@@ -37,7 +37,7 @@
         <div style="display: flex;justify-content: space-between">
           <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{totalPrice}}</span>
           <el-button-group>
-            <el-button type="success" round @click="pay">结&nbsp;&nbsp;&nbsp;算</el-button>
+            <el-button type="success" round @click="pay">下单</el-button>
           </el-button-group>
         </div>
 
@@ -70,11 +70,11 @@
         <!--</el-select>-->
         <!-- <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div> -->
       </div>
-      <div class="content-right" @click.stop.prevent="payConfirm">
-        <div class="pay" :class="payClass" >
-          {{payDesc}}
-        </div>
-      </div>
+      <!--<div class="content-right" @click.stop.prevent="payConfirm">-->
+        <!--<div class="pay" :class="payClass" >
+          {{payDesc}}-->
+        <!--</div>-->
+      <!--</div>-->
     </div>
     <div class="ball-container">
       <transition name="drop"

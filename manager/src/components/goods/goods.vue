@@ -149,6 +149,7 @@
                 label="banner状态">
               </el-table-column>
               <el-table-column
+                v-if="changeSortShow === 0"
                 fixed="right"
                 label="排序"
                 width="110">
@@ -339,7 +340,7 @@
           <el-input v-model.number="toDynamicTags.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
         </el-form-item>
         <el-form-item label="状态" style="text-align: left">
-          <el-select v-model="toDynamicTags.status" placeholder="请选择状态">
+          <el-select clearable v-model="toDynamicTags.status" placeholder="请选择状态">
             <el-option
               v-for="item in categoryStatus"
               :key="item.value"
@@ -349,7 +350,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="标签类型" style="text-align: left">
-          <el-select v-model="toDynamicTags.chargeType" placeholder="请选择标签类型">
+          <el-select clearable v-model="toDynamicTags.chargeType" placeholder="请选择标签类型">
             <el-option
               v-for="item in tagType"
               :key="item.value"
@@ -394,7 +395,7 @@
           <el-input v-model.number="toDynamicTagsPopularize.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
         </el-form-item>
         <el-form-item label="状态" style="text-align: left">
-          <el-select v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
+          <el-select clearable v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
             <el-option
               v-for="item in categoryStatus"
               :key="item.value"
@@ -443,7 +444,7 @@
           <el-input v-model.number="toDynamicTags1.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
         </el-form-item>
         <el-form-item label="状态" style="text-align: left">
-          <el-select v-model="toDynamicTags1.status" placeholder="请选择状态">
+          <el-select clearable v-model="toDynamicTags1.status" placeholder="请选择状态">
             <el-option
               v-for="item in categoryStatus"
               :key="item.value"
@@ -456,7 +457,7 @@
           <el-input v-model="toDynamicTags1.description" auto-complete="off" placeholder="请输入描述"></el-input>
         </el-form-item>
         <el-form-item label="展示类型" prop="showType">
-          <el-select v-model="toDynamicTags1.showType" placeholder="请选择展示类型">
+          <el-select clearable v-model="toDynamicTags1.showType" placeholder="请选择展示类型">
             <el-option
               v-for="item in categoryShowType"
               :key="item.value"
@@ -487,7 +488,7 @@
           </el-time-picker>
         </el-form-item>
         <el-form-item label="打印机" prop="pid">
-          <el-select v-model="toDynamicTags1.pid" placeholder="请选择">
+          <el-select clearable v-model="toDynamicTags1.pid" placeholder="请选择">
             <el-option
               v-for="(item,index) in pid"
               :key="index"
@@ -596,7 +597,7 @@
             <el-input autofocus="true" v-model="dishes.name" auto-complete="off" placeholder="请输入品名"></el-input>
           </el-form-item>
           <el-form-item label="类型" prop="cid">
-            <el-select v-model="dishes.cid" clearable placeholder="请选择，默认其他">
+            <el-select clearable v-model="dishes.cid" clearable placeholder="请选择，默认其他">
               <el-option
                 v-for="item in dynamicTags1"
                 :key="item.zindex"
@@ -609,7 +610,7 @@
             <el-input v-model.number="dishes.stock" auto-complete="off" placeholder="请输入数量"></el-input>
           </el-form-item>
           <el-form-item label="打印机" prop="pid">
-            <el-select v-model="dishes.pid" placeholder="请选择">
+            <el-select clearable v-model="dishes.pid" placeholder="请选择">
               <el-option
                 v-for="(item,index) in pid"
                 :key="index"
@@ -623,7 +624,7 @@
           </el-form-item>
 
           <el-form-item label="单位" prop="uid">
-            <el-select v-model="dishes.uid" placeholder="请选择单位">
+            <el-select clearable v-model="dishes.uid" placeholder="请选择单位">
               <el-option
                 v-for="item in unit"
                 :key="item.zindex"
@@ -641,7 +642,7 @@
             <el-input type="textarea" v-model="dishes.description" auto-complete="off" placeholder="请输入菜品介绍,50字以内"></el-input>
           </el-form-item>
           <el-form-item label="展示类型" prop="showType">
-            <el-select v-model="dishes.showType" placeholder="请选择时间段">
+            <el-select clearable v-model="dishes.showType" placeholder="请选择时间段">
               <el-option
                 v-for="item in showType"
                 :key="item.value"
@@ -749,6 +750,7 @@
 
           <el-form-item label="推广标签">
             <el-select
+              clearable
               style="display: inline-block; width: 555px"
               v-model="valueOfTagsPopularize"
               multiple placeholder="请选择，默认无标签">
@@ -759,10 +761,23 @@
                 :value="item.id">
               </el-option>
             </el-select>
+
           </el-form-item>
+          <p v-if="valueOfTagsPopularizeShow === 1" style="display: flex;justify-content: left">
+            &nbsp;&nbsp;&nbsp;已选&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button
+              size="mini"
+              style="padding: 4px"
+              round
+              type="primary"
+              v-for="item in valueOfTagsPopularize1">{{item.name}}
+            </el-button>
+          </p>
+
 
           <el-form-item label="添加标签">
             <el-select
+              clearable
               style="display: inline-block; width: 555px"
               v-model="valueOfTags"
               multiple placeholder="请选择，默认无标签">
@@ -774,9 +789,21 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <p v-if="dynamicTagsOldShow === 1" style="display: flex;justify-content: left">
+            &nbsp;&nbsp;&nbsp;已选&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button
+              size="mini"
+              style="padding: 4px"
+              round
+              type="primary"
+              v-for="item in dynamicTagsOld">{{item.name}}
+            </el-button>
+          </p>
+
 
           <el-form-item label="添加SKU">
             <el-select
+              clearable
               style="display: inline-block; width: 555px"
               v-model="valueOfSKU"
               value-key="zindex"
@@ -792,6 +819,17 @@
             </el-select>
             <el-button type="primary" :loading="generating" @click="outputSku">生成SKU</el-button>
           </el-form-item>
+          <p v-if="valueOfSKUOldShow === 1" style="display: flex;justify-content: left">
+            &nbsp;&nbsp;&nbsp;已选&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <el-button
+              size="mini"
+              style="padding: 4px"
+              round
+              type="primary"
+              v-for="item in valueOfSKU1">{{item.name}}
+            </el-button>
+          </p>
+
 
           <el-form-item style="text-align: center " label-width="0px" v-if="this.generatTable === true">
 
@@ -898,6 +936,8 @@ export default {
     };
     return {
       picReceive:'',
+      screenWidth: document.body.clientWidth,
+      changeSortShow: 0,
       startTimePre:'',
       endTimePre:'',
       categoryStartTimePre:'',
@@ -1081,8 +1121,14 @@ export default {
       toDynamicTags3:[],
       value4: '',
       valueOfSKU: [],
+      valueOfSKU1:[],
+      valueOfSKUOldShow:0,
       valueOfTags: [],
       valueOfTagsPopularize: [],
+      valueOfTagsPopularize1: [],
+      valueOfTagsPopularizeShow:0,
+      dynamicTagsOld:[],
+      dynamicTagsOldShow:0,
       normalPrice:12,
       value6: '',
       fileList2: [
@@ -1223,13 +1269,16 @@ export default {
     }
   },
   created() {
-    this._pullTable()
+    this._pullDishes()
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
     // this._pullUnit()
     // this._pullPreSpec()
     // this._pullPreTag()
+    if(this.screenWidth < 721){
+      this.changeSortShow = 1
+    }
     // this._pullPrePopularizeTag()
     this._pullPopularizeTag()
     this._pullPrinter()
@@ -1315,7 +1364,7 @@ export default {
         console.log(err);
       })
     },
-    _pullTable(){
+    _pullDishes(){
       var Data = [
         {
           feild: 'rid',
@@ -1468,13 +1517,18 @@ export default {
       for(let i=0;i<popularizeTags.length;i++){
         popularizeTags[i].zindex = i
       }
+      console.log(this.valueOfSKU);
 
-      for(let i=0;i<this.valueOfSKU.length;i++){
-        this.valueOfSKU[i].zindex = i
+
+      if(this.valueOfSKU){
+        for(let i=0;i<this.valueOfSKU.length;i++){
+          this.valueOfSKU[i].zindex = i
+        }
+        this.dishes.specs = this.valueOfSKU
       }
+
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
-      this.dishes.specs = this.valueOfSKU
       let rid = localStorage.getItem("rid");
       this.dishes.rid = rid   //加入rid
 
@@ -1490,7 +1544,7 @@ export default {
               type: 'success',
               message: '数据提交成功!'
             });
-            this.dishesDataTable.push(data);
+            this._pullDishes()
             this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
           }).catch((err)=>{
             this.$message({
@@ -1783,6 +1837,55 @@ export default {
       this.dishesIndex = index;
       console.log(row,'点击编辑菜品触发');
       console.log(row.popularizeTags);
+      let arrTagsPopularize = []
+      if(row.popularizeTags === null){
+
+      }else {
+        for(var i =0; i<row.popularizeTags.length;i++){
+          arrTagsPopularize.unshift({
+            name:row.popularizeTags[i].name,
+            id:row.popularizeTags[i].id
+          })
+        }
+        this.valueOfTagsPopularize1 = arrTagsPopularize
+        this.valueOfTagsPopularizeShow = 1
+        console.log('33333',this.valueOfTagsPopularize);
+      }
+
+
+      let dynamicTagsOld = []
+      if(row.tags === null){
+
+      }else {
+        for(var i =0; i<row.tags.length;i++){
+          dynamicTagsOld.unshift({
+            name:row.tags[i].name,
+            id:row.tags[i].id
+          })
+        }
+        this.dynamicTagsOld = dynamicTagsOld
+        this.dynamicTagsOldShow = 1
+      }
+
+
+      let valueOfSKU = []
+      if(row.specs === null){
+
+      }else {
+        for(var i =0; i<row.specs.length;i++){
+          valueOfSKU.unshift({
+            name:row.specs[i].name,
+            id:row.specs[i].id
+          })
+        }
+        this.valueOfSKU1 = valueOfSKU
+        this.valueOfSKUOldShow = 1
+      }
+
+      this.generatTable = true
+      this.generateSkuDate = row.skus
+      console.log('展示SKU价格',row.skus);
+
 
       console.log(this.dishesIndex,'第一打印did');
       if(row.showTime){
@@ -1804,15 +1907,54 @@ export default {
         }
         updateObj[key] = this.dishes[key];
       }
+
+
+
+      let tags = []
+      if(this.valueOfTags){
+        tags = Object.assign([],this.valueOfTags);
+        tags = tags.map(function (item) {
+          return {
+            id:item
+          }
+        })
+        for(let i=0;i<tags.length;i++){
+          tags[i].zindex = i
+        }
+        updateObj.tags = tags
+      }
+
+      let popularizeTags = []
+      if(this.valueOfTagsPopularize){
+        popularizeTags = Object.assign([],this.valueOfTagsPopularize)
+        popularizeTags = popularizeTags.map(function (item) {
+          return {
+            id:item
+          }
+        })
+        for(let i=0;i<popularizeTags.length;i++){
+          popularizeTags[i].zindex = i
+        }
+        updateObj.popularizeTags = popularizeTags
+      }
+      if(this.valueOfSKU){
+        for(let i=0;i<this.valueOfSKU.length;i++){
+          this.valueOfSKU[i].zindex = i
+        }
+        updateObj.specs = this.valueOfSKU
+      }
+
+
+      updateObj.skus = this.generateSkuDate
       console.log(updateObj,'提交的数据');
-      updateObj.unshift
+
       this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
         this.$message({
           type: 'success',
           message: '数据提交成功!'
         });
         this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
-        this._pullTable()
+        this._pullDishes()
       }).catch((err)=>{
         this.$message({
           type: 'info',
@@ -2297,8 +2439,19 @@ export default {
     },
     plusMethodsThis(){
       //初始化表格
-      this.dishesIndex = this.dishesDataTable.length
+      if(this.dishesDataTable){
+        this.dishesIndex = this.dishesDataTable.length
+      }
+      if(this.dynamicTags2){
+        for(let i = 0 ;i<this.dynamicTags2.length;i++){
+          this.dynamicTags2[i].zindex = i
+        }
+      }
+
       this.addOrEdit = 1
+      this.dynamicTagsOldShow = 0
+      this.valueOfTagsPopularizeShow = 0
+      this.valueOfSKUOldShow = 0
       this.dishes ={}
       this.valueOfSKU = []
       this.valueOfTags = []
@@ -2306,6 +2459,9 @@ export default {
       this.startTimePre = '请选择开始时间'
       this.endTimePre = '请选择结束时间'
       this.generatTable = false
+      this.dynamicTagsOld =[]
+      this.valueOfTagsPopularize1 = []
+      this.valueOfSKU1 = []
       this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
     },
     plusGoods(){

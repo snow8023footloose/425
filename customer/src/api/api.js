@@ -25,6 +25,13 @@ export  function urlColletion() {
 
     login2: BURL + '/xwfUser/login',
     loginAlipay: BURL + '/xwfUser/alipayLogin',
+    loginWechat: BURL + '/xwfUser/wechatLogin',
+
+    //订单确认
+    confirmOrder: BURL +'/userOrder/computePrepayInfo',
+
+    //订单确认
+    payOrder: BURL +'/userOrder/submit',
 
     restaurant1: BURL + '/restaurant/add',
     restaurant2: BURL + '/restaurant/complexPageQuery',
@@ -74,11 +81,6 @@ export  function urlColletion() {
     cart4: BURL + '/cart/update',
 
 
-    //订单确认
-    confirmOrder: BURL +'/userOrder/computePrepayInfo',
-
-    //订单确认
-    payOrder: BURL +'/userOrder/submit',
 
 
 

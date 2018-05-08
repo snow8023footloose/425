@@ -628,15 +628,19 @@ td
     button[data-v-19dca008]
       margin-left: 2px !important
       position: fixed !important
-      right: 5% !important
-      bottom: 8px !important
+      right: 280px !important
+      bottom: 2px !important
 
   .singleContainer[data-v-19dca008]
     height auto
 
+  .tables
+    .tableButtonGroup1[data-v-19dca008]
+      height auto !important
+
   .tableButtonGroup1
     left: 34px !important
-    bottom: -10px !important
+    bottom: 2px !important
 
   .transition-box
     margin-bottom: 10px

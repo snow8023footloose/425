@@ -10,7 +10,7 @@
           <span class="name">{{seller.name}}</span>
         </div>
         <div class="description">
-          点击查看商家信息：{{seller.description}}
+          <span>点击查看商家信息：</span>{{seller.description}}
         </div>
         <div v-if="seller.supports" class="support">
           <span class="icon" :class="classMap[seller.supports[0].type]"></span>
@@ -26,11 +26,11 @@
       <span class="bulletin-headertitle"></span><marquee
       style="margin: 0px !important;"
       direction="left" behavior="scroll" loop="1" scrollamount="4" scrolldelay="10" align="top" hspace="20" vspace="10" onmouseover=this.stop() onmouseout=this.start()
-      class="bulletin-text">{{seller.description}}</marquee>
+      class="bulletin-text">点击查看商家信息：{{seller.description}}</marquee>
       <i class="icon-keyboard_arrow_right"></i>
     </div>
     <div class="background">
-      <img :src="seller.avatar" width="100%" height="100%">
+      <img :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + seller.brandLogo" width="100%" height="100%">
     </div>
 
     <transition name="fade" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
@@ -99,14 +99,6 @@
               </div>
 
               <div class="bulletin">
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
                 <p class="content">{{seller.description}}</p>
               </div>
 
@@ -381,7 +373,7 @@ export default {
     justify-content center
 
 .pics
-  padding: 0px 20px 18px 18px
+  padding: 0px 37px 30px 37px
   .seemore
     font-size 8px
     float right
@@ -494,4 +486,9 @@ export default {
   font-size: 32px
   .icon-close
     padding-top: 15px
+
+
+
+
+
 </style>
