@@ -23,6 +23,13 @@ export  function urlColletion() {
     //不可改变顺序
     //餐厅请求接口
 
+    // 添加账号
+    restaurantWithdrawAccount: BURL + '/restaurantWithdrawAccount/add',
+    restaurantBindAccount: BURL + '/restaurant/getSmsCode',
+
+    //提现
+    restaurantAccountWithdraw: BURL + '/restaurantAccount/withdraw',
+
     login1: BURL + '/xwfUser/login',
     loginRestaurantManager: BURL + '/restaurantManager/login',
 
@@ -43,9 +50,7 @@ export  function urlColletion() {
     // 排序
     exchangeZindex1: BURL + '/dishes/exchangeZindex',
 
-    // 添加账号
-    restaurantWithdrawAccount: BURL + '/restaurantWithdrawAccount/add',
-    restaurantBindAccount: BURL + '/restaurant/getSmsCode',
+
 
     //分类
     dishesCategory1: BURL + '/dishesCategory/add',

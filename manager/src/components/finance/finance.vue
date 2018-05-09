@@ -66,17 +66,17 @@
           ref="ruleForm"
           :rules="rules2">
           <el-form-item v-if="showPasswordInput === 1"  label="密码" prop="password">
-          <el-input type="password" placeholder="请输入密码" v-model="password" class="input-with-select">
-            <el-select style="width: 100px" v-model="withdrawType" slot="prepend" placeholder="到账类型">
+          <el-input placeholder="请输入提现金额" v-model="moneyNumber" class="input-with-select">
+            <el-select style="width: 110px" v-model="withdrawType" slot="prepend" placeholder="到账类型">
               <el-option label="微信" value="wechat"></el-option>
               <el-option label="支付宝" value="alipay"></el-option>
-              <el-option label="银行卡" value="idcard"></el-option>
             </el-select>
           </el-input>
           </el-form-item>
           <el-form-item>
 
-            <el-button v-if="showPasswordInput === 1" style="float: right;margin-left: 10px" type="primary" @click="submitConfirmPassWord">立即提现</el-button>
+            <el-button v-if="showPasswordInput === 1" style="float: right;margin-left: 10px" type="primary"
+                       @click="submitConfirmPassWord">立即提现</el-button>
             <el-button style="float: right" @click="closeForm">取消</el-button>
           </el-form-item>
         </el-form>
@@ -98,9 +98,9 @@ export default {
       // ],
     },
     confirmMsg:'免费获取验证码',
-    password:'',
+    moneyNumber:'',
     countdown:60,
-    withdrawType:'',
+    withdrawType:'alipay',
     bindAliShowLoading:false,
     getAccountPhoneCode:'',
     showPasswordInput:0,
@@ -167,18 +167,12 @@ export default {
       }
     },
     getAccountPhoneCode(val){
-      if(val === '123456'){
+      if(val.length === 6){
         this.showPasswordInput =1
         this.$message({
           type: 'success',
           message: '验证码正确!'
         });
-      }else if(val.length === 6){
-        this.$message({
-          type: 'info',
-          message: '验证码错误! 请重新输入'
-        });
-        this.getAccountPhoneCode = ''
       }else {
         this.showPasswordInput =0
       }
@@ -211,7 +205,20 @@ export default {
       this.$refs[formName].resetFields();
     },
     submitConfirmPassWord(){
-      console.log(this.password);
+
+      console.log(this.getAccountPhoneCode);
+      console.log(this.moneyNumber);
+      console.log(this.withdrawType);
+      this.$request(this.url.restaurantAccountWithdraw,'form',{
+        type: this.withdrawType,
+        smsCode:this.getAccountPhoneCode,
+        money:this.moneyNumber
+        // account:
+      }).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -222,6 +229,11 @@ export default {
         .catch(_ => {});
     },
     getAccountCode(){
+      this.$request(this.url.restaurantBindAccount,'form',{}).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
       this.rollTime()
       // this.bindAliShowVisible = !this.bindAliShowVisible
     },

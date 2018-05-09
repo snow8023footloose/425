@@ -352,7 +352,7 @@
 
               </el-form-item>
               <el-form-item>
-                <el-button :loading="bindWechatShowLoading" type="success" @click="getWechatCode">{{confirmMsg}}</el-button>
+                <el-button :loading="bindAliShowLoading" type="success" @click="getAliCode">{{confirmMsg}}</el-button>
 
               </el-form-item>
             </el-form>
@@ -573,6 +573,16 @@ export default {
       console.log(this.alipayAccountName);
       console.log(this.aliRecode);
       console.log(this.alipayAccount);
+      this.$request(this.url.restaurantWithdrawAccount,'json',{
+        name:this.alipayAccountName,
+        account:this.alipayAccount,
+        type:'alipay',
+        smsCode:this.aliRecode
+      }).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
       this.$message({
         type: 'success',
         message: '绑定成功!'
@@ -620,7 +630,6 @@ export default {
         this.bindWechatShowLoading = true
         this.confirmMsg="重新发送(" + this.countdown + ")";
         this.countdown--;
-        console.log(this.countdown);
       }
       setTimeout(function() {
         _this.rollTime1(this.confirmMsg)
@@ -654,6 +663,8 @@ export default {
           message: '请输入验证码!'
         });
         return
+      } else {
+
       }
       this.bindWechatShowVisible = !this.bindWechatShowVisible
     },
@@ -673,8 +684,8 @@ export default {
         id:"qcode",    //div的id
         appid: "wx687467655647657e",
         scope: "snsapi_login",
-        redirect_uri: "http://egxt6i.natappfree.cc/wechatCallback/bind",        //回调地址
-        state: _this.WechatRecode,　　　　　　//参数，可带可不带
+        redirect_uri: "http://8yziif.natappfree.cc/restaurantWithdrawAccount/bind",        //回调地址
+        state: '1524988356660049,' + _this.WechatRecode,　　　　　　//参数，可带可不带
         style: "",　　　　　　　//样式  提供"black"、"white"可选，默认为黑色文字描述
         href: "/"              //自定义样式链接，第三方可根据实际需求覆盖默认样式。
       });

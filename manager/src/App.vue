@@ -17,7 +17,6 @@
               autofocus="true"
               v-model="ruleForm2.username"
               auto-complete="off"
-              @keyup.enter.native="submitForm('ruleForm2')"
             ></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
@@ -25,12 +24,15 @@
               type="password"
               v-model="ruleForm2.password"
               auto-complete="off"
-              @keyup.enter.native="submitForm('ruleForm2')"
-              @blur="submitForm('ruleForm2')"
             ></el-input>
           </el-form-item>
+        <el-form-item>
+          <el-button v-if="manager === false" type="primary" @click="submitFormXwf('ruleForm2')">登录</el-button>
+          <el-button @click="resetForm('ruleForm2')">重置</el-button>
+          <el-button type="text" @click="clearLocalStorage">清除</el-button>
+        </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm2')">登录</el-button>
+            <el-button type="primary" @click="submitFormManager('ruleForm2')">登录</el-button>
             <el-button @click="resetForm('ruleForm2')">重置</el-button>
             <el-button type="text" @click="clearLocalStorage">清除</el-button>
           </el-form-item>
@@ -230,7 +232,7 @@ export default {
 
   },
   methods: {
-    submitForm(formName) {
+    submitFormManager(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.value4,'value4');
@@ -371,9 +373,6 @@ export default {
   },
   mounted() {
     this.Height();
-  },
-  destroyed(){
-    this.submitForm();
   },
   components: {
     computer
