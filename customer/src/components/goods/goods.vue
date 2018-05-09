@@ -15,7 +15,7 @@
       <div @click="show=!show" class="menu-button">
         <i class="icon-keyboard_arrow_right button-icon"></i>
       </div>
-      <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
+      <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper" @touchend="otouch">
         <ul class="foods-ul" id="foods-ul">
           <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
             <h1 class="goods-title">{{item.name}}</h1>
@@ -88,6 +88,19 @@
           <el-button type="primary" @click="confirmSku">确 定</el-button>
         </div>
       </el-dialog>
+
+      <!--<el-dialog-->
+
+        <!--:visible.sync="startOrderVisible"-->
+        <!--:show-close="false"-->
+        <!--:center="true"-->
+        <!--width="80%">-->
+        <!--<p style="text-align: center">欢迎光临</p>-->
+        <!--<span slot="footer" class="dialog-footer">-->
+          <!--<el-button type="success" plain @click="startOrder">成功按钮</el-button>-->
+          <!--&lt;!&ndash;<el-button type="primary" @click="startOrder">确 定</el-button>&ndash;&gt;-->
+        <!--</span>-->
+      <!--</el-dialog>-->
     </div>
 </template>
 <script type="text/ecmascript-6">
@@ -109,6 +122,7 @@ export default {
   },
   data() {
     return {
+      startOrderVisible:false,
       selectedSpec:'',
       goods: [],
       listHeight: [],
@@ -120,6 +134,7 @@ export default {
       dishesCategory:[],
       SColor: 'SColor',
       specs:[],
+      scrollOnce:0,
       dialogTableVisible: false,
       dialogFormVisible: false,
       formLabelWidth: '50px',
@@ -139,15 +154,18 @@ export default {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
     this._pullTable();
     this._pullSpec();
+    this.openFullScreen2()
+
     // this.tid = localStorage.getItem('tid')
   },
   computed: {
     currentIndex() {
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i];
-        let height2 = this.listHeight[i + 1];
+        let height2 = this.listHeight[i+1];
+        console.log(height1, height2, this.scrollY);
         if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-          console.log(44, i)
+          console.log('外',i)
           return i;
         }
       }
@@ -168,6 +186,31 @@ export default {
     }
   },
   methods: {
+    openFullScreen2() {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+      setTimeout(() => {
+        if(this.scrollOnce === 0){
+          this._initScroll()
+          this._calculateHeight()
+          this.scrollOnce= 1
+        }
+        loading.close();
+      }, 500);
+    },
+    startOrder(){
+      if(this.scrollOnce === 0){
+        this._initScroll()
+        this._calculateHeight()
+        this.scrollOnce= 1
+      }
+      console.log('hello');
+      this.startOrderVisible =!this.startOrderVisible
+    },
     transformArrySku(){
       let selectedSkuArr = []
       for(var i=0;0<this.selectedSkuArr.length;i++){
@@ -442,6 +485,9 @@ export default {
     cartcontrol,
     food
   },
+  mounted(){
+    this.startOrderVisible = !this.startOrderVisible
+  },
   events: {
     'cart.add'(target) {
       this._drop(target);
@@ -593,8 +639,8 @@ export default {
   overflow: hidden
   height: 100%
   .menu-button
-    position absolute
-    margin-top 130%
+    position fixed
+    bottom 20%
     left 5%
     width 44px
     height 44px
@@ -649,7 +695,7 @@ export default {
     .foods-ul
       background-size 100%
       .food-list
-        padding-top 20px
+        padding-top 0px
         margin-top 25px
         background rgba(255,255,255,0.75)
         border-radius 10px
@@ -725,7 +771,6 @@ export default {
     text-decoration: line-through
     font-size: 10px
     color: rgb(147, 153, 159)
-
 
   .el-dialog__body
     padding 7px 20px !important

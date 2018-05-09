@@ -94,7 +94,7 @@
   import cartcontrol from '@/components/cartcontrol/cartcontrol'
   import ratingselect from '@/components/ratingselect/ratingselect.vue';
   import split from '@/components/split/split';
-const ERR_OK = 0
+  const ERR_OK = 0
   const ALL = 2;
 
   export default {

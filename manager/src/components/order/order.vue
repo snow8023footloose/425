@@ -206,13 +206,13 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="100"
+              width="150"
               prop="thirdPartCode"
               label="第三方code">
             </el-table-column>
             <el-table-column
               sortable
-              width="100"
+              width="150"
               prop="thirdPartName"
               label="第三方名称">
             </el-table-column>
@@ -488,12 +488,12 @@
 
         let data = [
           {
-            feild:'rid',
-            value: localStorage.getItem('rid'),
-            joinType:'eq'
+            feild:'time',
+            value: '',
+            joinType:'time'
           }
         ]
-        this.$request(this.url.dishes2,'json',data).then((res)=>{
+        this.$request(this.url.userOrder,'json',data).then((res)=>{
           console.log('orderComplexPageQuery',res);
           this.userOrder = res.data.data
           this.loading = false

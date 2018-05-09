@@ -301,21 +301,108 @@
 
         <!--账户-->
         <el-tab-pane style="padding-top: 15px" label="账户设置" name="fifth">
-          <div style="margin-top: 15px;">
-            <el-input style="margin: 10px 0px" placeholder="请输入支付宝账号" v-model="alipayAccount">
-              <template slot="append">
-                <svg class="icon" style="color:#0c9fe4;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1037 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2424"><path d="M665.600029 614.4c70.4-128 96-249.6 96-249.6l-12.8 0 0 0L640.000029 364.8 524.800029 364.8 524.800029 275.2l281.6 0L806.400029 236.8 524.800029 236.8 524.800029 102.4l-128 0 0 134.4-256 0 0 38.4 256 0 0 89.6L179.200029 364.8l0 38.4 441.6 0c0 6.4 0 6.4-6.4 12.8C614.400029 460.8 582.400029 524.8 556.800029 576 230.400029 448 134.400029 524.8 108.800029 537.6c-217.6 153.6-12.8 345.6 19.2 339.2 230.4 51.2 377.6-44.8 480-166.4 6.4 6.4 12.8 6.4 19.2 6.4 70.4 38.4 409.6 198.4 409.6 198.4s0-140.8 0-192C985.600029 723.2 800.000029 659.2 665.600029 614.4zM499.200029 672c-160 204.8-352 140.8-384 128C38.400029 780.8 12.800029 640 108.800029 595.2c160-51.2 300.8 6.4 403.2 57.6C505.600029 665.6 499.200029 672 499.200029 672z" p-id="2425"></path></svg>              </template>
-            </el-input>
-            <el-input placeholder="点击刷新二维码，若没有反应请刷新页面，" @focus="WeChatFocus" v-model="WeChatAccount">
-              <template slot="append">
-                <svg class="icon" style="color: #62b900;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2292"><path d="M403.26656 621.184c-54.78912 30.41792-62.9248-17.08032-62.9248-17.08032L271.6672 444.48256c-26.42432-75.8528 22.87104-34.20672 22.87104-34.20672s42.30144 31.86688 74.39872 51.29728c32.08192 19.42528 68.64896 5.69344 68.64896 5.69344l448.96256-206.40768c-82.8416-102.66112-219.66848-169.78944-374.5792-169.78944-252.80512 0-457.71776 178.64704-457.71776 399.02208 0 126.76608 67.85536 239.58016 173.54752 312.70912l-19.05664 109.1328c0 0-9.28256 31.872 22.912 17.09056 21.94432-10.07616 77.88032-46.18752 111.1808-68.15232 52.352 18.176 109.37856 28.26752 169.17504 28.26752 252.77952 0 457.74336-178.64192 457.74336-399.02208 0-63.83616-17.26464-124.11904-47.86688-177.61792C778.83904 398.19776 446.14656 597.41696 403.26656 621.184L403.26656 621.184 403.26656 621.184 403.26656 621.184z" p-id="2293"></path></svg>              </template>
-            </el-input>
+          <el-dialog
+            title="支付宝账号绑定"
+            :center="true"
+            :visible.sync="bindAliShowVisible"
+            width="60%">
+            <el-form :inline="true">
+              <el-form-item>
+                <el-input v-model="aliRecode" placeholder="输入餐厅绑定的手机验证码"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button :loading="bindAliShowLoading" type="primary" @click="getAliCode">{{confirmMsg}}</el-button>
+              </el-form-item>
+            </el-form>
+            <el-form>
+              <el-form-item>
+                <el-input
+                  placeholder="请输入姓名"
+                  v-model="alipayAccountName">
+                </el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-input
+                  style="margin: 10px 0px"
+                  placeholder="请输入支付宝账号"
+                  v-model="alipayAccount">
+                  <template slot="append">
+                    <svg class="icon" style="color:#0c9fe4;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1037 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2424"><path d="M665.600029 614.4c70.4-128 96-249.6 96-249.6l-12.8 0 0 0L640.000029 364.8 524.800029 364.8 524.800029 275.2l281.6 0L806.400029 236.8 524.800029 236.8 524.800029 102.4l-128 0 0 134.4-256 0 0 38.4 256 0 0 89.6L179.200029 364.8l0 38.4 441.6 0c0 6.4 0 6.4-6.4 12.8C614.400029 460.8 582.400029 524.8 556.800029 576 230.400029 448 134.400029 524.8 108.800029 537.6c-217.6 153.6-12.8 345.6 19.2 339.2 230.4 51.2 377.6-44.8 480-166.4 6.4 6.4 12.8 6.4 19.2 6.4 70.4 38.4 409.6 198.4 409.6 198.4s0-140.8 0-192C985.600029 723.2 800.000029 659.2 665.600029 614.4zM499.200029 672c-160 204.8-352 140.8-384 128C38.400029 780.8 12.800029 640 108.800029 595.2c160-51.2 300.8 6.4 403.2 57.6C505.600029 665.6 499.200029 672 499.200029 672z" p-id="2425"></path></svg>
+                  </template>
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="handleCloseBindAli">取 消</el-button>
+              <el-button type="primary" @click="lastAliBinded">确 定</el-button>
+            </span>
+          </el-dialog>
 
+
+
+          <el-dialog
+            title="微信账号绑定"
+            :center="true"
+            :visible.sync="bindWechatShowVisible"
+            width="60%"
+            :before-close="handleCloseBindWechat">
+            <el-form :inline="true">
+              <el-form-item>
+                <el-input v-model="WechatRecode" placeholder="输入餐厅绑定的手机验证码"></el-input>
+
+              </el-form-item>
+              <el-form-item>
+                <el-button :loading="bindWechatShowLoading" type="success" @click="getWechatCode">{{confirmMsg}}</el-button>
+
+              </el-form-item>
+            </el-form>
+            <el-form>
+              <el-form-item>
+                <el-input
+                  style="margin: 10px 0px"
+                  placeholder="请输入姓名"
+                  v-model="WeChatAccountName">
+                </el-input>
+              </el-form-item>
+              <!--<el-form-item>-->
+                <!--<el-input placeholder="点击刷新二维码，若没有反应请刷新页面，" @focus="WeChatFocus" v-model="WeChatAccount">-->
+                  <!--<template slot="append">-->
+                    <!--<svg class="icon" style="color: #62b900;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2292"><path d="M403.26656 621.184c-54.78912 30.41792-62.9248-17.08032-62.9248-17.08032L271.6672 444.48256c-26.42432-75.8528 22.87104-34.20672 22.87104-34.20672s42.30144 31.86688 74.39872 51.29728c32.08192 19.42528 68.64896 5.69344 68.64896 5.69344l448.96256-206.40768c-82.8416-102.66112-219.66848-169.78944-374.5792-169.78944-252.80512 0-457.71776 178.64704-457.71776 399.02208 0 126.76608 67.85536 239.58016 173.54752 312.70912l-19.05664 109.1328c0 0-9.28256 31.872 22.912 17.09056 21.94432-10.07616 77.88032-46.18752 111.1808-68.15232 52.352 18.176 109.37856 28.26752 169.17504 28.26752 252.77952 0 457.74336-178.64192 457.74336-399.02208 0-63.83616-17.26464-124.11904-47.86688-177.61792C778.83904 398.19776 446.14656 597.41696 403.26656 621.184L403.26656 621.184 403.26656 621.184 403.26656 621.184z" p-id="2293"></path></svg>-->
+                  <!--</template>-->
+                <!--</el-input>-->
+              <!--</el-form-item>-->
+              <div id="qcode" style="text-align: center"></div>
+            </el-form>
+
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="handleCloseBindWechat">取 消</el-button>
+              <el-button type="success" @click="confirmWechatBinded">确 定</el-button>
+            </span>
+          </el-dialog>
+          <div style="margin-top: 15px; display: flex;justify-content: space-around;">
+            <span></span>
+            <el-col :span="8">
+              <el-card shadow="hover" style="text-align: center">
+                <p>{{alipayGetName}}</p>
+                <el-button @click="bindAliShow" :type="primaryTo">
+                  <svg class="icon" style="color:white;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1037 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2424"><path d="M665.600029 614.4c70.4-128 96-249.6 96-249.6l-12.8 0 0 0L640.000029 364.8 524.800029 364.8 524.800029 275.2l281.6 0L806.400029 236.8 524.800029 236.8 524.800029 102.4l-128 0 0 134.4-256 0 0 38.4 256 0 0 89.6L179.200029 364.8l0 38.4 441.6 0c0 6.4 0 6.4-6.4 12.8C614.400029 460.8 582.400029 524.8 556.800029 576 230.400029 448 134.400029 524.8 108.800029 537.6c-217.6 153.6-12.8 345.6 19.2 339.2 230.4 51.2 377.6-44.8 480-166.4 6.4 6.4 12.8 6.4 19.2 6.4 70.4 38.4 409.6 198.4 409.6 198.4s0-140.8 0-192C985.600029 723.2 800.000029 659.2 665.600029 614.4zM499.200029 672c-160 204.8-352 140.8-384 128C38.400029 780.8 12.800029 640 108.800029 595.2c160-51.2 300.8 6.4 403.2 57.6C505.600029 665.6 499.200029 672 499.200029 672z" p-id="2425"></path></svg>
+                  支付宝账号绑定
+                </el-button>
+              </el-card>
+            </el-col>
+
+            <el-col :span="8">
+              <el-card shadow="hover" style="text-align: center">
+                <p>{{wechatGetName}}</p>
+                <el-button @click="bindWechatShow" :type="successTo">
+                  <svg class="icon" style="color: white;width: 2em; height: 2em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2292"><path d="M403.26656 621.184c-54.78912 30.41792-62.9248-17.08032-62.9248-17.08032L271.6672 444.48256c-26.42432-75.8528 22.87104-34.20672 22.87104-34.20672s42.30144 31.86688 74.39872 51.29728c32.08192 19.42528 68.64896 5.69344 68.64896 5.69344l448.96256-206.40768c-82.8416-102.66112-219.66848-169.78944-374.5792-169.78944-252.80512 0-457.71776 178.64704-457.71776 399.02208 0 126.76608 67.85536 239.58016 173.54752 312.70912l-19.05664 109.1328c0 0-9.28256 31.872 22.912 17.09056 21.94432-10.07616 77.88032-46.18752 111.1808-68.15232 52.352 18.176 109.37856 28.26752 169.17504 28.26752 252.77952 0 457.74336-178.64192 457.74336-399.02208 0-63.83616-17.26464-124.11904-47.86688-177.61792C778.83904 398.19776 446.14656 597.41696 403.26656 621.184L403.26656 621.184 403.26656 621.184 403.26656 621.184z" p-id="2293"></path></svg>
+                  微信账号绑定
+                </el-button>
+              </el-card>
+            </el-col>
+            <span></span>
           </div>
-          <div id="qcode" style="text-align: center"></div>
         </el-tab-pane>
-
-
       </el-tabs>
       <!--增加打印模板-->
       <el-dialog title="增加打印机" :visible.sync="dialogFormVisiblePrinterPlus">
@@ -397,19 +484,35 @@ export default {
   components: {
     upload
   },
+  watch:{
+    WechatRecode(val){
+      console.log(val);
+      if(val.length === 6){
+        this.WeChatFocus()
+      }
+    }
+  },
   data() {
     return {
       alipayAccount:'',
       WeChatAccount:'',
+      alipayGetName:'未绑定',
+      wechatGetName:'未绑定',
+      alipaymsg:'支付宝账号绑定',
+      wechatmsg:'微信账号绑定',
       activeName: 'first',
+      successTo:'success',
+      primaryTo:'primary',
       printerTable:[],
+      countdown:60,
       printerTemplateTable:[],
       printerTemplateForm:{},
       startTimeSetting:'',
       endTimeSetting:'',
       startTimePreSetting:'',
       endTimePreSetting:'',
-
+      alipayAccountName:'',
+      WeChatAccountName:'',
       printerStatus:[
         {
           label:'可用',
@@ -439,8 +542,15 @@ export default {
       birthdayDiscountType:'',
       birthdayDiscountNum:'',
       birthdayMinimumChar:'',
+      bindAliShowVisible:false,
+      bindAliShowLoading:false,
+      aliRecode:'',
+      bindWechatShowVisible:false,
+      bindWechatShowLoading:false,
+      WechatRecode:'',
       saveSetting: false,
       showIndexBg:false,
+      confirmMsg:'免费获取验证码',
       form: {
         name: '',
         region: '',
@@ -450,15 +560,8 @@ export default {
         desc: ''
       },
       formLabelWidth: '80px',
-      fileList2: [
-        {
-        name: 'food.jpeg',
-        url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'
-        }
-      ],
       color3:'#409EFF'
     };
-
   },
   created(){
     this._pullPrinter()
@@ -466,15 +569,114 @@ export default {
     this._pullSetting()
   },
   methods:{
+    lastAliBinded(){
+      console.log(this.alipayAccountName);
+      console.log(this.aliRecode);
+      console.log(this.alipayAccount);
+      this.$message({
+        type: 'success',
+        message: '绑定成功!'
+      });
+      this.bindAliShowVisible =!this.bindAliShowVisible
+    },
+    handleCloseBindAli() {
+      this.bindAliShowVisible = !this.bindAliShowVisible
+    },
+    confirmAliBinded(){
+      if(!this.aliRecode){
+        this.$message({
+          type: 'info',
+          message: '请输入验证码!'
+        });
+        return
+      }
+      this.bindAliShowVisible = !this.bindAliShowVisible
+    },
+
+    rollTime(){
+      var _this = this
+      if (this.countdown === 0) {
+        this.bindAliShowLoading = false
+        this.confirmMsg="免费获取验证码";
+        this.countdown = 60;
+        return
+      } else {
+        this.bindAliShowLoading = true
+        this.confirmMsg="重新发送(" + this.countdown + ")";
+        this.countdown--;
+      }
+      setTimeout(function() {
+        _this.rollTime(this.confirmMsg)
+      },1000)
+    },
+    rollTime1(){
+      var _this = this
+      if (this.countdown === 0) {
+        this.bindWechatShowLoading = false
+        this.confirmMsg="免费获取验证码";
+        this.countdown = 60;
+        return
+      } else {
+        this.bindWechatShowLoading = true
+        this.confirmMsg="重新发送(" + this.countdown + ")";
+        this.countdown--;
+        console.log(this.countdown);
+      }
+      setTimeout(function() {
+        _this.rollTime1(this.confirmMsg)
+      },1000)
+    },
+    getWechatCode(){
+      this.rollTime1()
+      // this.bindWechatShowVisible = !this.bindWechatShowVisible
+    },
+    getAliCode(){
+      console.log(localStorage.getItem('rid'));
+      // let data = {
+      //     phone:17375636967
+      // }
+      this.$request(this.url.restaurantBindAccount,'form',{}).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+      this.rollTime()
+    },
+    bindAliShow() {
+      this.aliRecode = ''
+      this.countdown = 60
+      this.bindAliShowVisible = !this.bindAliShowVisible
+    },
+    confirmWechatBinded(){
+      if(!this.WechatRecode){
+        this.$message({
+          type: 'info',
+          message: '请输入验证码!'
+        });
+        return
+      }
+      this.bindWechatShowVisible = !this.bindWechatShowVisible
+    },
+    handleCloseBindWechat(done) {
+      this.bindWechatShowVisible =!this.bindWechatShowVisible
+    },
+
+    bindWechatShow() {
+      this.WechatRecode = ''
+      this.countdown = 60
+      this.bindWechatShowLoading = false
+      this.bindWechatShowVisible = !this.bindWechatShowVisible
+    },
     WeChatFocus(){
+      let _this = this
       var obj = new WxLogin({
         id:"qcode",    //div的id
         appid: "wx687467655647657e",
         scope: "snsapi_login",
-        redirect_uri: "http://y1975i1826.imwork.net/wechatCallback/bind",        //回调地址
-        state: "123456789",　　　　　　//参数，可带可不带
+        redirect_uri: "http://egxt6i.natappfree.cc/wechatCallback/bind",        //回调地址
+        state: _this.WechatRecode,　　　　　　//参数，可带可不带
         style: "",　　　　　　　//样式  提供"black"、"white"可选，默认为黑色文字描述
-        href: ""              //自定义样式链接，第三方可根据实际需求覆盖默认样式。
+        href: "/"              //自定义样式链接，第三方可根据实际需求覆盖默认样式。
       });
     },
     UID(n){
@@ -636,7 +838,6 @@ export default {
     margin-bottom 10px
     &:hover
       background rgba(0, 0, 0, 0.02)
-
 
 
   .el-form-item__content

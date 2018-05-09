@@ -175,7 +175,7 @@
       >下单</el-button>
     </div>
     <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
-    <transition >
+    <transition>
         <div class="goodse" id="goods" ref="goods-top" v-if="tableShow === 1">
         <el-popover
           placement="top"
@@ -211,7 +211,7 @@
         <div @click="show=!show" class="menu-button">
         </div>
         <!--菜品展示-->
-        <div style="overflow-y: scroll" class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
+        <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
             <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
               <h1 class="goods-title">{{item.name}}</h1>
@@ -471,7 +471,7 @@
 
     <el-dialog
       width="70%"
-      title="规格"
+      title="选择规格"
       :visible.sync="dialogFormVisible"
       :append-to-body="true"
       style="z-index: 9999"
@@ -492,6 +492,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
+        <span style="float: left">价格：￥ {{getFoods.normalPrice}}</span>
+
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmSku">确 定</el-button>
       </div>
@@ -600,6 +602,7 @@ export default {
     restaurantTagRes:[],
     selectSingleOrder: 0,
     singleOrder:[],
+    scrollOnce:0,
     value9: [],
     list: [],
     loading: false,
@@ -622,11 +625,12 @@ export default {
       "Wyoming"],
     options: [],
     value: '',
-    foodss:[]
-
+    foodss:[],
+    tagsPrice:0,
+    oldTagArr : []
   }),
-  computed: {
 
+  computed: {
     listShow() {
       if (!this.totalCount) {
         this.fold = true;
@@ -685,6 +689,56 @@ export default {
       return foods;
     }
   },
+  watch:{
+    selectedSkuArr(val){
+      console.log(val);
+    },
+    selectedTags(val) {
+      console.log('123213213', val);
+      // console.log('this.getFoods.tags',this.getFoods,val);
+      if (val.length > 0) {
+        if (this.getFoods.tags) {
+          if(this.oldTagArr.length == 0){
+            for(let newTag of val){
+              for(let originTag of this.getFoods.tags){
+                if(newTag == originTag.name && originTag.chargeType == 'charge'){
+                  this.getFoods.normalPrice += originTag.price;
+                  this.oldTagArr = Object.assign({},val);
+                  break;
+                }
+              }
+            }
+          } else {
+            if (val.length > this.oldTagArr.length) {
+              for (let newTag of val) {
+                for (let oldTag of this.oldTagArr) {
+                  if (newTag != oldTag) {
+                    for (let orininTag of this.getFoods.tags) {
+                      if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
+                        this.getFoods.normalPrice += orininTag.price;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        if (this.oldTagArr.length > 0) {
+          for (let oldTag of this.oldTagArr) {
+            for (let originTag of this.getFoods.tags) {
+              if (oldTag == originTag.name && originTag.chargeType == 'charge') {
+                this.getFoods.normalPrice -= originTag.price;
+              }
+            }
+          }
+        }
+      }
+      console.log('=====最新价格',this.getFoods.normalPrice);
+    }
+  },
   methods: {
     toggleList() {
       if (!this.totalCount) {
@@ -712,12 +766,16 @@ export default {
     },
     transformArrySku(){
       let selectedSkuArr = []
+      // console.log(this.selectedSkuArr);
       for(var i=0;0<this.selectedSkuArr.length;i++){
+        // console.log(i);
         if(this.selectedSkuArr.length === i){
+          // console.log(selectedSkuArr);
           return selectedSkuArr
         }else {
-          console.log(this.specs.attrs);
-          if(this.specs.attrs === undefined){
+          // console.log(this.specs);
+          // console.log(this.specs[i].attrs);
+          if(this.specs[i].attrs === undefined){
           }else{
             for(var j=0;j<this.specs[i].attrs.length;j++){
               // console.log(this.specs[i].attrs);
@@ -728,7 +786,6 @@ export default {
               }
             }
           };
-
         }
       }
     },
@@ -744,7 +801,6 @@ export default {
       let _this = this
       this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
         var response = res.data.data
-
         for(var i=0;0<this.selectedTags.length;i++) {
           if(this.selectedTags.length === i){
             _this.restaurantTagRes = selectedArryTags
@@ -766,7 +822,9 @@ export default {
               tagIds: attrTags
             }
             _this.$request(_this.url.cart1,'json',data).then((res)=>{
-              console.log(res);
+              if(res.data.msg === 'success'){
+                _this.ballDrop()
+              }
             }).catch((err)=>{
               console.log(err);
             })
@@ -792,17 +850,16 @@ export default {
         });
         return
       }
-
-      if(this.selectedTags){
+      if(this.selectedTags.length > 0){
         this.transformArryTags()
-      }else {
-        let attrJoin = this.transformArrySku().join('_');
-        // this.transformArryTags()
-
-        console.log('transformArryTags',this.transformArryTags());
-        console.log(attrJoin,'SKU-Tags',attrTags);
-        let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
-
+      }else{
+        let  attrJoin = this.transformArrySku().join('_');
+        let  selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+        console.log('12121212121212',selectedSkuObj);
+        if(!selectedSkuObj){
+          alert('规格没有选完')
+          return false
+        }
         let data = {
           num:1,
           sid: selectedSkuObj.id,
@@ -810,31 +867,40 @@ export default {
           rid: this.getFoods.rid,
           tid: this.tid,
           type: 'multi',
-          tagIds: attrTags
         }
+        console.log('提交购物车数据，包含sid',data);
         this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
+          if(res.data.msg === 'success'){
+            this.ballDrop()
+          }else{
+            console.log('加入购物车成功',res.data.msg);
+          }
+
         }).catch((err)=>{
-          console.log(err);
+          console.log('加入购物车失败',err);
         })
       }
-
+    },
+    ballDrop(){
       if (!this.getFoods.count) {
         Vue.set(this.getFoods, 'count', 1);
       } else {
         this.getFoods.count++;
       }
-
       this.dialogFormVisible = !this.dialogFormVisible
       this.$nextTick(() => {
         this.$refs['shop-cart'].drop(this.getData.event);
       });
     },
     incrementTotalAdd(g) {
-      console.log('餐桌',this.tableForm);
+      // console.log('餐桌',this.tableForm);
       this.getData = g
-      console.log(g.event,g.food,'456546456456')
+      this.selectedSkuArr = []
+      this.selectedTags = []
+      // console.log(g.event,g.food,'456546456456')
       //体验优化,异步执行下落动画
+      this.getFoods = Object.assign({},g.food)
+      console.log(this.getFoods);
       if(g.specs){
         this.dialogFormVisible = !this.dialogFormVisible
         this.getFoods = g.food
@@ -851,9 +917,9 @@ export default {
           type: 'multi',
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
+          console.log('加入购物车成功',res);
         }).catch((err)=>{
-          console.log(err);
+          console.log('加入购物车失败',err);
         })
       }
     },
@@ -878,8 +944,8 @@ export default {
       }
     },
     findSkuByAttrJoin(selectedJoinAttr){
-      console.log('findSkuByAttrJoin', selectedJoinAttr);
-      console.log('this.getFoods.skus', this.getFoods.skus);
+      // console.log('findSkuByAttrJoin', selectedJoinAttr);
+      // console.log('this.getFoods.skus', this.getFoods.skus);
       for(let item of this.getFoods.skus){
         if(item.attrJion === selectedJoinAttr){
           console.log('item',item);
@@ -1026,14 +1092,7 @@ export default {
         this.$refs['shop-cart'].drop(target);
       });
     },
-    closeTable(){
-      this.tableShow = 0
-      console.log('12321');
-      // this.goods = this.goodsArr(this)
-      // this.show3 = false
 
-      // location.reload();
-    },
     tableTypeChange(){
       console.log(this.value5);
       console.log(this.tableForm);
@@ -1232,6 +1291,9 @@ export default {
         console.log(err);
       })
     },
+    vuetouch(){
+      console.log('1');
+    },
     changeTable1(){
       let data = {
         id:this.tableForm.id,
@@ -1291,13 +1353,8 @@ export default {
         }).then(function () {
           _this.goods = _this.goodsArr(_this);
           console.log('selectTable - _this.goods', _this.goods);
-          _this.$nextTick(()=>{
-            _this._initScroll()
-            _this._calculateHeight()
-          })
+        }).then((res)=>{
 
-        }).then(function () {
-          // _this.goods = goods;
         })
       })
       console.log('selectTable - this.goods',this.goods);
@@ -1306,6 +1363,63 @@ export default {
 
       var Title = new Array("桌号"+(index+1))
       this.tableTitle = Title.join('——')
+
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+      setTimeout(() => {
+        if(this.scrollOnce === 0){
+          this._initScroll()
+          this._calculateHeight()
+          this.scrollOnce= 1
+        }
+        loading.close();
+      }, 500);
+
+    },
+    // getTable() {
+    //   const loading = this.$loading({
+    //     lock: true,
+    //     text: 'Loading',
+    //     spinner: 'el-icon-loading',
+    //     background: 'rgba(0, 0, 0, 0.7)'
+    //   });
+    //   setTimeout(() => {
+    //     if(this.scrollOnce === 0){
+    //       this._initScroll()
+    //       this._calculateHeight()
+    //       this.scrollOnce= 1
+    //     }
+    //     loading.close();
+    //   }, 2000);
+    // },
+    // getTable(){
+    //   if(this.scrollOnce === 0){
+    //     this._initScroll()
+    //     this._calculateHeight()
+    //     this.scrollOnce= 1
+    //   }
+    //
+    // },
+    // vuetap:function(s){
+    //   console.log(s);
+    //   if(this.scrollOnce === 0){
+    //     this._initScroll()
+    //     this._calculateHeight()
+    //     this.scrollOnce= 1
+    //   }
+    // },
+    closeTable(){
+      this.tableShow = 0
+      console.log('12321');
+      this.scrollOnce= 0
+      // this.goods = this.goodsArr(this)
+      // this.show3 = false
+
+      // location.reload();
     },
     handleClick(tab, event) {
       this.show2 = !this.show2
@@ -1419,6 +1533,119 @@ export default {
 
 }
 
+
+
+function vueTouch(el,binding,type,vnode){
+  var _this=this;
+  this.obj=el;
+  this.binding=binding;
+  this.touchType=type;
+  this.vueTouches={x:0,y:0};
+  this.vueMoves=true;
+  this.vueLeave=true;
+  this.longTouch=true;
+  this.vueCallBack=typeof(binding.value)=="object"?binding.value.fn:binding.value;
+  this.obj.addEventListener("touchstart",function(e){
+    _this.start(e);
+  },false);
+  this.obj.addEventListener("touchend",function(e){
+    _this.end(e);
+  },false);
+  this.obj.addEventListener("touchmove",function(e){
+    _this.move(e);
+  },false);
+  vnode.key = this.randomString()
+};
+vueTouch.prototype={
+  start:function(e){
+    this.vueMoves=true;
+    this.vueLeave=true;
+    this.longTouch=true;
+    this.vueTouches={x:e.changedTouches[0].pageX,y:e.changedTouches[0].pageY};
+    this.time=setTimeout(function(){
+      if(this.vueLeave&&this.vueMoves){
+        this.touchType=="longtap"&&this.vueCallBack(this.binding.value,e);
+        this.longTouch=false;
+      };
+    }.bind(this),1000);
+  },
+  end:function(e){
+    var disX=e.changedTouches[0].pageX-this.vueTouches.x;
+    var disY=e.changedTouches[0].pageY-this.vueTouches.y;
+    clearTimeout(this.time);
+    if(Math.abs(disX)>10||Math.abs(disY)>100){
+      this.touchType=="swipe"&&this.vueCallBack(this.binding.value,e);
+      if(Math.abs(disX)>Math.abs(disY)){
+        if(disX>10){
+          this.touchType=="swiperight"&&this.vueCallBack(this.binding.value,e);
+        };
+        if(disX<-10){
+          this.touchType=="swipeleft"&&this.vueCallBack(this.binding.value,e);
+        };
+      }else{
+        if(disY>10){
+          this.touchType=="swipedown"&&this.vueCallBack(this.binding.value,e);
+        };
+        if(disY<-10){
+          this.touchType=="swipeup"&&this.vueCallBack(this.binding.value,e);
+        };
+      };
+    }else{
+      if(this.longTouch&&this.vueMoves){
+        this.touchType=="tap"&&this.vueCallBack(this.binding.value,e);
+        this.vueLeave=false
+      };
+    };
+  },
+  move:function(e){
+    this.vueMoves=false;
+  },
+  randomString:function(){
+    var len = 10;
+    var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
+    var maxPos = $chars.length;
+    var pwd = '';
+    for (var i = 0; i < len; i++) {
+      pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+    }
+    return pwd;
+  }
+};
+Vue.directive("tap",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"tap",vnode);
+  }
+});
+Vue.directive("swipe",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"swipe",vnode);
+  }
+});
+Vue.directive("swipeleft",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"swipeleft",vnode);
+  }
+});
+Vue.directive("swiperight",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"swiperight",vnode);
+  }
+});
+Vue.directive("swipedown",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"swipedown",vnode);
+  }
+});
+Vue.directive("swipeup",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"swipeup",vnode);
+  }
+});
+Vue.directive("longtap",{
+  bind:function(el,binding,vnode){
+    new vueTouch(el,binding,"longtap",vnode);
+  }
+});
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -1745,4 +1972,9 @@ export default {
     font-weight bolder
     display block
     width 25%
+
+
+.foods-ul
+  li:last-child
+    margin-bottom 50px
 </style>

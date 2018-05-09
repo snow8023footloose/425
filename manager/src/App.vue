@@ -104,6 +104,7 @@
           </router-link>
 
           <router-link :to="{path:'/XWFs/order'}" class="vlink">
+          <!--<router-link :to="{path:'/touch'}" class="vlink">-->
             <el-menu-item index="2">
               <i class="el-icon-bell"></i>
               <span slot="title" class="title">订单管理</span>

@@ -81,10 +81,7 @@ export  function urlColletion() {
     cart4: BURL + '/cart/update',
 
 
-
-
-
-    //购物车
+    //餐桌
     table1: BURL + '/restaurantTable/add',
     table2: BURL + '/restaurantTable/complexPageQuery',
     table3: BURL + '/restaurantTable/delete',
@@ -179,10 +176,6 @@ export function goodsArr(self) {
   Promise.all(promiseArr).then((res)=>{
     console.log(res);
     handleRes(_this,res,goodsArr);
-    _this.$nextTick(()=>{
-      _this._initScroll()
-      _this._calculateHeight()
-    })
     _this.goods = goodsArr
   })
 }

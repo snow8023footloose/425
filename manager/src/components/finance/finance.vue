@@ -38,8 +38,10 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="请输入提现密码" :visible.sync="dialogFormVisible">
+    <el-dialog title="提现" :visible.sync="dialogFormVisible">
       <div class="withDraw" v-show="loginShow">
+        <span slot="footer" class="dialog-footer">
+            </span>
         <!--<img class="loginPic" src="../logo.png" alt="">-->
         <el-form
           label-width="100px"
@@ -47,16 +49,35 @@
           class="demo-ruleForm withDraw"
           status-icon
           ref="ruleForm"
+          :inline="true"
           :rules="rules2">
-          <el-form-item label="密码" prop="password">
-            <el-input
-              type="password"
-              v-model="ruleForm"
-            ></el-input>
+          <el-form-item label="请输入验证码" prop="recode">
+              <el-input v-model="getAccountPhoneCode" placeholder="输入餐厅绑定的手机验证码"></el-input>
+          </el-form-item>
+          <el-form-item label="点击获取">
+            <el-button :loading="bindAliShowLoading" type="primary" @click="getAccountCode">{{confirmMsg}}</el-button>
+          </el-form-item>
+        </el-form>
+        <el-form
+          label-width="100px"
+          :label-position="labelPosition"
+          class="demo-ruleForm withDraw"
+          status-icon
+          ref="ruleForm"
+          :rules="rules2">
+          <el-form-item v-if="showPasswordInput === 1"  label="密码" prop="password">
+          <el-input type="password" placeholder="请输入密码" v-model="password" class="input-with-select">
+            <el-select style="width: 100px" v-model="withdrawType" slot="prepend" placeholder="到账类型">
+              <el-option label="微信" value="wechat"></el-option>
+              <el-option label="支付宝" value="alipay"></el-option>
+              <el-option label="银行卡" value="idcard"></el-option>
+            </el-select>
+          </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button style="float: right;margin-left: 10px" type="primary" @click="submitConfirmPassWord">确定</el-button>
-            <el-button style="float: right" @click="resetForm('ruleForm')">重置</el-button>
+
+            <el-button v-if="showPasswordInput === 1" style="float: right;margin-left: 10px" type="primary" @click="submitConfirmPassWord">立即提现</el-button>
+            <el-button style="float: right" @click="closeForm">取消</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -69,11 +90,20 @@ export default {
   name: 'collect',
   data:() => ({
     rules2: {
-      password: [
-        {required: true, message:'请输入密码', trigger:'blur'},
-      ],
+      // password: [
+      //   {required: true, message:'请输入密码', trigger:'blur'},
+      // ],
+      // recode: [
+      //   {required: true, message:'请输入验证码', trigger:'blur'},
+      // ],
     },
-    ruleForm:'',
+    confirmMsg:'免费获取验证码',
+    password:'',
+    countdown:60,
+    withdrawType:'',
+    bindAliShowLoading:false,
+    getAccountPhoneCode:'',
+    showPasswordInput:0,
     labelPosition: 'top',
     msg: '财务信息！',
     activeName: 'first',
@@ -132,18 +162,85 @@ export default {
           // that.init()
           that.timer = false
         }, 400)
+      }else {
+        this.height = 500
+      }
+    },
+    getAccountPhoneCode(val){
+      if(val === '123456'){
+        this.showPasswordInput =1
+        this.$message({
+          type: 'success',
+          message: '验证码正确!'
+        });
+      }else if(val.length === 6){
+        this.$message({
+          type: 'info',
+          message: '验证码错误! 请重新输入'
+        });
+        this.getAccountPhoneCode = ''
+      }else {
+        this.showPasswordInput =0
       }
     }
   },
+
   created(){
     if(this.screenWidth < 721){
       this.height = 220
       this.width = 450
       this.type = 'line'
       this.buttonShow = 1
+    }else {
+      this.height = 500
     }
   },
   methods: {
+    confirmRecode(){
+      if(!this.getAccountPhoneCode){
+        this.$message({
+          type: 'info',
+          message: '请输入验证码!'
+        });
+        return
+      }
+      this.dialogFormVisible = !this.dialogFormVisible
+    },
+    closeForm(formName) {
+      this.password = ''
+      this.$refs[formName].resetFields();
+    },
+    submitConfirmPassWord(){
+      console.log(this.password);
+    },
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+          this.countdown = 0
+        })
+        .catch(_ => {});
+    },
+    getAccountCode(){
+      this.rollTime()
+      // this.bindAliShowVisible = !this.bindAliShowVisible
+    },
+    rollTime(){
+      var _this = this
+      if (this.countdown == 0) {
+        this.bindAliShowLoading = false
+        this.confirmMsg="免费获取验证码";
+        this.countdown = 60;
+        return
+      } else {
+        this.bindAliShowLoading = true
+        this.confirmMsg="重新发送(" + this.countdown + ")";
+        this.countdown--;
+      }
+      setTimeout(function() {
+        _this.rollTime(this.confirmMsg)
+      },1000)
+    },
     handleClick(tab, event) {
     },
     radioChange1(){
@@ -152,13 +249,7 @@ export default {
     radioChange2(){
       this.type = 'line'
     },
-    resetForm(formName) {
-      this.ruleForm = ''
-      this.$refs[formName].resetFields();
-    },
-    submitConfirmPassWord(){
-      console.log(this.password);
-    },
+
     withDraw(){
       this.dialogFormVisible = !this.dialogFormVisible
     }

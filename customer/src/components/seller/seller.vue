@@ -4,20 +4,33 @@
     <div class="coupon-content">
       <div class="overview">
         <ul>
-          <li class="coupon-item" v-for="(item,index,key) in seller.coupon" :key="key" @click="buyCoupon(index,$event)">
-            <span class="price">{{seller.coupon[index].price}}</span>
+          <li class="coupon-item" @click="buyCoupon(index,$event)">
+            <span class="price">333</span>
 
             <div class="masked">
-              抵<span class="realworth">{{seller.coupon[index].realWorth}}</span>元
+              抵<span class="realworth">456</span>元
             </div>
-            <img class="bg-coupon" :src="seller.coupon[index].bg" alt="">
-            <div class="rules"><h5>使用规则</h5>{{seller.coupon[index].rules}}，满<span class="text">{{seller.coupon[index].floorPrice}}</span>可用</div>
-            <div class="quantity">剩余{{seller.coupon[index].quantity}}张</div>
+            <img class="bg-coupon" alt="">
+            <div class="rules"><h5>使用规则</h5>456456，满<span class="text">456</span>可用</div>
+            <div class="quantity">剩余23张</div>
           </li>
         </ul>
       </div>
-      <split></split>
+      <!--<div class="overview">-->
+        <!--<ul>-->
+          <!--<li class="coupon-item" v-for="(item,index,key) in seller.coupon" :key="key" @click="buyCoupon(index,$event)">-->
+            <!--<span class="price">{{seller.coupon[index].price}}</span>-->
 
+            <!--<div class="masked">-->
+              <!--抵<span class="realworth">{{seller.coupon[index].realWorth}}</span>元-->
+            <!--</div>-->
+            <!--<img class="bg-coupon" :src="seller.coupon[index].bg" alt="">-->
+            <!--<div class="rules"><h5>使用规则</h5>{{seller.coupon[index].rules}}，满<span class="text">{{seller.coupon[index].floorPrice}}</span>可用</div>-->
+            <!--<div class="quantity">剩余{{seller.coupon[index].quantity}}张</div>-->
+          <!--</li>-->
+        <!--</ul>-->
+      <!--</div>-->
+      <split></split>
       <!--底部更多活动展示-->
       <div class="pics">
         <h1 class="title">更多活动，敬请期待……</h1>
@@ -31,15 +44,12 @@
       </div>
       <split></split>
     </div>
-
   </div>
 </template>
-
 <script type="text/ecmascript-6">
 /* eslint-disable */
   import BScroll from 'better-scroll';
   import split from '@/components/split/split';
-
   export default {
     props: {
       seller: {

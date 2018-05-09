@@ -50,11 +50,44 @@
                   </el-popover>
                 </template>
               </el-table-column>
+              <!--<el-table-column-->
+                <!--sortable-->
+                <!--width="150"-->
+                <!--prop="bannerImg"-->
+                <!--label="banner">-->
+                <!--<template slot-scope="scope">-->
+                  <!--<img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg" alt="未上传">-->
+                <!--</template>-->
+              <!--</el-table-column>-->
               <el-table-column
                 sortable
-                width="80"
-                prop="zindex"
-                label="id">
+                width="150"
+                prop="thumb"
+                label="缩略图">
+                <template slot-scope="scope">
+                  <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb" alt="未上传">
+                </template>
+              </el-table-column>
+              <!--<el-table-column-->
+                <!--sortable-->
+                <!--width="150"-->
+                <!--prop="highDefinitionImg"-->
+                <!--label="高清图">-->
+                <!--<template slot-scope="scope">-->
+                  <!--<img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg" alt="未上传">-->
+                <!--</template>-->
+              <!--</el-table-column>-->
+              <el-table-column
+                sortable
+                width="150"
+                prop="showType"
+                label="展示类型">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.showType === 'always'">一直展示</span>
+                  <span v-if="scope.row.showType === 'sometimes'">按时间段</span>
+                  <span v-if="scope.row.showType === 'invisible'">不展示</span>
+
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -62,12 +95,7 @@
                 label="售卖情况"
                 width="120">
               </el-table-column>
-              <el-table-column
-                sortable
-                prop="stock"
-                label="库存"
-                width="100">
-              </el-table-column>
+
               <el-table-column
                 sortable
                 width="100"
@@ -84,7 +112,13 @@
                 sortable
                 width="100"
                 prop="promotionPrice"
-                label="推广价">
+                label="活动价">
+              </el-table-column>
+              <el-table-column
+                sortable
+                prop="stock"
+                label="库存"
+                width="100">
               </el-table-column>
               <el-table-column
                 sortable
@@ -100,39 +134,8 @@
                   </el-popover>
                 </template>
               </el-table-column>
-              <el-table-column
-                sortable
-                width="150"
-                prop="showType"
-                label="展示类型">
-              </el-table-column>
-              <el-table-column
-                sortable
-                width="150"
-                prop="thumb"
-                label="缩略图">
-                <template slot-scope="scope">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb" alt="未上传">
-                </template>
-              </el-table-column>
-              <el-table-column
-                sortable
-                width="150"
-                prop="highDefinitionImg"
-                label="高清图">
-                <template slot-scope="scope">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.highDefinitionImg" alt="未上传">
-                </template>
-              </el-table-column>
-              <el-table-column
-                sortable
-                width="150"
-                prop="bannerImg"
-                label="banner">
-                <template slot-scope="scope">
-                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.bannerImg" alt="未上传">
-                </template>
-              </el-table-column>
+
+
               <!--<el-table-column-->
                 <!--sortable-->
                 <!--width="150"-->
@@ -142,12 +145,12 @@
                     <!--<img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="未上传">-->
                 <!--</template>-->
               <!--</el-table-column>-->
-              <el-table-column
-                sortable
-                width="150"
-                prop="bannerStatus"
-                label="banner状态">
-              </el-table-column>
+              <!--<el-table-column-->
+                <!--sortable-->
+                <!--width="150"-->
+                <!--prop="bannerStatus"-->
+                <!--label="banner状态">-->
+              <!--</el-table-column>-->
               <el-table-column
                 v-if="changeSortShow === 0"
                 fixed="right"
@@ -169,7 +172,7 @@
                     <!--@click.native.prevent="deleteDishes(scope.row,scope.$index)">-->
                   <!--</el-button>-->
                   <el-button-group>
-                    <el-button size="mini" icon="el-icon-sort-up"></el-button>
+                    <el-button size="mini" icon="el-icon-sort-up" @click="sortUP"></el-button>
                     <el-button size="mini" icon="el-icon-sort-down"></el-button>
                   </el-button-group>
                 </template>
@@ -1282,9 +1285,32 @@ export default {
     // this._pullPrePopularizeTag()
     this._pullPopularizeTag()
     this._pullPrinter()
+    this.openFullScreen2()
 
   },
   methods: {
+    openFullScreen2() {
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+      setTimeout(() => {
+        loading.close();
+      }, 1000);
+    },
+    sortUP(){
+      let data = {
+        id1: 12,
+        id2: 13
+      }
+      this.$request(this.url.restaurantWithdrawAccount,'json',data).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
     changeStyle(event){
       console.log(event);
       event.target.style.background= 'rgba(64,158,255,.1)'

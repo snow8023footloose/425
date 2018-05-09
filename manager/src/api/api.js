@@ -40,6 +40,13 @@ export  function urlColletion() {
     dishes3: BURL + '/dishes/delete',
     dishes4: BURL + '/dishes/update',
 
+    // 排序
+    exchangeZindex1: BURL + '/dishes/exchangeZindex',
+
+    // 添加账号
+    restaurantWithdrawAccount: BURL + '/restaurantWithdrawAccount/add',
+    restaurantBindAccount: BURL + '/restaurant/getSmsCode',
+
     //分类
     dishesCategory1: BURL + '/dishesCategory/add',
     dishesCategory2: BURL + '/dishesCategory/complexPageQuery',
@@ -60,6 +67,8 @@ export  function urlColletion() {
 
     //SKU
     sku1: BURL + '/sku/complexPageQuery',
+
+    userOrder: BURL + '/userOrder/complexPageQuery',
 
     //规格
     spec1: BURL + '/restaurantSpec/add',
@@ -110,6 +119,11 @@ export  function urlColletion() {
     preTableType3: BURL +'/predefineTableType/delete',
     preTableType4: BURL +'/predefineTableType/update',
 
+    //法人
+    legalPerson1: BURL +'/legalPerson/add',
+    legalPerson2: BURL +'/legalPerson/complexPageQuery',
+    legalPerson3: BURL +'/legalPerson/delete',
+    legalPerson4: BURL +'/legalPerson/update',
 
     //订单确认
     confirmOrder: BURL +'/userOrder/computePrepayInfo',
@@ -214,7 +228,7 @@ export function goodsArr(self) {
     ]))
   }
   Promise.all(promiseArr).then((res)=>{
-    console.log(res);
+    // console.log(res);
     handleRes(_this,res,goodsArr);
     // _this.$nextTick(()=>{
     //   _this._initScroll()

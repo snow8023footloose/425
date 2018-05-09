@@ -168,8 +168,6 @@
         this.$nextTick(() => {
           if (!this.scroll) {
             this.scroll = new BScroll(this.$refs['s-scroll'], {
-              // scrollX: true,
-              // eventPassthrough: 'vertical'
             });
           } else {
             this.scroll.refresh();

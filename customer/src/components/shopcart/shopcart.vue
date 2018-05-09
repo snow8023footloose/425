@@ -286,22 +286,27 @@ const ERR_OK = 0
         // window.alert(`支付${this.totalPrice}元`);
       },
       confirmPay(){
-        let data= {
-          restaurantId: localStorage.getItem('rid'),
-          // restaurantId: 1524988356660049,
+        alert('===========进入支付');
+        alert(localStorage.getItem('rid'));
+        alert(localStorage.getItem('tid'));
+        alert(localStorage.getItem('clientType'));
+        var data = {
+          //restaurantId: localStorage.getItem('rid'),
+          restaurantId: 1524988356660049,
           orderType:'single',
           // payType:'alipay-online',
           serverType:'real-time',
-          tableId: localStorage.getItem('tid')
-          // tableId: 12
+          //tableId: localStorage.getItem('tid')
+          tableId: 12
         }
         let clientType = localStorage.getItem('clientType');
         if(clientType && clientType == 'wechat'){
+          alert('========微信');
           data.payType = 'wechat-online';
           this.$request(this.url.payOrder, 'form', data).then((res) => {
             wx.config({
               //debug : true,
-              appId: res.data.data.appid, // 必填，公众号的唯一标识
+              appId: res.data.data.appId, // 必填，公众号的唯一标识
               timestamp: res.data.data.timeStamp + "", // 必填，生成签名的时间戳
               nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
               signature: res.data.data.paySign, // 必填，签名，见附录1
@@ -309,6 +314,7 @@ const ERR_OK = 0
               // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
             });
             wx.ready(function () {
+              alert(res.data.data.package);
               wx.chooseWXPay({
                 timestamp: res.data.data.timeStamp + "", // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
                 nonceStr: res.data.data.nonceStr, // 支付签名随机串，不长于 32 位
@@ -329,7 +335,9 @@ const ERR_OK = 0
             console.log(err);
           })
         } else {
+          alert('========支付宝')
           data.payType = 'alipay-online'
+          alert(data.payType);
           this.$request(this.url.payOrder, 'form', data).then((res) => {
             console.log('confirmOrder', res);
             console.log(res.data);

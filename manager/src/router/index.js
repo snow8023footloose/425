@@ -13,6 +13,7 @@ import Xwffunction from '@/components/xwffunction/xwffunction'
 import upLoad from '@/components/upload/upload'
 import Modle from '@/components/test/modle'
 import Computer from '@/components/comput/computer'
+import Touch from '@/components/test/touch'
 
 
 Vue.use(Router)
@@ -25,6 +26,11 @@ export default new Router({
       path:'/Computer',
       name:'Computer',
       component: Computer
+    },
+    {
+      path:'/touch',
+      name:'Touch',
+      component: Touch
     },
     {
       path:'/XWFs/goods',

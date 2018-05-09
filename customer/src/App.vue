@@ -5,14 +5,20 @@
       <i class="icon-close"></i>
     </div>
     <div class="tab">
+      <router-link to="/order" @click.native="active($event)">
+        <div class="tab-item">
+          订单
+        </div>
+      </router-link>
       <router-link to="/" @click.native="active($event)">
         <div class="tab-item">
           商品
         </div>
       </router-link>
-      <router-link to="/order" @click.native="active($event)">
+
+      <router-link to="/seller" @click.native="active($event)">
         <div class="tab-item">
-          订单
+          领券
         </div>
       </router-link>
       <div class="service"></div>
