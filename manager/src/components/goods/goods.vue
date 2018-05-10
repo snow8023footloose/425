@@ -119,6 +119,10 @@
                 prop="stock"
                 label="库存"
                 width="100">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.stock === -1">无限</span>
+                  <span v-else>{{scope.row.stock}}</span>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -187,11 +191,11 @@
 
           <!--分类-->
           <div class="categoryGroup">
-            <h6>请不要建立同名分类</h6>
+            <h6>请不要建立同名分类，注意：所有分类都必须有菜品！</h6>
             <span style="width: 20%;">分类：</span>
             <span style="width: 80%;">
             <el-tag
-              :key="tag.zindex"
+              :key="index"
               v-for="(tag,index) in dynamicTags1"
               closable
               :disable-transitions="false"
@@ -227,7 +231,7 @@
             <h6>请不要建立同名规格类</h6>
             规格：
             <el-tag
-              :key="tag.zindex"
+              :key="index"
               v-for="(tag,index) in dynamicTags2"
               closable
               :disable-transitions="false"
@@ -260,7 +264,7 @@
             <h6>请不要建立同名标签</h6>
             标签：
             <el-tag
-              :key="tag.index"
+              :key="index"
               v-for="(tag,index) in dynamicTags"
               closable
               :disable-transitions="false"
@@ -294,7 +298,7 @@
             <h6>请不要建立同名标签</h6>
             推广标签：
             <el-tag
-              :key="tag.index"
+              :key="index"
               v-for="(tag,index) in dynamicTagsPopularize"
               closable
               :disable-transitions="false"
@@ -683,7 +687,7 @@
               size="small"
               v-model.number="dishes.normalPrice"
               auto-complete="off"
-              :value="dishes.normalPrice"
+              :value.number="dishes.normalPrice"
               placeholder="请输入价格"
               class="price-item"
             >
@@ -693,7 +697,7 @@
               size="small"
               v-model.number="dishes.memberPrice"
               auto-complete="off"
-              :value="mPrice"
+              :value.number="mPrice"
               placeholder="会员价"
               class="price-item"
             >
@@ -703,7 +707,7 @@
               size="small"
               v-model.number="dishes.promotionPrice"
               auto-complete="off"
-              :value="pPrice"
+              :value.number="pPrice"
               placeholder="活动价"
               class="price-item"
             >
@@ -1058,7 +1062,6 @@ export default {
         //   showTime:'',
         //   showType:'',
         //   pid: '',
-        //   rid: 0,
         //   description: '',
         //   status: '',
         // },
@@ -1186,10 +1189,10 @@ export default {
         showType: [
           {required: true, message:'请选择展示类型', trigger:'change'}
         ],
-        price: [
-          {required: true, message:'请输入价格', trigger:'blur'},
-          {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
-        ],
+        // price: [
+        //   {required: true, message:'请输入价格', trigger:'blur'},
+        //   {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
+        // ],
         thumb: [
           {required: true, message:'请上传一张图片', trigger:'change'}
         ]
@@ -1298,7 +1301,7 @@ export default {
       });
       setTimeout(() => {
         loading.close();
-      }, 1000);
+      }, 500);
     },
     sortUP(){
       let data = {
@@ -1378,13 +1381,13 @@ export default {
     _pullPrinter(){
       let data=[
         {
-          feild:'rid',
-          value:1524988356660049,
-          joinType:'eq'
+          feild:'status',
+          value:'enable',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
-        console.log(res);
+        console.log('11111111111111111111',res);
         this.pid = res.data.data
       }).catch((err)=>{
         console.log(err);
@@ -1393,9 +1396,9 @@ export default {
     _pullDishes(){
       var Data = [
         {
-          feild: 'rid',
-          value: localStorage.getItem('rid'),
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.dishes2,'json',Data).then((res)=>{
@@ -1409,15 +1412,15 @@ export default {
     _pullTags(){
       var Data = [
         {
-          feild: 'rid',
-          value: localStorage.getItem('rid'),
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.restaurantTag2,'json',Data).then((res)=>{
         let response = res.data.data
         this.dynamicTags = response
-        // console.log(response);
+        console.log(response);
       }).catch((err)=>{
         console.log(err);
       })
@@ -1425,9 +1428,9 @@ export default {
     _pullSpec(){
       let Data = [
         {
-          feild: 'time',
-          value: '',
-          joinType: 'time'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.spec2,'json',Data).then((res)=>{
@@ -1441,9 +1444,9 @@ export default {
     _pullPreTag(){
       let Data = [
         {
-          feild: 'status',
-          value: 'enable',
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.preTag2,'json',Data).then((res)=>{
@@ -1457,9 +1460,9 @@ export default {
     _pullPreSpec(){
       let Data = [
         {
-          feild: 'status',
-          value: 'enable',
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.preSpec2,'json',Data).then((res)=>{
@@ -1473,9 +1476,9 @@ export default {
     _pullPopularizeTag(){
       let Data = [
         {
-          feild: 'status',
-          value: 'enable',
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.restaurantPopularizeTag2,'json',Data).then((res)=>{
@@ -1489,9 +1492,9 @@ export default {
     _pullUnit(){
       var Data = [
         {
-          feild: 'rid',
-          value: localStorage.getItem('rid'),
-          joinType: 'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.preUnit2,'json',Data).then((res)=>{
@@ -1505,14 +1508,14 @@ export default {
     _pullCategory(){
       var Data = [
         {
-          feild: 'rid',
-          value: localStorage.getItem("rid"),
-          joinType: 'eq'
-        },
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        }
       ]
       this.$request(this.url.dishesCategory2,'json',Data).then((res)=>{
         let response = res.data.data
-        // console.log(response);
+        console.log(response);
         this.dynamicTags1 = response
         // console.log(this.dynamicTags1);
       }).catch((err)=>{
@@ -1522,6 +1525,28 @@ export default {
 
     // 增加菜品
     addDishes(formName1,formName2){
+      if(!this.dishes.normalPrice){
+        this.$message({
+          type: 'info',
+          message: '请输入价格!'
+        });
+        return false
+      }
+      console.log(this.dishes.normalPrice);
+      if(this.dishes.normalPrice === ''){
+        this.$message({
+          type: 'info',
+          message: '请输入价格!'
+        });
+        return false
+      }
+      if(!this.dishes.thumb){
+        this.$message({
+          type: 'info',
+          message: '请重新提交缩略图!'
+        });
+        return false
+      }
       console.log(this.valueOfTags,'得到标签');
       let tags = []
       tags = Object.assign([],this.valueOfTags);
@@ -1545,7 +1570,6 @@ export default {
       }
       console.log(this.valueOfSKU);
 
-
       if(this.valueOfSKU){
         for(let i=0;i<this.valueOfSKU.length;i++){
           this.valueOfSKU[i].zindex = i
@@ -1555,14 +1579,14 @@ export default {
 
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
-      let rid = localStorage.getItem("rid");
-      this.dishes.rid = rid   //加入rid
+
 
       let data = {}
       data = Object.assign({},this.dishes);
       data.tags = tags
       data.popularizeTags = popularizeTags
       console.log(data,'提交菜品数据');
+
       this.$refs[formName1].validate((valid) => {
         if (valid) {
           this.$request(this.url.dishes1,'json',data).then((res)=>{
@@ -1586,7 +1610,6 @@ export default {
           return false;
         }
       });
-      //提交SKU
     },
     addDishesDelay(formName1,formName2){
       console.log(this.valueOfTags,'得到标签');
@@ -1618,8 +1641,6 @@ export default {
       this.dishes.skus = this.generateSkuDate
       this.dishes.specs = this.valueOfSKU
       this.dishes.status = 'disable'
-      let rid = localStorage.getItem("rid");
-      this.dishes.rid = rid   //加入rid
 
       let data = {}
       data = Object.assign({},this.dishes);
@@ -1687,7 +1708,9 @@ export default {
           message: '数据提交成功!'
         });
         this.dialogFormVisibleTagEdit = !this.dialogFormVisibleTagEdit
-        this._pullCategory()
+
+        this._pullTags()
+
       }).catch((err)=>{
         this.$message({
           type: 'info',
@@ -1726,13 +1749,14 @@ export default {
       })
     },
     updateSpec(){
-      console.log('2222222222');
+      console.log('得到sku内部分',this.toDynamicTags2.attrs);
       let index = this.categoryIndex
       let updateObj = {
-        zindex:this.toDynamicTags2.zindex,
+        zindex:parseInt(this.toDynamicTags2.zindex),
         name:this.toDynamicTags2.name,
         id:this.toDynamicTags2.id,
-        attrs:this.toDynamicTags2.attrs
+        attrs:this.toDynamicTags2.attrs,
+        status:'enable'
       }
       // for(let key in this.toDynamicTags2){
       //   if(this.toDynamicTags2[key] === this.dynamicTags2[index][key]){
@@ -1742,10 +1766,19 @@ export default {
       // }
       console.log(updateObj,'specspec');
       this.$request(this.url.spec4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
+        if(res.data.msg === 'success'){
+          this.$message({
+            type: 'success',
+            message: '数据提交成功!'
+          });
+          this._pullPopularizeTag()
+        }else {
+          this.$message({
+            type: 'info',
+            message: '数据问题!'
+          });
+
+        }
         this.dialogFormVisibleSKUEdit = !this.dialogFormVisibleSKUEdit
         this._pullSpec()
       }).catch((err)=>{
@@ -1762,7 +1795,6 @@ export default {
       let index = this.categoryIndex
       let updateObj = {
         id:this.toDynamicTags1.id,
-        rid:localStorage.getItem("rid")
       }
       for(let key in this.toDynamicTags1){
         if(this.toDynamicTags1[key] === this.dynamicTags1[index][key]){
@@ -1858,6 +1890,9 @@ export default {
     },
     // 修改菜品
     editDishes (row,index) {
+      this.valueOfSKU = []
+      this.valueOfTags = []
+      this.valueOfTagsPopularize = []
       this.addOrEdit = 2;
       this.dishes = Object.assign({},row);
       this.dishesIndex = index;
@@ -1921,6 +1956,29 @@ export default {
       }
     },
     updateDishes(){
+
+      if(!this.dishes.normalPrice){
+        this.$message({
+          type: 'info',
+          message: '请输入价格!'
+        });
+        return false
+      }
+      console.log(this.dishes.normalPrice);
+      if(this.dishes.normalPrice === ''){
+        this.$message({
+          type: 'info',
+          message: '请输入价格!'
+        });
+        return false
+      }
+      if(!this.dishes.thumb){
+        this.$message({
+          type: 'info',
+          message: '请重新提交缩略图!'
+        });
+        return false
+      }
       console.log(this.picReceive);
       let index = this.dishesIndex
       let updateObj = {
@@ -2022,7 +2080,6 @@ export default {
 
           let data = {
             name: inputValuePopularize,
-            rid: localStorage.getItem("rid"),  //加入rid
             status: 'enable'
           }
           console.log('推广标签——提交前的数据',data);
@@ -2036,7 +2093,7 @@ export default {
             }else{
               this.$message({
                 type: 'info',
-                message: '添加失败!'
+                message: '数据问题!'
               });
             }
           }).catch((err)=>{
@@ -2077,11 +2134,14 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue,
-            rid:localStorage.getItem("rid")
+            chargeType: 'free',
+            status:'enable',
+
+
           }
           this.$request(this.url.restaurantTag1,'json',data).then((res)=>{
 
-
+            console.log(res.data.msg);
             if(res.data.msg === 'success'){
               this.$message({
                 type: 'success',
@@ -2091,13 +2151,9 @@ export default {
             }else{
               this.$message({
                 type: 'info',
-                message: '添加失败!'
+                message: '数据问题!'
               });
             }
-            this.$message({
-              type: 'success',
-              message: '数据提交成功!'
-            });
 
           }).catch((err)=>{
             this.$message({
@@ -2213,7 +2269,10 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue1,
-            rid:localStorage.getItem("rid")
+            description:inputValue1,
+            pid:7,
+            showType:'always',
+            status:'enable'
           }
           this.$request(this.url.dishesCategory1,'json',data).then((res)=>{
             if(res.data.msg === 'success'){
@@ -2225,7 +2284,7 @@ export default {
             }else{
               this.$message({
                 type: 'info',
-                message: '添加失败!'
+                message: '数据问题!'
               });
             }
 
@@ -2319,7 +2378,6 @@ export default {
           let data = {
             zindex: lastNumber,
             name: inputValue2,
-            rid:localStorage.getItem("rid")
           }
           this.$request(this.url.spec1,'json',data).then((res)=>{
             if(res.data.msg === 'success'){
@@ -2331,7 +2389,7 @@ export default {
             }else{
               this.$message({
                 type: 'info',
-                message: '添加失败!'
+                message: '数据问题!'
               });
             }
           }).catch((err)=>{
@@ -2425,8 +2483,6 @@ export default {
             sid: this.toDynamicTags2.id,
             name: inputValue3,
             zindex: lastNumber,
-            rid:localStorage.getItem("rid")
-
           }
 
         );

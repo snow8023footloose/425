@@ -200,9 +200,8 @@ export default {
       }
       this.dialogFormVisible = !this.dialogFormVisible
     },
-    closeForm(formName) {
-      this.password = ''
-      this.$refs[formName].resetFields();
+    closeForm() {
+      this.dialogFormVisible = !this.dialogFormVisible
     },
     submitConfirmPassWord(){
 
@@ -219,6 +218,14 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
+      this.dialogFormVisible = !this.dialogFormVisible
+      // this.$confirm('确认关闭？')
+      //   .then(_ => {
+      //
+      //   })
+      //   .catch(_ => {
+      //     return
+      //   });
     },
     handleClose(done) {
       this.$confirm('确认关闭？')

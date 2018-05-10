@@ -35,9 +35,9 @@
           <span class="empty" @click="empty">清空</span>
         </div>
         <div style="display: flex;justify-content: space-between">
-          <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{totalPrice}}</span>
+          <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{needPay}}</span>
           <el-button-group>
-            <el-button type="success" round @click="pay">下单</el-button>
+            <el-button type="success" round @click="prePay">下单</el-button>
           </el-button-group>
         </div>
 
@@ -56,7 +56,7 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay}}</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
         <!--<el-select size="small" multiple collapse-tags v-model="value8" filterable placeholder="点击搜索" class="search">-->
           <!--<el-option-->
@@ -145,6 +145,10 @@ const ERR_OK = 0
         type: Number,
         default: 0
       },
+      needPay: {
+        type: Number,
+        default: 0
+      },
     },
     data() {
       return {
@@ -170,6 +174,9 @@ const ERR_OK = 0
         dropBalls: [],
         fold: true,
         book: false,
+        cartList:[],
+        discountMoney:'',
+        realPay:'',
         SColor:'SColor',
         SColor2:'SColor2',
         SColor4:'SColor4',
@@ -178,9 +185,12 @@ const ERR_OK = 0
       };
 
     },
+    watch: {
+
+    },
+
     methods: {
       drop(el) {
-
         for(let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
           if(!ball.show) {
@@ -251,7 +261,7 @@ const ERR_OK = 0
         console.log(this.selectFoods);
         this.dialogTableVisible = !this.dialogTableVisible
       },
-      pay(){
+      prePay(){
         if (this.totalPrice < this.minPrice) {
           return;
         }
@@ -259,6 +269,7 @@ const ERR_OK = 0
       }
     },
     computed: {
+
       totalPrice() {
         let total = 0;
         this.selectFoods.forEach((food) => {

@@ -54,13 +54,18 @@ export default {
     let loginData = {};
 
     let clientType = localStorage.getItem('clientType');
+
+
     if(clientType && clientType == 'wechat'){
       loginData.auth_code = this.$route.query.code;
       loginData.state = this.$route.query.state;
+      alert('接下来弹code和state')
       alert(loginData.auth_code);
       alert(loginData.state)
       this.$request(this.url.loginWechat,'form',loginData).then((res)=>{
+
         alert(res)
+        alert('登录接口进入')
         alert('欢迎光临'+res.data.data.nickname);
       }).catch((err)=>{
         console.log(err);
@@ -74,6 +79,7 @@ export default {
         console.log(err);
       })
     }
+
     this.$request(this.url.restaurant2,'json',[{
       feild:'id',
       value:1524988356660049,

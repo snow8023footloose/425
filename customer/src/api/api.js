@@ -172,6 +172,7 @@ export function goodsArr(self) {
         joinType: 'eq'
       }
     ]))
+    console.log(promiseArr,'11111111111111');
   }
   Promise.all(promiseArr).then((res)=>{
     console.log(res);

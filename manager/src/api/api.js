@@ -25,11 +25,16 @@ export  function urlColletion() {
 
     // 添加账号
     restaurantWithdrawAccount: BURL + '/restaurantWithdrawAccount/add',
+    restaurantWithdrawAccountComplexPageQuery: BURL + '/restaurantWithdrawAccount/complexPageQuery',
+
+    //发送验证码
     restaurantBindAccount: BURL + '/restaurant/getSmsCode',
 
     //提现
     restaurantAccountWithdraw: BURL + '/restaurantAccount/withdraw',
 
+
+    //登录
     login1: BURL + '/xwfUser/login',
     loginRestaurantManager: BURL + '/restaurantManager/login',
 

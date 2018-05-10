@@ -14,8 +14,8 @@
                 v-model="settingForm.serviceStatus"
                 active-color="#13ce66"
                 inactive-color="#ff4949"
-                active-text="营业"
-                inactive-text="休息"
+                active-text="开启服务"
+                inactive-text="暂停服务"
                 active-value="open"
                 inactive-value="close"
               >
@@ -96,6 +96,7 @@
                 <el-option label="分类打印" value="part"></el-option>
               </el-select>
             </el-form-item>
+
             <el-form-item label="促销状态">
               <el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">
                 <el-option label="未促销" value="close"></el-option>
@@ -103,45 +104,121 @@
                 <el-option label="活动促销" value="promotion"></el-option>
               </el-select>
             </el-form-item>
+
             <el-form-item label="提现类型">
               <el-select v-model="settingForm.withdrawType" placeholder="请选择提现类型">
                 <el-option label="实时到账" value="realtime"></el-option>
                 <el-option label="主动提现" value="withdraw"></el-option>
               </el-select>
             </el-form-item>
+
             <el-form-item label="服务提现类型" label-width="100px">
               <el-select v-model="settingForm.serviceRemindType" placeholder="请选择提现类型">
                 <el-option label="文字提醒" value="text"></el-option>
                 <el-option label="音频+文字提醒" value="audioText"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="会员生日优惠" label-width="100px">
-              <el-select v-model="settingForm.birthdayDiscountStatus" placeholder="请选择会员优惠方式">
-                <el-option label="开启" value="open"></el-option>
-                <el-option label="关闭" value="close"></el-option>
+          <el-form :inline="true">
+            <el-form-item label="厨房打印机" label-width="100px">
+              <el-select
+                style="display: inline-block"
+                v-model="settingForm.kitchenPrinterId"
+                placeholder="请选择厨房打印机">
+                <el-option
+                  v-for="(item,index) in printerTable"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="生日优惠方式" label-width="100px">
-              <el-select v-model="settingForm.birthdayDiscountType" placeholder="请选择生日优惠方式">
-                <el-option label="会员价优惠" value="memberPrice"></el-option>
-                <el-option label="活动价优惠" value="promotionPrice"></el-option>
-                <el-option label="折扣" value="discount"></el-option>
-                <el-option label="满减" value="full-cut"></el-option>
+            <el-form-item label="厨房打印模板" label-width="100px">
+              <el-select
+                style="display: inline-block"
+                v-model="settingForm.kitchenPrinterTemplate"
+                placeholder="请选择厨房打印模板">
+                <el-option
+                  v-for="(item,index) in printerTemplateTable"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="生日优惠数额" label-width="100px">
+          </el-form>
+          <el-form>
+            <el-form-item label="厨房打印份数" label-width="100px">
+            <el-input
+            v-model="settingForm.kitchenPrinterNum"
+            placeholder="请输入厨房打印份数"></el-input>
+            </el-form-item>
+          </el-form>
+          <el-form :inline="true">
+            <el-form-item label="收银台打印机" label-width="100px">
+              <el-select
+                style="display: inline-block"
+                v-model="settingForm.cashierPrinterId"
+                placeholder="请选择厨房打印机">
+                <el-option
+                  v-for="(item,index) in printerTable"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="收银台打印模板" label-width="120px">
+              <el-select
+                style="display: inline-block"
+                v-model="settingForm.cashierPrinterTemplate"
+                placeholder="请选择收银台打印模板">
+                <el-option
+                  v-for="(item,index) in printerTemplateTable"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                >
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-form>
+          <el-form>
+            <el-form-item label="收银台打印份数" label-width="120px">
               <el-input
-                v-model="settingForm.birthdayDiscountNum"
-                placeholder="请输入金额"></el-input>
+                v-model="settingForm.cashierPrinterNum"
+                placeholder="请输入收银台打印份数"></el-input>
             </el-form-item>
-            <el-form-item label="生日优惠门槛" label-width="100px">
-              <el-input
-                v-model="settingForm.birthdayMinimumCharge"
-                placeholder="请输入金额"></el-input>
-            </el-form-item>
-            <el-form-item label="店铺公告">
-              <el-input type="textarea" v-model="form.desc"></el-input>
-            </el-form-item>
+          </el-form>
+            <!--<el-form-item label="会员生日优惠" label-width="100px">-->
+              <!--<el-select v-model="settingForm.birthdayDiscountStatus" placeholder="请选择会员优惠方式">-->
+                <!--<el-option label="开启" value="open"></el-option>-->
+                <!--<el-option label="关闭" value="close"></el-option>-->
+              <!--</el-select>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item label="生日优惠方式" label-width="100px">-->
+              <!--<el-select v-model="settingForm.birthdayDiscountType" placeholder="请选择生日优惠方式">-->
+                <!--<el-option label="会员价优惠" value="memberPrice"></el-option>-->
+                <!--<el-option label="活动价优惠" value="promotionPrice"></el-option>-->
+                <!--<el-option label="折扣" value="discount"></el-option>-->
+                <!--<el-option label="满减" value="full-cut"></el-option>-->
+              <!--</el-select>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item label="生日优惠数额" label-width="100px">-->
+              <!--<el-input-->
+                <!--v-model="settingForm.birthdayDiscountNum"-->
+                <!--placeholder="请输入金额"></el-input>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item label="生日优惠门槛" label-width="100px">-->
+              <!--<el-input-->
+                <!--v-model="settingForm.birthdayMinimumCharge"-->
+                <!--placeholder="请输入金额"></el-input>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item label="店铺公告">-->
+              <!--<el-input type="textarea" v-model="form.desc"></el-input>-->
+            <!--</el-form-item>-->
           </el-form>
         </el-tab-pane>
 
@@ -204,6 +281,10 @@
                 width="150"
                 prop="status"
                 label="状态">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.status === 'disable'">不可用</span>
+                  <span v-if="scope.row.status === 'enable'">可用</span>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -403,6 +484,7 @@
             <span></span>
           </div>
         </el-tab-pane>
+
       </el-tabs>
       <!--增加打印模板-->
       <el-dialog title="增加打印机" :visible.sync="dialogFormVisiblePrinterPlus">
@@ -513,6 +595,10 @@ export default {
       endTimePreSetting:'',
       alipayAccountName:'',
       WeChatAccountName:'',
+      cashierPrinterTemplate:[],
+      kitchenPrinterTemplate:[],
+      kitchenPrinterId:[],
+      cashierPrinterId:[],
       printerStatus:[
         {
           label:'可用',
@@ -567,8 +653,49 @@ export default {
     this._pullPrinter()
     this._pullPrinterTemplate()
     this._pullSetting()
+    this._pullBindAccount()
   },
   methods:{
+    _pullBindAccount(){
+      let _this = this
+      this.$request(this.url.restaurantWithdrawAccountComplexPageQuery,'json',[
+        {
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        },
+        {
+          feild:'type',
+          value:'alipay',
+          joinType:'eq'
+        }
+      ]).then((res)=>{
+        this.alipayGetName = res.data.data[0].name + '已绑定';
+        _this.alipaymsg = '切换支付宝绑定'
+        console.log(res.data.data);
+      }).catch((err)=>{
+        console.log(err);
+      })
+
+      this.$request(this.url.restaurantWithdrawAccountComplexPageQuery,'json',[
+        {
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        },
+        {
+          feild:'type',
+          value:'wechat',
+          joinType:'eq'
+        }
+      ]).then((res)=>{
+        this.wechatGetName = res.data.data[0].nickname + '已绑定'
+        _this.wechatmsg = '切换微信绑定'
+        console.log(res.data.data);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
     lastAliBinded(){
       console.log(this.alipayAccountName);
       console.log(this.aliRecode);
@@ -706,9 +833,11 @@ export default {
     },
     _pullSetting(){
       this.$request(this.url.restaurantSetting,'json',[{
-        feild: 'rid',
-        value: localStorage.getItem('rid'),
-        joinType: 'eq'
+
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+
       }]).then((res)=>{
         this.settingForm = res.data.data[0]
         console.log('this.settingForm',res.data.data[0]);
@@ -719,14 +848,15 @@ export default {
     _pullPrinter(){
       let data=[
         {
-          feild:'rid',
-          value:1524988356660049,
-          joinType:'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         }
       ]
       this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
         console.log(res);
         this.printerTable = res.data.data
+        console.log('printerTable',res.data.data);
       }).catch((err)=>{
         console.log(err);
       })
@@ -742,19 +872,19 @@ export default {
       this.$request(this.url.printerTemplateComplexPageQuery,'json',data).then((res)=>{
         console.log(res);
         this.printerTemplateTable = res.data.data
+        console.log('printerTemplateTable',res.data.data);
       }).catch((err)=>{
         console.log(err);
       })
     },
     printerTypeChange(){},
     plusPrinterConfirm(){
-      this.printerForm.rid = localStorage.getItem('rid')
+      // this.printerForm.rid = localStorage.getItem('rid')
       console.log('提交打印机数据',this.printerForm);
       this.$request(this.url.printerAdd,'json',this.printerForm).then((res)=>{
         console.log(res);
         this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
         this._pullPrinter()
-
       }).catch((err)=>{
         console.log(err);
       })
@@ -763,7 +893,7 @@ export default {
       this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
     },
     plusPrinterTemplateConfirm(){
-      this.printerTemplateForm.rid = localStorage.getItem('rid')
+      // this.printerTemplateForm.rid = localStorage.getItem('rid')
       console.log('提交打印机数据',this.printerTemplateForm);
       this.$request(this.url.printerTemplateAdd,'json',this.printerTemplateForm).then((res)=>{
         console.log(res);

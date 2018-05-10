@@ -11,7 +11,7 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay}}</div>
         <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
       </div>
@@ -45,7 +45,7 @@
           <li class="food" v-for="(food,key) in selectFoods" :key="key">
             <span class="name">{{food.name}}</span>
             <div class="price">
-              <span>￥{{food.normalPrice*food.count}}</span>
+              <span>￥{{needPay}}</span>
             </div>
             <div class="cartcontrol-wrapper">
               <cartcontrol
@@ -67,7 +67,7 @@
       <div style="color: white" v-show="prePayShow" class="detail animated">
         <div class="detail-wrapper clearfix">
 
-          <div class="scroll" style="height: 490px" ref="s-scroll">
+          <div class="scroll" style="height: 490px" ref="confirm-scroll">
             <div class="s-scroll" style="background: rgba(255,255,255,0);width: 100%;margin: 0px auto;">
               <h1 class="name">确认订单</h1>
               <!--<div class="favorite">
@@ -142,8 +142,8 @@
                 <!--<p class="content">下单时间：{{seller.description}}</p>-->
 
                 <ul>
-                  <li class="orderList info-item" v-for="item in cartList">
-                    <span> {{item.dishes.name}} </span> <span>x{{item.num}} </span><span>￥{{item.totalPrice}} </span>
+                  <li class="orderList info-item" v-for="item in cartList" v-if="item.num > 0">
+                    <span > {{item.dishes.name}} </span> <span>x{{item.num}} </span><span>￥{{item.totalPrice}} </span>
                   </li>
                 </ul>
               </div>
@@ -195,7 +195,11 @@ const ERR_OK = 0
       minPrice: {
         type: Number,
         default: 0
-      }
+      },
+      needPay: {
+        type: Number,
+        default: 0
+      },
     },
     data() {
       return {
@@ -203,7 +207,6 @@ const ERR_OK = 0
         confirmOnce:0,
         cartList:[],
         discountMoney:'',
-        needPay:'',
         realPay:'',
         prePayShow:false,
         balls: [
@@ -248,7 +251,7 @@ const ERR_OK = 0
         // if (this.totalPrice < this.minPrice) {
         //   return;
         // }
-
+          let _this = this
         // if(this.confirmOnce === 0){
           this.prePayShow = !this.prePayShow
           let data= {
@@ -265,10 +268,12 @@ const ERR_OK = 0
             this.needPay = res.data.data.needPay.toFixed(1)
             this.realPay = res.data.data.realPay.toFixed(1)
             console.log('confirmOrder',res);
+            console.log('111');
+            _this._intScroll
             // alert(this.needPay)
             this.$nextTick(() => {
               if (!this.scroll) {
-                this.scroll = new BScroll(this.$refs['s-scroll'], {
+                this.scroll = new BScroll(this.$refs['confirm-scroll'], {
                   click: true
                 });
               } else {
@@ -284,6 +289,18 @@ const ERR_OK = 0
         //   this.prePayShow = !this.prePayShow
         // }
         // window.alert(`支付${this.totalPrice}元`);
+      },
+      _intScroll(){
+        console.log('222');
+        this.$nextTick(() => {
+          if (!this.scroll) {
+            this.scroll = new BScroll(this.$refs['confirm-scroll'], {
+              click: true
+            });
+          } else {
+            this.scroll.refresh();
+          }
+        });
       },
       confirmPay(){
         alert('===========进入支付');
@@ -323,13 +340,27 @@ const ERR_OK = 0
                 paySign: res.data.data.paySign, // 支付签名
                 success: function (response) {
                   if(response.errMsg == "chooseWXPay:ok"){
-                    alert('支付成功')
+                    this.$router.push({path:'/order'})
+                    this.$message({
+                      type: 'success',
+                      message: '支付成功！'
+                    });
+
                   }
+                },
+                cancel: function(res) {
+                  this.$message({
+                    type: 'info',
+                    message: '支付未完成'
+                  });
                 }
               });
             });
             wx.error(function (res) {
-              alert('签名错误');
+              this.$message({
+                type: 'success',
+                message: '签名错误'
+              });
             });
           }).catch((err) => {
             console.log(err);
@@ -353,6 +384,7 @@ const ERR_OK = 0
             console.log(err);
           })
         }
+        this.empty()
       },
       hidePrePayShow(){
         this.prePayShow = !this.prePayShow

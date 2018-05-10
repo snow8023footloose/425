@@ -26,12 +26,12 @@
               auto-complete="off"
             ></el-input>
           </el-form-item>
-        <el-form-item>
-          <el-button v-if="manager === false" type="primary" @click="submitFormXwf('ruleForm2')">登录</el-button>
-          <el-button @click="resetForm('ruleForm2')">重置</el-button>
-          <el-button type="text" @click="clearLocalStorage">清除</el-button>
-        </el-form-item>
-          <el-form-item>
+          <el-form-item v-if="manager === true">
+            <el-button type="primary" @click="submitFormManager('ruleForm2')">登录</el-button>
+            <el-button @click="resetForm('ruleForm2')">重置</el-button>
+            <el-button type="text" @click="clearLocalStorage">清除</el-button>
+          </el-form-item>
+          <el-form-item v-if="manager === false">
             <el-button type="primary" @click="submitFormManager('ruleForm2')">登录</el-button>
             <el-button @click="resetForm('ruleForm2')">重置</el-button>
             <el-button type="text" @click="clearLocalStorage">清除</el-button>
@@ -60,7 +60,7 @@
       <i style="color: #ff525b" class="el-icon-circle-close person-close" @click="loginOut"></i>
 
 
-      <el-col :span="5" v-show="manager">
+      <el-col :span="5" v-show="owner">
         <img src="./logo.png" alt="">
         <el-menu
           default-active="1"
@@ -91,7 +91,7 @@
       </el-col>
 
 
-      <el-col :span="5" v-show="owner">
+      <el-col :span="5" v-show="manager">
         <img src="./logo.png" alt="">
         <el-menu
           default-active="1"
@@ -148,11 +148,9 @@
     <computer v-if="this.loginShow === false"></computer>
   </div>
 </template>
-
 <script>
 
-  import computer from '@/components/comput/computer'
-
+import computer from '@/components/comput/computer'
 export default {
   name: 'App',
   data () {
@@ -186,7 +184,7 @@ export default {
       loginstate: false,
       loginShow: true,
       owner: false,
-      manager: false,
+      manager: true,
 
       //
       // 新沃丰公司内部登录 不需账号设置
@@ -228,11 +226,13 @@ export default {
       }
     }
   },
-  mounted(){
-
-  },
   methods: {
     submitFormManager(formName) {
+      if(this.manager === true){
+        this.owner = false
+      }else{
+        this.owner = true
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.value4,'value4');
@@ -242,31 +242,58 @@ export default {
             thirdId: 123154464
           }
           console.log(data,'提交时的登录信息');
-          this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
-            console.log(res.data,'这是登录返回的信息');
-            if(res.data.msg === 'username is not exist'){
-              this.$message({
-                duration: 1000,
-                type: 'info',
-                message: '用户名不存在'
-              });
-            }else if(res.data.msg === 'success'){
-              let rid = res.data.data.rid
-              localStorage.setItem('rid',JSON.stringify(rid))
-              this.manager = false
-              this.owner = true
-              this.loginstate = true
-              this.loginShow = false
-              this.$message({
-                duration: 1000,
-                type: 'success',
-                message: '欢迎登录新沃丰系统'
-              });
-              this.$router.push({path:'/'})
-            }
-          }).catch((res)=>{
-            console.log(res);
-          })
+          if(this.manager === true){
+            this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
+              console.log(res.data,'这是登录返回的信息');
+              if(res.data.msg === 'username is not exist'){
+                this.$message({
+                  duration: 1000,
+                  type: 'info',
+                  message: '用户名不存在'
+                });
+              }else if(res.data.msg === 'success'){
+                let rid = res.data.data.rid
+                localStorage.setItem('rid',JSON.stringify(rid))
+
+                this.loginstate = true
+                this.loginShow = false
+                this.$message({
+                  duration: 1000,
+                  type: 'success',
+                  message: '欢迎登录新沃丰系统'
+                });
+                this.$router.push({path:'/'})
+              }
+            }).catch((err)=>{
+              console.log(err);
+            })
+          }else {
+            this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
+              console.log(res.data,'这是登录返回的信息');
+              if(res.data.msg === 'username is not exist'){
+                this.$message({
+                  duration: 1000,
+                  type: 'info',
+                  message: '用户名不存在'
+                });
+              }else if(res.data.msg === 'success'){
+                let rid = res.data.data.rid
+                localStorage.setItem('rid',JSON.stringify(rid))
+
+                this.loginstate = true
+                this.loginShow = false
+                this.$message({
+                  duration: 1000,
+                  type: 'success',
+                  message: '欢迎登录新沃丰系统'
+                });
+                this.$router.push({path:'/XWFer/xwfcustom'})
+              }
+            }).catch((err)=>{
+              console.log(err);
+            })
+          }
+
         } else {
           console.log('提交失败');
           return false;
@@ -275,24 +302,6 @@ export default {
     },
     clearLocalStorage(){
       localStorage.clear()
-    },
-    atSwitch(){
-      console.log("1");
-      const loading = this.$loading({
-        lock: true,
-        text: '正在暂停该餐桌服务……',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-
-      });
-      setTimeout(() => {
-        loading.close();
-        this.$message({
-          showClose: true,
-          message: '该餐桌二维码已经失效！',
-          type: 'success'
-        });
-      }, 2000);
     },
     keyEvent (ev) {
       alert(ev.keyCode)

@@ -58,6 +58,7 @@
       <shopcart
         ref="shop-cart"
         :select-foods="selectFoods"
+        :needPay = 'needPay'
         :delivery-price="seller.deliveryPrice"
         :min-price="seller.minPrice"
       ></shopcart>
@@ -84,6 +85,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
+          <span style="float: left">价格：￥{{getFoods.normalPrice+sideTagsPrice}}</span>
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="confirmSku">确 定</el-button>
         </div>
@@ -118,12 +120,14 @@ export default {
   props: {
     seller: {
       type: Object
-    }
+    },
   },
   data() {
     return {
       startOrderVisible:false,
       selectedSpec:'',
+      needPay:0,
+      sideTagsPrice:0,
       goods: [],
       listHeight: [],
       tid: 12,
@@ -147,15 +151,83 @@ export default {
       selectedSkuArr : [],
       trueLabelofSpecs:[],
       trueLabelofTags:[],
-      transformArryTag:[]
+      transformArryTag:[],
+      tagsPrice:0,
+      oldTagArr : []
     };
+  },
+  watch:{
+    getFoods(){
+      let data= {
+        // restaurantId: localStorage.getItem('rid'),
+        restaurantId: 1524988356660049,
+        orderType:'single',
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        this.cartList = res.data.data.cartList
+        this.discountMoney = res.data.data.discountMoney.toFixed(1)
+        this.needPay = parseInt(res.data.data.needPay.toFixed(1))
+        console.log(this.needPay);
+        this.realPay = res.data.data.realPay.toFixed(1)
+      }).catch((err)=>{
+
+      })
+    },
+    selectedSkuArr(val){
+      console.log(val);
+    },
+    selectedTags(val) {
+      console.log('123213213', val);
+      // console.log('this.getFoods.tags',this.getFoods,val);
+      if (val.length > 0) {
+        if (this.getFoods.tags) {
+          if(this.oldTagArr.length == 0){
+            for(let newTag of val){
+              for(let originTag of this.getFoods.tags){
+                if(newTag == originTag.name && originTag.chargeType == 'charge'){
+                  this.sideTagsPrice += originTag.price;
+                  this.oldTagArr = Object.assign({},val);
+                  break;
+                }
+              }
+            }
+          } else {
+            if (val.length > this.oldTagArr.length) {
+              for (let newTag of val) {
+                for (let oldTag of this.oldTagArr) {
+                  if (newTag != oldTag) {
+                    for (let orininTag of this.getFoods.tags) {
+                      if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
+                        this.sideTagsPrice += orininTag.price;
+                        break;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      } else {
+        if (this.oldTagArr.length > 0) {
+          for (let oldTag of this.oldTagArr) {
+            for (let originTag of this.getFoods.tags) {
+              if (oldTag == originTag.name && originTag.chargeType == 'charge') {
+                this.sideTagsPrice -= originTag.price;
+              }
+            }
+          }
+        }
+      }
+      console.log('=====最新价格',this.getFoods.normalPrice);
+    }
   },
   created () {
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
     this._pullTable();
     this._pullSpec();
     this.openFullScreen2()
-
     // this.tid = localStorage.getItem('tid')
   },
   computed: {
@@ -163,9 +235,9 @@ export default {
       for (let i = 0; i < this.listHeight.length; i++) {
         let height1 = this.listHeight[i];
         let height2 = this.listHeight[i+1];
-        console.log(height1, height2, this.scrollY);
+        // console.log(height1, height2, this.scrollY);
         if (!height2 || (this.scrollY >= height1 && this.scrollY < height2)) {
-          console.log('外',i)
+          // console.log('外',i)
           return i;
         }
       }
@@ -200,7 +272,7 @@ export default {
           this.scrollOnce= 1
         }
         loading.close();
-      }, 500);
+      }, 1500);
     },
     startOrder(){
       if(this.scrollOnce === 0){
@@ -217,19 +289,24 @@ export default {
         if(this.selectedSkuArr.length === i){
           return selectedSkuArr
         }else {
-          for(var j=0;j<this.specs[i].attrs.length;j++){
-            // console.log(this.specs[i].attrs);
-            if(this.selectedSkuArr.length === i){
-              continue
-            }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
-              selectedSkuArr.push(this.specs[i].attrs[j].id)
+
+          if(this.specs[i].attrs === undefined){
+          } else{
+            for(var j=0;j<this.specs[i].attrs.length;j++){
+              // console.log(this.specs[i].attrs);
+              if(this.selectedSkuArr.length === i){
+                continue
+              }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
+                selectedSkuArr.push(this.specs[i].attrs[j].id)
+              }
             }
           }
+
+
         }
       }
     },
     transformArryTags(){
-
       let selectedArryTags = []
       let data1 = [
         {
@@ -246,12 +323,16 @@ export default {
         for(var i=0;0<this.selectedTags.length;i++) {
           if(this.selectedTags.length === i){
             _this.restaurantTagRes = selectedArryTags
-            console.log('selectedArryTags111111111111111',selectedArryTags);
+            // console.log('selectedArryTags111111111111111',selectedArryTags);
             let attrTags = selectedArryTags.join(',');
             let attrJoin = _this.transformArrySku().join('_');
             let selectedSkuObj = _this.findSkuByAttrJoin(attrJoin);
-            console.log('selectedSkuObj===================',selectedSkuObj);
+            // console.log('selectedSkuObj===================',selectedSkuObj);
 
+            if(!selectedSkuObj){
+              alert('规格没有选完')
+              return false
+            }
             //删掉相关联的规格都会引起id出现问题
             //删掉相关联的分类都会引起forEach出现问题
 
@@ -264,8 +345,11 @@ export default {
               type: 'single',
               tagIds: attrTags
             }
-            console.log('加入标签，加入SKU',data);
+            // console.log('加入标签，加入SKU',data);
             _this.$request(_this.url.cart1,'json',data).then((res)=>{
+              if(res.data.msg === 'success'){
+                _this.ballDrop()
+              }
               console.log(res);
             }).catch((err)=>{
               console.log(err);
@@ -284,7 +368,19 @@ export default {
         console.log(err);
       })
     },
+    ballDrop(){
+      if (!this.getFoods.count) {
+        Vue.set(this.getFoods, 'count', 1);
+      } else {
+        this.getFoods.count++;
+      }
+      this.dialogFormVisible = !this.dialogFormVisible
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(this.getData.event);
+      });
+    },
     confirmSku(){
+      console.log('1');
       if(!this.transformArrySku()){
         this.$message({
           type: 'info',
@@ -292,16 +388,20 @@ export default {
         });
         return
       }
-      if(this.selectedTags){
+
+      if(this.selectedTags.length > 0){
         this.transformArryTags()
       }else {
         let attrJoin = this.transformArrySku().join('_');
         // this.transformArryTags()
 
-        console.log('transformArryTags',this.transformArryTags());
-        console.log(attrJoin,'SKU-Tags',attrTags);
+        // console.log('transformArryTags',this.transformArryTags());
+        // console.log(attrJoin,'SKU-Tags',attrTags);
         let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
-
+        if(!selectedSkuObj){
+          alert('规格没有选完')
+          return false
+        }
         let data = {
           num:1,
           sid: selectedSkuObj.id,
@@ -309,29 +409,33 @@ export default {
           rid: this.getFoods.rid,
           tid: this.tid,
           type: 'single',
-          tagIds: attrTags
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
+          if(res.data.msg === 'success'){
+            this.ballDrop()
+            console.log('加入购物车成功',res.data.msg);
+            return
+          }else{
+            console.log('数据提交成功但是数据错误',res);
+          }
         }).catch((err)=>{
-          console.log(err);
+          console.log('加入购物车失败',err);
         })
+        this.$nextTick(() => {
+          this.$refs['shop-cart'].drop(this.getData.event);
+        });
       }
 
-      if (!this.getFoods.count) {
-        Vue.set(this.getFoods, 'count', 1);
-      } else {
-        this.getFoods.count++;
-      }
 
-      this.dialogFormVisible = !this.dialogFormVisible
-      this.$nextTick(() => {
-        this.$refs['shop-cart'].drop(this.getData.event);
-      });
+
     },
     incrementTotalAdd(g) {
+      this.sideTagsPrice = 0
       this.getData = g
-      console.log(g.event,g.food,'456546456456')
+      this.selectedSkuArr = []
+      this.selectedTags = []
+      // console.log(g.event,g.food,'456546456456')
+      this.getFoods = Object.assign({},g.food)
       //体验优化,异步执行下落动画
       if(g.specs){
         this.dialogFormVisible = !this.dialogFormVisible
@@ -349,9 +453,9 @@ export default {
           type: 'single',
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
+          console.log('加入购物车成功',res);
         }).catch((err)=>{
-          console.log(err);
+          console.log('加入购物车失败',err);
         })
       }
     },
@@ -459,7 +563,7 @@ export default {
           console.log(err)
         }).then(function () {
           _this.goods = _this.goodsArr(_this);
-          // console.log(55, _this.goods);
+          console.log(55, _this.goods);
         }).then(function () {
           // _this.goods = goods;
         })
@@ -486,6 +590,13 @@ export default {
     food
   },
   mounted(){
+    this.$request(this.url.dishes2,'json',[{
+      feild: 'time',
+      value:'',
+      joinType: 'time'
+    }]).then((res)=>{
+      console.log(res);
+    })
     this.startOrderVisible = !this.startOrderVisible
   },
   events: {
@@ -640,11 +751,11 @@ export default {
   height: 100%
   .menu-button
     position fixed
-    bottom 20%
+    bottom 13%
     left 5%
     width 44px
     height 44px
-    background rgba(255,255,255,0.9)
+    background rgba(0, 180, 60, 0.8)
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3)
     /*background #f3f5f7*/
     border-radius 100%
@@ -653,6 +764,7 @@ export default {
       font-size 45px
       text-align center
       vertical-align middle
+      color white
   .menu-wrapper
     flex: 0 0 80px
     position: absolute
@@ -661,7 +773,7 @@ export default {
     left -47%
     margin-left 50%
     padding 8px
-    background: rgba(255,255,255,0.9)
+    background: rgba(0, 180, 60, 0.8)
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3)
     z-index 30
     overflow hidden
@@ -688,6 +800,7 @@ export default {
           border-1px(rgba(7, 17, 27, 0.1))
           text-align center
           font-size: 16px
+          color white
 
 
   .foods-wrapper

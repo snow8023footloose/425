@@ -134,8 +134,6 @@
               <div style="text-align: right; margin: 0">
                 <div class="shopcart-list">
                   <div class="list-header" @click.stop="toggleList">
-                    <!--<p class="title">购物车</p>-->
-                    <span class="empty" @click="empty">清空</span>
                   </div>
                   <div class="list-content" ref="list-content">
                     <ul style="padding: 0px">
@@ -195,8 +193,8 @@
           <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
             <ul class="menu-ul">
               <li
-                v-for="(item,index,key) in goods"
-                :key="key"
+                v-for="(item,index) in goods"
+                :key="item.zindex"
                 class="menu-item"
                 :class="{'current':currentIndex===index}"
                 @click="selectMenu(index,$event)">
@@ -213,10 +211,10 @@
         <!--菜品展示-->
         <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
           <ul class="foods-ul">
-            <li v-for="(item,key) in goods" :key="key" class="food-list food-list-hook">
+            <li v-for="item in goods" :key="item.zindex" class="food-list food-list-hook">
               <h1 class="goods-title">{{item.name}}</h1>
               <ul class="goodsUl">
-                <li ref="food-li" v-for="(food,key) in item.foods" :key="key" class="food-item border-1px">
+                <li ref="food-li" v-for="food in item.foods" :key="item.zindex" class="food-item border-1px">
                   <div class="icon">
                       <img width="70px" height="70px" class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb" alt="点击查看原图">
                   </div>
@@ -244,7 +242,11 @@
           </ul>
         </div>
         <!--加入购物车-->
-        <shopcart ref="shop-cart" :select-foods="selectFoods" :goods1="goods"></shopcart>
+        <shopcart
+          ref="shop-cart"
+          :select-foods="selectFoods"
+          :goods1="goods"
+          :needPay="needPay"></shopcart>
       </div>
       </transition>
     <!--丢弃弹框-->
@@ -327,9 +329,12 @@
           <span class="empty" @click="empty">清空</span>
         </div>
         <div>
-          <div class="price" style="font-size: 20px;text-align: center">优惠 ￥{{discountMoney}}</div>
-          <div class="price" style="font-size: 20px;text-align: center">需付 ￥{{needPay}}</div>
-          <div class="price" style="font-size: 20px;font-weight: bolder;text-align: center">总计 ￥{{realPay}}</div>
+          <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
+            优惠 <span>￥{{discountMoney}}</span></div>
+          <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
+            需付 <span>￥{{needPay}}</span></div>
+          <div class="price" style="font-size: 20px;font-weight: bolder;text-align: center;display: flex;justify-content: space-around">
+            总计 <span>￥{{realPay}}</span></div>
           <el-button-group>
             <el-button style="position: fixed;bottom: 30px;left: 50%;width: 30%;margin-left: -15%" type="success" round @click="confirmOrder">确认下单</el-button>
           </el-button-group>
@@ -492,8 +497,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <span style="float: left">价格：￥ {{getFoods.normalPrice}}</span>
-
+        <span style="float: left">价格：￥ {{getFoods.normalPrice+sideTagsPrice+sideSkusPrice}}</span>
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <el-button type="primary" @click="confirmSku">确 定</el-button>
       </div>
@@ -513,7 +517,7 @@ export default {
   data: () => ({
     cartList:[],
     discountMoney:'',
-    needPay:'',
+    needPay:0,
     realPay:'',
     tableShow:0,
     confirmMessage: {
@@ -627,7 +631,12 @@ export default {
     value: '',
     foodss:[],
     tagsPrice:0,
-    oldTagArr : []
+    sideTagsPrice:0,
+    skusPrice:0,
+    sideSkusPrice:0,
+    oldTagArr : [],
+    oldSkuArr : [],
+    tagsTotalPrice:0,
   }),
 
   computed: {
@@ -690,53 +699,110 @@ export default {
     }
   },
   watch:{
-    selectedSkuArr(val){
-      console.log(val);
+    totalCount(){
+      let data= {
+        // restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        this.cartList = res.data.data.cartList
+        this.discountMoney = res.data.data.discountMoney.toFixed(1)
+        this.needPay = parseInt(res.data.data.needPay.toFixed(1))
+        console.log(this.needPay);
+        this.realPay = res.data.data.realPay.toFixed(1)
+      }).catch((err)=>{
+
+      })
     },
-    selectedTags(val) {
-      console.log('123213213', val);
-      // console.log('this.getFoods.tags',this.getFoods,val);
-      if (val.length > 0) {
-        if (this.getFoods.tags) {
-          if(this.oldTagArr.length == 0){
-            for(let newTag of val){
-              for(let originTag of this.getFoods.tags){
-                if(newTag == originTag.name && originTag.chargeType == 'charge'){
-                  this.getFoods.normalPrice += originTag.price;
-                  this.oldTagArr = Object.assign({},val);
-                  break;
-                }
-              }
-            }
-          } else {
-            if (val.length > this.oldTagArr.length) {
-              for (let newTag of val) {
-                for (let oldTag of this.oldTagArr) {
-                  if (newTag != oldTag) {
-                    for (let orininTag of this.getFoods.tags) {
-                      if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
-                        this.getFoods.normalPrice += orininTag.price;
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
+    selectedSkuArr(val){
+      let  attrJoin = this.transformArrySku().join('_');
+      let  selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+      let  skusTotalPrice = 0
+      if(!selectedSkuObj){
+        return false
+      }else{
+        if(this.getFoods.skus){
+          for(let i=0;i<this.getFoods.skus.length;i++) {
+            if (selectedSkuObj.id === this.getFoods.skus[i].id) {
+              console.log(this.getFoods.skus[i].normalPrice);
+              skusTotalPrice += this.getFoods.skus[i].price
             }
           }
-        }
-      } else {
-        if (this.oldTagArr.length > 0) {
-          for (let oldTag of this.oldTagArr) {
-            for (let originTag of this.getFoods.tags) {
-              if (oldTag == originTag.name && originTag.chargeType == 'charge') {
-                this.getFoods.normalPrice -= originTag.price;
-              }
-            }
-          }
+        }else {
+          return false
         }
       }
-      console.log('=====最新价格',this.getFoods.normalPrice);
+    },
+
+    selectedTags(val) {
+      let tagsTotalPrice = 0
+      if(this.getFoods.tags){
+        for(let i=0;i<this.getFoods.tags.length;i++){
+          if(val.length > 0 ){
+            for(let i=0;i<val.length;i++){
+              if(val[i] === this.getFoods.tags[i].name){
+                console.log(this.getFoods.tags[i].price);
+                tagsTotalPrice += this.getFoods.tags[i].price
+              }
+            }
+          }
+        }
+      }else {
+        return
+      }
+      this.tagsTotalPrice = tagsTotalPrice/this.getFoods.tags.length
+      console.log('最后得到的总价',this.tagsTotalPrice);
+
+      // console.log('this.getFoods.tags',this.getFoods,val);
+      // if (val.length > 0) {
+      //   if (this.getFoods.tags) {
+      //     if (this.oldTagArr.length == 0) {
+      //       for (let newTag of val) {
+      //         for (let originTag of this.getFoods.tags) {
+      //           if (newTag == originTag.name && originTag.chargeType == 'charge') {
+      //             this.sideTagsPrice += originTag.price;
+      //             console.log('第一次赋值');
+      //             this.oldTagArr = Object.assign({}, val);
+      //             break;
+      //           }
+      //         }
+      //       }
+      //     } else {
+      //       if (val.length > this.oldTagArr.length) {
+      //         for (let newTag of val) {
+      //           for (let oldTag of this.oldTagArr) {
+      //             if (newTag != oldTag) {
+      //               for (let orininTag of this.getFoods.tags) {
+      //                 if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
+      //                   this.sideTagsPrice += orininTag.price;
+      //                   console.log('第二次赋值');
+      //                   break;
+      //                 }
+      //               }
+      //             }
+      //           }
+      //         }
+      //       }
+      //     }
+      //   }
+      // } else {
+      //   if (this.oldTagArr.length > 0) {
+      //     for (let oldTag of this.oldTagArr) {
+      //       for (let originTag of this.getFoods.tags) {
+      //         if (oldTag == originTag.name && originTag.chargeType == 'charge') {
+      //           this.sideTagsPrice -= originTag.price;
+      //           console.log('第二次赋值');
+      //         }
+      //       }
+      //     }
+      //   }
+      // }
+      // this.oldTagArr = []
+      console.log('选中的标签', val);
+      console.log('this.oldTagArr', this.oldTagArr);
+      console.log('该菜品所有的标签', this.getFoods.tags);
+      console.log('选中标签的价格',this.sideTagsPrice);
     }
   },
   methods: {
@@ -751,7 +817,7 @@ export default {
         return;
       }
       let data= {
-        restaurantId: localStorage.getItem('rid'),
+        // restaurantId: localStorage.getItem('rid'),
         orderType:'multi',
         tableId: this.tid
       }
@@ -804,19 +870,26 @@ export default {
         for(var i=0;0<this.selectedTags.length;i++) {
           if(this.selectedTags.length === i){
             _this.restaurantTagRes = selectedArryTags
-            console.log('selectedArryTags111111111111111',selectedArryTags);
+            // console.log('selectedArryTags111111111111111',selectedArryTags);
             let attrTags = selectedArryTags.join(',');
             let attrJoin = _this.transformArrySku().join('_');
-            console.log('attrJoin', attrJoin);
+            // console.log('attrJoin', attrJoin);
             let selectedSkuObj = _this.findSkuByAttrJoin(attrJoin);
-            console.log('确定_this.getFoods',_this.getFoods);
-            console.log('selectedSkuObj===================',selectedSkuObj);
+            // console.log('确定_this.getFoods',_this.getFoods);
+            // console.log('selectedSkuObj===================',selectedSkuObj);
+
+            if(!selectedSkuObj){
+              alert('规格没有选完')
+              return false
+            }
+            //删掉相关联的规格都会引起id出现问题
+            //删掉相关联的分类都会引起forEach出现问题
 
             let data = {
               num:1,
               sid: selectedSkuObj.id,
               did: _this.getFoods.id,
-              rid: _this.getFoods.rid,
+              // rid: _this.getFoods.rid,
               tid: _this.tid,
               type: 'multi',
               tagIds: attrTags
@@ -843,6 +916,7 @@ export default {
       })
     },
     confirmSku(){
+      console.log('1');
       if(!this.transformArrySku()){
         this.$message({
           type: 'info',
@@ -864,7 +938,7 @@ export default {
           num:1,
           sid: selectedSkuObj.id,
           did: this.getFoods.id,
-          rid: this.getFoods.rid,
+          // rid: this.getFoods.rid,
           tid: this.tid,
           type: 'multi',
         }
@@ -875,10 +949,13 @@ export default {
           }else{
             console.log('加入购物车成功',res.data.msg);
           }
-
         }).catch((err)=>{
           console.log('加入购物车失败',err);
         })
+        this.$nextTick(() => {
+          this.$refs['shop-cart'].drop(this.getData.event);
+          console.log(this.$refs);
+        });
       }
     },
     ballDrop(){
@@ -894,13 +971,14 @@ export default {
     },
     incrementTotalAdd(g) {
       // console.log('餐桌',this.tableForm);
-      this.getData = g
+      this.tagsTotalPrice = 0
       this.selectedSkuArr = []
       this.selectedTags = []
+      this.sideTagsPrice = 0
       // console.log(g.event,g.food,'456546456456')
       //体验优化,异步执行下落动画
       this.getFoods = Object.assign({},g.food)
-      console.log(this.getFoods);
+      // console.log(this.getFoods);
       if(g.specs){
         this.dialogFormVisible = !this.dialogFormVisible
         this.getFoods = g.food
@@ -912,7 +990,7 @@ export default {
         let data = {
           num: 1,
           did: g.food.id,
-          rid: g.food.rid,
+          // rid: g.food.rid,
           tid: this.tid,
           type: 'multi',
         }
@@ -932,7 +1010,7 @@ export default {
         let data = {
           num: -1,
           did: g.food.id,
-          rid: g.food.rid,
+          // rid: g.food.rid,
           tid: this.tid,
           type: 'multi',
         }
@@ -997,7 +1075,7 @@ export default {
       this.dialogConfirmOrder = !this.dialogConfirmOrder
       let data= {
         // restaurantId: localStorage.getItem('rid'),
-        restaurantId: localStorage.getItem('rid'),
+        // restaurantId: localStorage.getItem('rid'),
         orderType:'multi',
         // tableId: localStorage.getItem('tid')
         tableId: this.tid
@@ -1006,7 +1084,7 @@ export default {
         this.cartList = res.data.data.cartList
         console.log('this.cartList',this.cartList);
         this.discountMoney = res.data.data.discountMoney.toFixed(2)
-        this.needPay = res.data.data.needPay.toFixed(2)
+        this.needPay = parseInt(res.data.data.needPay.toFixed(2))
         this.realPay = res.data.data.realPay.toFixed(2)
         console.log('confirmOrder',res);
         // alert(this.needPay)
@@ -1153,9 +1231,9 @@ export default {
       this.dialogConfirmOrder = !this.dialogConfirmOrder
       let data = [
         {
-          feild:'rid',
-          value:localStorage.getItem('rid'),
-          joinType:'eq'
+          feild:'status',
+          value:'123',
+          joinType:'ne'
         },
         {
           feild:'tid',
@@ -1222,7 +1300,7 @@ export default {
       }
     },
     plusTable(){
-      this.tableForm.rid = localStorage.getItem("rid");
+      // this.tableForm.rid = localStorage.getItem("rid");
       this.tableForm.status = 'enable'
       let data = this.tableForm
       console.log(data);
@@ -1246,7 +1324,7 @@ export default {
       })
     },
     plusTable1(){
-      this.tableForm.rid = localStorage.getItem("rid");
+      // this.tableForm.rid = localStorage.getItem("rid");
       this.tableForm.status = 'disable'
       let data = this.tableForm
       console.log(data);
@@ -1326,11 +1404,11 @@ export default {
     },
     selectTable(item,index){
 
-      if(this.screenWidth < 760){
-        var splusOrder = document.getElementById('splusOrder')
-        console.log(splusOrder);
+      // if(this.screenWidth < 760){
+      //   var splusOrder = document.getElementById('splusOrder')
+      //   console.log(splusOrder);
+      // }
 
-      }
       this.toAccountBox = item;
       this.tableForm = item
       this.tid = item.id
@@ -1480,10 +1558,10 @@ export default {
     _pullTable(){
       let data2 = [
         {
-        feild: 'rid',
-        value: localStorage.getItem('rid'),
-        joinType: 'eq'
-        },
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        }
       ]
       this.$request(this.url.table2,'json',data2).then((res)=>{
         console.log(res.data.data);
