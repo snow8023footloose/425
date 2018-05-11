@@ -5,18 +5,18 @@
       <i class="icon-close"></i>
     </div>
     <div class="tab">
-      <router-link to="/order" @click.native="active($event)">
+      <router-link to="/mall/order" @click.native="active($event)">
         <div class="tab-item">
           订单
         </div>
       </router-link>
-      <router-link to="/" @click.native="active($event)">
+      <router-link to="/mall/" @click.native="active($event)">
         <div class="tab-item">
           商品
         </div>
       </router-link>
 
-      <router-link to="/seller" @click.native="active($event)">
+      <router-link to="/mall/seller" @click.native="active($event)">
         <div class="tab-item">
           领券
         </div>
@@ -50,6 +50,7 @@ export default {
     // let dataLoginAli = {
     //   auth_code: this.$route.query.auth_code,
     //   state: this.$route.query.state
+
     // }
     let loginData = {};
 
@@ -59,14 +60,13 @@ export default {
     if(clientType && clientType == 'wechat'){
       loginData.auth_code = this.$route.query.code;
       loginData.state = this.$route.query.state;
-      alert('接下来弹code和state')
-      alert(loginData.auth_code);
-      alert(loginData.state)
+        // alert('接下来弹code和state')
+        // alert(loginData.auth_code);
+        // alert(loginData.state)
       this.$request(this.url.loginWechat,'form',loginData).then((res)=>{
-
-        alert(res)
-        alert('登录接口进入')
-        alert('欢迎光临'+res.data.data.nickname);
+        // alert(res)
+        // alert('登录接口进入')
+        // alert('欢迎光临'+res.data.data.nickname);
       }).catch((err)=>{
         console.log(err);
       })
@@ -80,12 +80,11 @@ export default {
       })
     }
 
-    this.$request(this.url.restaurant2,'json',[{
-      feild:'id',
-      value:1524988356660049,
-      joinType:'eq'
-    }]).then((res)=>{
-      console.log('res111111111',res.data.data[0]);
+    // console.log(localStorage.getItem('rid'));
+    console.log(parseInt(localStorage.getItem('rid')));
+    this.$request(this.url.restaurant5,'form',{
+      id:Number.parseInt(localStorage.getItem('rid'))
+    }).then((res)=>{
       this.seller = res.data.data[0]
     }).catch((err)=>{
       console.log(err);

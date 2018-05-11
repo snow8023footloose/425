@@ -787,37 +787,40 @@
 
               this.$request(this.url.legalPerson2,'json',data3).then((res)=>{
                 let response = res.data.data
-                var address = this.restaurantData.country + this.restaurantData.province + this.restaurantData.city + this.restaurantData.area + this.restaurantData.address
-                var longtitude = 0;
-                var latitude = 0;
-                var url = "http://api.map.baidu.com/geocoder/v2/?address=" + address + "&output=json&ak=FG7wxr1VUj0k2NwoO3yXzymd&callback=?";
+                // var address = this.restaurantData.country + this.restaurantData.province + this.restaurantData.city + this.restaurantData.area + this.restaurantData.address
+                // var longtitude = 0;
+                // var latitude = 0;
+                // var url = "http://api.map.baidu.com/geocoder/v2/?address=" + address + "&output=json&ak=FG7wxr1VUj0k2NwoO3yXzymd&callback=?";
 
-                $.getJSON(url, function (data) {
-                  latitude = data.result.location.lat.toFixed(3);
-                  longtitude = data.result.location.lng.toFixed(3);
-                  console.log(latitude,longtitude,'打印经纬度');
-                  console.log(_this.restaurantData);
-                  _this.restaurantData.latitude = latitude
-                  _this.restaurantData.longitude = longtitude
-
-
-
-                  let data1 = _this.restaurantData
-                  console.log(data1,'最后提交的数据');
-                  _this.$request(_this.url.restaurant1,'json',_this.restaurantData).then((res)=>{
-
-                    _this.restaurantDataTable.push(data1);
-                    _this.dialogFormVisibleMsg = !_this.dialogFormVisibleMsg
-                    _this.$message({
-                      type: 'success',
-                      message: '数据提交成功!'
-                    });
-                  }).catch((err)=>{
-                    console.log(err);
-                  })
+                // $.getJSON(url, function (data) {
+                //   latitude = data.result.location.lat.toFixed(3);
+                //   longtitude = data.result.location.lng.toFixed(3);
+                //   console.log(latitude,longtitude,'打印经纬度');
+                //   console.log(_this.restaurantData);
+                //   _this.restaurantData.latitude = latitude
+                //   _this.restaurantData.longitude = longtitude
+                //
+                //
+                //
+                //
+                // });
 
 
-                });
+                let data1 = _this.restaurantData
+                console.log(data1,'最后提交的数据');
+                _this.$request(_this.url.restaurant1,'json',_this.restaurantData).then((res)=>{
+
+                  _this.restaurantDataTable.push(data1);
+                  _this.dialogFormVisibleMsg = !_this.dialogFormVisibleMsg
+                  _this.$message({
+                    type: 'success',
+                    message: '数据提交成功!'
+                  });
+                }).catch((err)=>{
+                  console.log(err);
+                })
+
+
 
                 this.restaurantData.pid = response[0].id
                 console.log(this.restaurantDatapid,'得到餐厅pid');

@@ -5,7 +5,8 @@ import qs from 'qs'
 // axios.defaults.baseURL = 'http://192.168.2.189';
 axios.defaults.withCredentials = true
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-var BURL = 'http://192.168.2.189'
+// var BURL = 'http://192.168.2.189/api'
+var BURL = 'https://www.xwfwlkj.com/api'
 export function _addRestaurant(obj) {
   return axios.post("/restaurant/add",  obj, {
     header:{
@@ -20,10 +21,9 @@ export function getAliyunSTSAccessToken() {
 
 export  function urlColletion() {
   return {
-    //不可改变顺序
     //餐厅请求接口
 
-    login2: BURL + '/xwfUser/login',
+    //login2: BURL + '/xwfUser/login',
     loginAlipay: BURL + '/xwfUser/alipayLogin',
     loginWechat: BURL + '/xwfUser/wechatLogin',
 
@@ -37,6 +37,7 @@ export  function urlColletion() {
     restaurant2: BURL + '/restaurant/complexPageQuery',
     restaurant3: BURL + '/restaurant/delete',
     restaurant4: BURL + '/restaurant/update',
+    restaurant5: BURL + '/restaurant/findByIdWithExtraData',
 
     //阿里数据上传
     ali: BURL +'/common/getAliOssSTSAccessSToken',

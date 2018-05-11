@@ -63,46 +63,46 @@
             <!--<el-button type="primary" icon="el-icon-share"></el-button>-->
             <!--<el-button type="primary" icon="el-icon-delete"></el-button>-->
           <!--</el-button-group>-->
-          <div class="filter" style="display: flex;justify-content: space-around">
-            <el-select
-              style="margin-right: 5px"
-              v-model="filterOrderType"
-              @change="filterOrderTypeFun"
-              placeholder="请选择订单类型">
-              <el-option
-                v-for="(item,index) in optionsOrder"
-                :key="index"
-                :label="item.label"
+          <!--<div class="filter" style="display: flex;justify-content: space-around">-->
+            <!--<el-select-->
+              <!--style="margin-right: 5px"-->
+              <!--v-model="filterOrderType"-->
+              <!--@change="filterOrderTypeFun"-->
+              <!--placeholder="请选择订单类型">-->
+              <!--<el-option-->
+                <!--v-for="(item,index) in optionsOrder"-->
+                <!--:key="index"-->
+                <!--:label="item.label"-->
 
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-select
-              style="margin-right: 5px"
-              v-model="filterPayType"
-              @change="filterPayTypeFun"
-              placeholder="请选择支付类型">
-              <el-option
-                v-for="(item,index) in optionsPay"
-                :key="index"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-            <el-date-picker
-              style="margin-right: 5px"
-              v-model="filterOrderDate"
-              type="daterange"
-              align="right"
-              unlink-panels
-              @change="filterDateTypeFun"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :picker-options="pickerOptions">
-            </el-date-picker>
-            <el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>
-          </div>
+                <!--:value="item.value">-->
+              <!--</el-option>-->
+            <!--</el-select>-->
+            <!--<el-select-->
+              <!--style="margin-right: 5px"-->
+              <!--v-model="filterPayType"-->
+              <!--@change="filterPayTypeFun"-->
+              <!--placeholder="请选择支付类型">-->
+              <!--<el-option-->
+                <!--v-for="(item,index) in optionsPay"-->
+                <!--:key="index"-->
+                <!--:label="item.label"-->
+                <!--:value="item.value">-->
+              <!--</el-option>-->
+            <!--</el-select>-->
+            <!--<el-date-picker-->
+              <!--style="margin-right: 5px"-->
+              <!--v-model="filterOrderDate"-->
+              <!--type="daterange"-->
+              <!--align="right"-->
+              <!--unlink-panels-->
+              <!--@change="filterDateTypeFun"-->
+              <!--range-separator="至"-->
+              <!--start-placeholder="开始日期"-->
+              <!--end-placeholder="结束日期"-->
+              <!--:picker-options="pickerOptions">-->
+            <!--</el-date-picker>-->
+            <!--<el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>-->
+          <!--</div>-->
 
           <el-table
             :data="userOrder"
@@ -112,46 +112,45 @@
             <el-table-column type="expand" fixed="right">
               <template slot-scope="props">
                 <el-form label-position="right" class="demo-table-expand">
-                  <el-form-item label="商品名称">
-                    <span>{{ props.row.name }}</span>
+                  <el-form-item label="所点菜品">
+                    <span v-for="item in props.row.orderDishes">
+                      {{ item.dishes.name }}：数量 <span>{{ item.num }}</span>
+                    </span>
                   </el-form-item>
-
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
+                  <el-form-item label="规格价格">
+                    <span v-for="item in props.row.orderDishes">
+                      <span v-if="item.sku.normalPrice">{{ item.sku.normalPrice.toFixed(2) }} ￥</span>
+                      <span v-else>0.00 ￥</span>
+                    </span>
                   </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
+                  <el-form-item label="标签价格">
+                    <span v-for="item in props.row.orderDishes">
+                      <span v-for="tag in item.tags">
+                        {{ tag.name }} / <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
+                        <span v-else="tag.price">0.00 ￥</span>
+                      </span>
+                    </span>
                   </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
-                  </el-form-item>
-                  <el-form-item label="商品 ID">
-                    <span>{{ props.row.id }}</span>
+                  <el-form-item label="总价">
+                    <span v-for="item in props.row.orderDishes">
+                      {{ item.totalPrice.toFixed(2) }} ￥
+                    </span>
                   </el-form-item>
                 </el-form>
               </template>
             </el-table-column>
+            <!--<el-table-column-->
+              <!--sortable-->
+              <!--fixed="left"-->
+              <!--prop="index"-->
+              <!--label="序号"-->
+              <!--width="100"-->
+            <!--&gt;-->
+            <!--</el-table-column>-->
             <el-table-column
               sortable
               fixed="left"
               prop="id"
-              label="序号"
-              width="100"
-            >
-            </el-table-column>
-            <el-table-column
-              sortable
-              fixed="left"
-              prop="order_sn"
               label="订单编号"
               width="150"
             >
@@ -161,25 +160,35 @@
               prop="needPay"
               label="应付金额"
               width="150">
+              <template slot-scope="props">
+                {{props.row.needPay.toFixed(2)}}
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               width="150"
               prop="realPay"
               label="实付金额">
-            </el-table-column>
-            <el-table-column
-              sortable
-              width="150"
-              prop="oldPrice"
-              label="下单时间">
+              <template slot-scope="props">
+                {{props.row.realPay.toFixed(2)}}
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               width="100"
               prop="discountMoney"
               label="优惠金额">
+              <template slot-scope="props">
+                {{props.row.discountMoney.toFixed(2)}}
+              </template>
             </el-table-column>
+            <el-table-column
+              sortable
+              width="150"
+              prop="createTime"
+              label="下单时间">
+            </el-table-column>
+
             <el-table-column
               sortable
               width="100"
@@ -194,15 +203,23 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="100"
+              width="130"
               prop="payType"
               label="支付方式">
+              <template slot-scope="props">
+                <span v-if="props.row.payType === 'wechat-online'">微信支付</span>
+                <span v-if="props.row.payType === 'alipay-online'">支付宝支付</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               width="100"
               prop="orderType"
               label="订单类型">
+              <template slot-scope="props">
+                <span v-if="props.row.orderType === 'single'">单人点餐</span>
+                <span v-if="props.row.orderType === 'multi'">多人点餐</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
@@ -218,7 +235,6 @@
             </el-table-column>
           </el-table>
         </template>
-        {{filters}}
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -242,25 +258,25 @@
       optionsPay: [
         {
           value: {
-            feild: 'cid',
-            value: 51,
-            joinType: 'eq',
+            feild: 'payType',
+            value: '',
+            joinType: 'ne',
           },
           label: '全部'
         },
 
         {
           value: {
-            feild: 'normalPrice',
-            value:18,
-            joinType:'lt',
+            feild: 'payType',
+            value:'wechat-online',
+            joinType:'eq',
           },
           label: '微信支付'
         },
         {
           value: {
             feild: 'payType',
-            value:'Alipay',
+            value:'alipay-online',
             joinType:'eq',
           },
           label: '支付宝支付'
@@ -269,9 +285,9 @@
       optionsOrder: [
         {
           value: {
-            feild: 'id',
-            value:96,
-            joinType:'eq',
+            feild: 'orderType',
+            value:'',
+            joinType:'ne',
           },
           label: '全选'
         },
@@ -293,25 +309,25 @@
         }
       ],
       filterOrderType: {
-        feild:'time',
-        value: '',
-        joinType:'time'
+        feild: 'orderType',
+        value:'',
+        joinType:'ne',
       },
       filterPayType:{
-        feild:'time',
+        feild: 'payType',
         value: '',
-        joinType:'time'
+        joinType: 'ne',
       },
       filters:[
         {
-          feild: 'cid',
+          feild: 'orderType',
           value:'',
-          joinType:'eq',
+          joinType:'ne',
         },
         {
-          feild: 'id',
+          feild: 'payType',
           value:'',
-          joinType:'eq',
+          joinType:'ne',
         },
         {
           feild: 'startTime',
@@ -384,14 +400,14 @@
       resetFilters(){
         this.filters = [
           {
-            feild: 'cid',
+            feild: 'orderType',
             value:'',
-            joinType:'eq',
+            joinType:'ne',
           },
           {
-            feild: 'id',
+            feild: 'payType',
             value:'',
-            joinType:'eq',
+            joinType:'ne',
           },
           {
             feild: 'startTime',
@@ -405,14 +421,14 @@
           }
         ]
         this.filterOrderType = {
-          feild:'time',
-          value: '',
-          joinType:'time'
+          feild: 'orderType',
+          value:'',
+          joinType:'ne',
         }
         this.filterPayType = {
-          feild:'time',
-          value: '',
-          joinType:'time'
+          feild: 'payType',
+          value:'',
+          joinType:'ne',
         }
         this.start = {
           feild:'startTime',

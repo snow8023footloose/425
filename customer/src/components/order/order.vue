@@ -24,31 +24,36 @@
           </div>
         </div>
       </div>-->
-      <ratingselect :select-type="selectType" :only-content="onlyContent" :ratings="ratings"></ratingselect>
+      <!--<ratingselect :select-type="selectType" :only-content="onlyContent" :ratings="ratings"></ratingselect>-->
       <!--历史订单详情-->
       <div style="overflow: hidden" class="order-wrapper" ref="ratings">
         <ul>
-          <li v-for="(rating,key) in ratings" :key="key" v-show="needShow(rating.rateType, rating.text)" class="order-item">
-            <div class="avatar">
-              <img width="28" height="28" :src="rating.avatar">
-            </div>
+          <li v-for="(rating,key) in ratings" :key="key" class="order-item">
+            <!--<div class="avatar">-->
+              <!--<img width="28" height="28" :src="rating.avatar">-->
+            <!--</div>-->
             <div class="content" @click="showDetils">
-              <h1 class="order-code">订单编号{{rating.username}}</h1><span class="outdate">订单已经完成</span>
+              <h1 class="order-code">订单编号{{rating.id}}</h1>
+
+              <span class="outdate" v-if="rating.status === 'payed'">订单已经完成</span>
+              <span class="outdate" v-if="rating.status === 'not-payed'">订单未完成</span>
               <div style="clear:both"></div>
-              <div class="order-content" v-show="rating.recommend && rating.recommend.length">
+              <div class="order-content" v-for="(item,key) in rating.orderDishes" :key="key">
                 <!--<span class="icon-thumb_up"></span>-->
-                <span class="item" v-for="(item,key) in rating.recommend" :key="key">{{item}}</span>
+
+                <span class="item">{{item.dishes.name}}</span>
               </div>
-              <p class="text">
-                点击查看订单详情
-              </p>
+              <!--<p class="text">-->
+                <!--点击查看订单详情-->
+              <!--</p>-->
               <!--<span class="button">申请退单</span>-->
               <div class="time">
-                {{rating.rateTime | formatDate}}
+                {{rating.createTime | formatDate}}
               </div>
             </div>
           </li>
         </ul>
+
       </div>
       <!--订单详情框-->
       <transition name="fade" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
@@ -145,20 +150,39 @@
     },
     created() {
       this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
-      this.$http.get('/api/ratings').then((response) => {
-        response = response.body;
-        if (response.errno === ERR_OK) {
-          this.ratings = response.data;
-          this.$nextTick(() => {
-            this.scroll = new BScroll(this.$refs['ratings'], {
-              click: true
-            });
-          });
-        }
-      });
+      // this.$http.get('/api/ratings').then((response) => {
+      //   response = response.body;
+      //   if (response.errno === ERR_OK) {
+      //     this.ratings = response.data;
+      //     console.log(this.ratings);
+      //
+      //   }
+      // });
+
       this._pullOder()
     },
     methods: {
+      _pullOder(){
+        let data = [
+          {
+            feild:'status',
+            value:'123',
+            joinType:'ne'
+          }
+        ]
+        this.$request(this.url.order2, 'json', data).then((res)=>{
+          console.log(res)
+          this.ratings = res.data.data;
+          console.log(this.ratings);
+            this.$nextTick(() => {
+              this.scroll = new BScroll(this.$refs['ratings'], {
+                click: true
+              });
+            });
+        }).catch((err)=>{
+          console.log(err);
+        })
+      },
       showDetils(event){
         if (!event._constructed) {
           return;
@@ -201,19 +225,7 @@
           return type === this.selectType;
         }
       },
-      _pullOder(){
-        var _this = this;
-        var Data = [
-          {
-            feild: '',
-            value: '',
-            joinType: ''
-          }
-        ];
-        this.$request(this.url.order2, 'json', Data).then((res)=>{
-          console.log(res)
-        })
-      },
+
       hideDetail() {
         this.detailShow = false;
       }

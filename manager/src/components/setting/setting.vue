@@ -507,7 +507,6 @@
             <el-select
               style="display: inline-block"
               v-model="printerForm.status"
-              @change="printerTypeChange"
               placeholder="请选择状态">
               <el-option
                 v-for="(item,index) in printerStatus"
@@ -658,39 +657,10 @@ export default {
   methods:{
     _pullBindAccount(){
       let _this = this
-      this.$request(this.url.restaurantWithdrawAccountComplexPageQuery,'json',[
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        },
-        {
-          feild:'type',
-          value:'alipay',
-          joinType:'eq'
-        }
-      ]).then((res)=>{
-        this.alipayGetName = res.data.data[0].name + '已绑定';
-        _this.alipaymsg = '切换支付宝绑定'
-        console.log(res.data.data);
-      }).catch((err)=>{
-        console.log(err);
-      })
-
-      this.$request(this.url.restaurantWithdrawAccountComplexPageQuery,'json',[
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        },
-        {
-          feild:'type',
-          value:'wechat',
-          joinType:'eq'
-        }
-      ]).then((res)=>{
+      this.$request(this.url.restaurantWithdrawAccountComplexPageQuery,'json',[]).then((res)=>{
         this.wechatGetName = res.data.data[0].nickname + '已绑定'
-        _this.wechatmsg = '切换微信绑定'
+        this.alipayGetName = res.data.data[1].name + '已绑定';
+        _this.alipaymsg = '切换支付宝绑定'
         console.log(res.data.data);
       }).catch((err)=>{
         console.log(err);
@@ -832,13 +802,7 @@ export default {
       console.log(this.BusinessTime);
     },
     _pullSetting(){
-      this.$request(this.url.restaurantSetting,'json',[{
-
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-
-      }]).then((res)=>{
+      this.$request(this.url.restaurantSetting,'json',[]).then((res)=>{
         this.settingForm = res.data.data[0]
         console.log('this.settingForm',res.data.data[0]);
       }).catch((err)=>{
@@ -846,14 +810,7 @@ export default {
       })
     },
     _pullPrinter(){
-      let data=[
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        }
-      ]
-      this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
+      this.$request(this.url.printerComplexPageQuery,'json',[]).then((res)=>{
         console.log(res);
         this.printerTable = res.data.data
         console.log('printerTable',res.data.data);
@@ -862,14 +819,11 @@ export default {
       })
     },
     _pullPrinterTemplate(){
-      let data=[
-        {
-          feild:'status',
-          value:'enable',
-          joinType:'eq'
-        }
-      ]
-      this.$request(this.url.printerTemplateComplexPageQuery,'json',data).then((res)=>{
+      this.$request(this.url.printerTemplateComplexPageQuery,'json',[{
+        feild:"status",
+        value:"enable",
+        joinType:"eq"
+      }]).then((res)=>{
         console.log(res);
         this.printerTemplateTable = res.data.data
         console.log('printerTemplateTable',res.data.data);
@@ -877,7 +831,6 @@ export default {
         console.log(err);
       })
     },
-    printerTypeChange(){},
     plusPrinterConfirm(){
       // this.printerForm.rid = localStorage.getItem('rid')
       console.log('提交打印机数据',this.printerForm);
@@ -929,7 +882,6 @@ export default {
         console.log(err);
       })
     },
-
     handleClick(tab, event) {
     },
     onSubmitSetting() {

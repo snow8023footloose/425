@@ -45,7 +45,7 @@
           <li class="food" v-for="(food,key) in selectFoods" :key="key">
             <span class="name">{{food.name}}</span>
             <div class="price">
-              <span>￥{{needPay}}</span>
+              <span>￥{{needPay.toFixed(2)}}</span>
             </div>
             <div class="cartcontrol-wrapper">
               <cartcontrol
@@ -255,11 +255,11 @@ const ERR_OK = 0
         // if(this.confirmOnce === 0){
           this.prePayShow = !this.prePayShow
           let data= {
-            // restaurantId: localStorage.getItem('rid'),
-            restaurantId: 1524988356660049,
+            restaurantId: parseInt(localStorage.getItem('rid')),
+            // restaurantId: 1000000000,
             orderType:'single',
             // tableId: localStorage.getItem('tid')
-            tableId: 12
+            tableId: parseInt(localStorage.getItem('tid'))
           }
           this.$request(this.url.confirmOrder,'form',data).then((res)=>{
             this.cartList = res.data.data.cartList
@@ -307,13 +307,13 @@ const ERR_OK = 0
         alert(localStorage.getItem('tid'));
         alert(localStorage.getItem('clientType'));
         var data = {
-          //restaurantId: localStorage.getItem('rid'),
-          restaurantId: 1524988356660049,
+          restaurantId: parseInt(localStorage.getItem('rid')),
+          // restaurantId: 1000000000,
           orderType:'single',
           // payType:'alipay-online',
           serverType:'real-time',
           //tableId: localStorage.getItem('tid')
-          tableId: 12
+          tableId: parseInt(localStorage.getItem('tid'))
         }
         let clientType = localStorage.getItem('clientType');
         if(clientType && clientType == 'wechat'){

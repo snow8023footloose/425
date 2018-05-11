@@ -327,13 +327,20 @@
         <!--<div class="list-header" @click.stop="toggleList" style="display: flex;justify-content: flex-end;padding: 0px 6px;margin-bottom: 20px">-->
           <!--<span class="empty" @click="empty">清空</span>-->
         <!--</div>-->
-        <div>
+        <div style="
+        width: 50%;
+        color: #67c23a;
+        background: #f0f9eb;
+        border-color: #c2e7b0;
+        border-radius: 10px;
+        margin: 5px auto;
+        padding: 10px">
           <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
-            优惠 <span>￥{{discountMoney}}</span></div>
+            优惠 <span>￥{{discountMoney.toFixed(2)}}</span></div>
           <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
-            需付 <span>￥{{needPay}}</span></div>
+            需付 <span>￥{{needPay.toFixed(2)}}</span></div>
           <div class="price" style="font-size: 20px;font-weight: bolder;text-align: center;display: flex;justify-content: space-around">
-            总计 <span>￥{{realPay}}</span></div>
+            总计 <span>￥{{realPay.toFixed(2)}}</span></div>
           <el-button-group style="position: fixed;bottom: 30px;left: 50%;width: 246;margin-left: -123px" >
             <el-button type="success" round @click="confirmOrder" plain icon="el-icon-download">确认下单</el-button>
             <el-button type="success" round @click="confirmOrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
@@ -516,9 +523,9 @@ export default {
   name: 'tables',
   data: () => ({
     cartList:[],
-    discountMoney:'',
+    discountMoney:0,
     needPay:0,
-    realPay:'',
+    realPay:0,
     tableShow:0,
     confirmMessage: {
       is: 0

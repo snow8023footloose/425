@@ -155,40 +155,38 @@
                 <!--prop="bannerStatus"-->
                 <!--label="banner状态">-->
               <!--</el-table-column>-->
-              <el-table-column
-                v-if="changeSortShow === 0"
-                fixed="right"
-                label="排序"
-                width="110">
-                <template slot-scope="scope">
-                  <!--<el-button-->
-                    <!--type="primary"-->
-                    <!--size="mini"-->
-                    <!--icon="el-icon-edit"-->
-                    <!--circle-->
-                    <!--@click="editDishes(scope.row,scope.$index); dialogFormVisibleGoodsPlus = true">-->
-                  <!--</el-button>-->
-                  <!--<el-button-->
-                    <!--type="danger"-->
-                    <!--size="mini"-->
-                    <!--icon="el-icon-delete"-->
-                    <!--circle-->
-                    <!--@click.native.prevent="deleteDishes(scope.row,scope.$index)">-->
-                  <!--</el-button>-->
-                  <el-button-group>
-                    <el-button size="mini" icon="el-icon-sort-up" @click="sortUP"></el-button>
-                    <el-button size="mini" icon="el-icon-sort-down"></el-button>
-                  </el-button-group>
-                </template>
-              </el-table-column>
+              <!--<el-table-column-->
+                <!--v-if="changeSortShow === 0"-->
+                <!--fixed="right"-->
+                <!--label="排序"-->
+                <!--width="110">-->
+                <!--<template slot-scope="scope">-->
+                  <!--&lt;!&ndash;<el-button&ndash;&gt;-->
+                    <!--&lt;!&ndash;type="primary"&ndash;&gt;-->
+                    <!--&lt;!&ndash;size="mini"&ndash;&gt;-->
+                    <!--&lt;!&ndash;icon="el-icon-edit"&ndash;&gt;-->
+                    <!--&lt;!&ndash;circle&ndash;&gt;-->
+                    <!--&lt;!&ndash;@click="editDishes(scope.row,scope.$index); dialogFormVisibleGoodsPlus = true">&ndash;&gt;-->
+                  <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
+                  <!--&lt;!&ndash;<el-button&ndash;&gt;-->
+                    <!--&lt;!&ndash;type="danger"&ndash;&gt;-->
+                    <!--&lt;!&ndash;size="mini"&ndash;&gt;-->
+                    <!--&lt;!&ndash;icon="el-icon-delete"&ndash;&gt;-->
+                    <!--&lt;!&ndash;circle&ndash;&gt;-->
+                    <!--&lt;!&ndash;@click.native.prevent="deleteDishes(scope.row,scope.$index)">&ndash;&gt;-->
+                  <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
+                  <!--<el-button-group>-->
+                    <!--<el-button size="mini" icon="el-icon-sort-up" @click="sortUP"></el-button>-->
+                    <!--<el-button size="mini" icon="el-icon-sort-down"></el-button>-->
+                  <!--</el-button-group>-->
+                <!--</template>-->
+              <!--</el-table-column>-->
             </el-table>
             <editcontrol @plusMethods="plusMethodsThis"></editcontrol>
           </template>
         </el-tab-pane>
-
         <!--特性模块-->
         <el-tab-pane label="特性管理" name="second">
-
           <!--分类-->
           <div class="categoryGroup">
             <h6>请不要建立同名分类，注意：所有分类都必须有菜品！</h6>

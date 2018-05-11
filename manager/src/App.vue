@@ -238,13 +238,18 @@ export default {
           console.log(this.value4,'value4');
           let data = {
             username:this.ruleForm2.username,
-            password:this.ruleForm2.password,
-            thirdId: 123154464
+            password:this.ruleForm2.password
           }
           console.log(data,'提交时的登录信息');
           if(this.manager === true){
+            this.$message({
+              duration: 1000,
+              type: 'info',
+              message: '即将登陆新沃丰餐饮管理系统'
+            });
             this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
               console.log(res.data,'这是登录返回的信息');
+
               if(res.data.msg === 'username is not exist'){
                 this.$message({
                   duration: 1000,
@@ -263,13 +268,25 @@ export default {
                   message: '欢迎登录新沃丰系统'
                 });
                 this.$router.push({path:'/'})
+              }else if(res.data.msg === "username is not exist or password is incorrect"){
+                this.$message({
+                  duration: 1000,
+                  type: 'info',
+                  message: '用户不存在或者密码不正确'
+                });
               }
             }).catch((err)=>{
               console.log(err);
             })
           }else {
-            this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
+            this.$message({
+              duration: 1000,
+              type: 'info',
+              message: '即将登陆新沃丰公司内部系统'
+            });
+            this.$request(this.url.loginEmploy,'form',data).then((res)=>{
               console.log(res.data,'这是登录返回的信息');
+
               if(res.data.msg === 'username is not exist'){
                 this.$message({
                   duration: 1000,
@@ -277,8 +294,6 @@ export default {
                   message: '用户名不存在'
                 });
               }else if(res.data.msg === 'success'){
-                let rid = res.data.data.rid
-                localStorage.setItem('rid',JSON.stringify(rid))
 
                 this.loginstate = true
                 this.loginShow = false
@@ -288,6 +303,12 @@ export default {
                   message: '欢迎登录新沃丰系统'
                 });
                 this.$router.push({path:'/XWFer/xwfcustom'})
+              }else if(res.data.msg === "username is not exist or password is incorrect"){
+                this.$message({
+                  duration: 1000,
+                  type: 'info',
+                  message: '用户不存在或者密码不正确'
+                });
               }
             }).catch((err)=>{
               console.log(err);

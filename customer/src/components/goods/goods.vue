@@ -29,7 +29,7 @@
                 class="food-item border-1px"
               >
                 <div class="icon">
-                  <img width="70px" height="70px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.highDefinitionImg">
+                  <img width="70px" height="70px" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb">
                 </div>
                 <div class="goods-content" style="padding-left: 12px">
                   <h2 class="goods-name">{{food.name}}</h2>
@@ -205,6 +205,7 @@ export default {
     }
   },
   created () {
+    this.tid = parseInt(localStorage.getItem('tid'))
     this.classMap = ['decrease', 'discount', 'special', 'invoice', 'guarantee'];
     this._pullTable();
     this._pullSpec();
@@ -320,7 +321,7 @@ export default {
             }
             //删掉相关联的规格都会引起id出现问题
             //删掉相关联的分类都会引起forEach出现问题
-
+            console.log(_this.getFoods.rid);
             let data = {
               num:1,
               sid: selectedSkuObj.id,
@@ -334,6 +335,9 @@ export default {
             _this.$request(_this.url.cart1,'json',data).then((res)=>{
               if(res.data.msg === 'success'){
                 _this.ballDrop()
+
+
+                console.log('5555555555',_this.needPay);
               }
               console.log(res);
             }).catch((err)=>{
@@ -435,6 +439,7 @@ export default {
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
           console.log('加入购物车成功',res);
+          this.refreshNeedPay()
         }).catch((err)=>{
           console.log('加入购物车失败',err);
         })
@@ -465,15 +470,17 @@ export default {
     },
     refreshNeedPay(){
       let data= {
-        restaurantId: localStorage.getItem('rid'),
-        orderType:'multi',
-        tableId: this.tid
+        // restaurantId: 1000000000,
+        restaurantId: parseInt(localStorage.getItem('rid')),
+        orderType:'single',
+        tableId: parseInt(localStorage.getItem('tid'))
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
         this.realPay = res.data.data.realPay
+        console.log('this.needPay',this.needPay);
       }).catch((err)=>{
 
       })
@@ -546,27 +553,24 @@ export default {
       var _this = this;
       var Data = [
         {
-          feild: '',
-          value: '',
-          joinType: ''
+          feild: 'rid',
+          value: parseInt(localStorage.getItem('rid')),
+          // value: 1000000000,
+          joinType: 'eq'
         }
       ];
-      this.$request(this.url.login2,'form',{
-        thirdId:2088112484988593
-      }).then((res)=>{
-        _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
-          _this.dishesCategory = res.data.data;
-        }).catch((err)=>{
-          console.log(err)
-        }).then(function () {
-          _this.goods = _this.goodsArr(_this);
-          console.log(55, _this.goods);
-        }).then(function () {
-          // _this.goods = goods;
-        })
+      _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
+        _this.dishesCategory = res.data.data;
+      }).catch((err)=>{
+        console.log(err)
+      }).then(function () {
+        _this.goods = _this.goodsArr(_this);
+        console.log('555555555', _this.goods);
+      }).then(function () {
+        // _this.goods = goods;
       })
     },
-  //  拉取规格
+    //  拉取规格
     _pullSpec(){
       var _this = this;
       var Data = [
