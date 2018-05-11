@@ -31,9 +31,9 @@
             </li>
           </ul>
         </div>
-        <div class="list-header" @click.stop="toggleList" style="display: flex;justify-content: flex-end;padding: 0px 6px;margin-bottom: 20px">
-          <span class="empty" @click="empty">清空</span>
-        </div>
+        <!--<div class="list-header" @click.stop="toggleList" style="display: flex;justify-content: flex-end;padding: 0px 6px;margin-bottom: 20px">-->
+          <!--<span class="empty" @click="empty">清空</span>-->
+        <!--</div>-->
         <div style="display: flex;justify-content: space-between">
           <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{needPay}}</span>
           <el-button-group>
@@ -56,7 +56,7 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay}}</div>
+        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay.toFixed(2)}}</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
         <!--<el-select size="small" multiple collapse-tags v-model="value8" filterable placeholder="点击搜索" class="search">-->
           <!--<el-option-->
@@ -205,6 +205,7 @@ const ERR_OK = 0
 
       },
       beforeDrop(el) {
+        console.log(this.needPay);
         let count = this.balls.length;
         while (count--) {
           let ball = this.balls[count];

@@ -85,7 +85,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <span style="float: left">价格：￥{{getFoods.normalPrice+sideTagsPrice}}</span>
+          <span style="float: left">价格：￥{{basePrice+tagsTotalPrice}}</span>
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="confirmSku">确 定</el-button>
         </div>
@@ -153,74 +153,55 @@ export default {
       trueLabelofTags:[],
       transformArryTag:[],
       tagsPrice:0,
+      tagsTotalPrice:0,
+      basePrice:0,
       oldTagArr : []
     };
   },
   watch:{
     getFoods(){
-      let data= {
-        // restaurantId: localStorage.getItem('rid'),
-        restaurantId: 1524988356660049,
-        orderType:'single',
-        tableId: this.tid
-      }
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        this.cartList = res.data.data.cartList
-        this.discountMoney = res.data.data.discountMoney.toFixed(1)
-        this.needPay = parseInt(res.data.data.needPay.toFixed(1))
-        console.log(this.needPay);
-        this.realPay = res.data.data.realPay.toFixed(1)
-      }).catch((err)=>{
-
-      })
+      this.basePrice = this.getFoods.normalPrice
     },
     selectedSkuArr(val){
-      console.log(val);
-    },
-    selectedTags(val) {
-      console.log('123213213', val);
-      // console.log('this.getFoods.tags',this.getFoods,val);
-      if (val.length > 0) {
-        if (this.getFoods.tags) {
-          if(this.oldTagArr.length == 0){
-            for(let newTag of val){
-              for(let originTag of this.getFoods.tags){
-                if(newTag == originTag.name && originTag.chargeType == 'charge'){
-                  this.sideTagsPrice += originTag.price;
-                  this.oldTagArr = Object.assign({},val);
-                  break;
-                }
-              }
-            }
-          } else {
-            if (val.length > this.oldTagArr.length) {
-              for (let newTag of val) {
-                for (let oldTag of this.oldTagArr) {
-                  if (newTag != oldTag) {
-                    for (let orininTag of this.getFoods.tags) {
-                      if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
-                        this.sideTagsPrice += orininTag.price;
-                        break;
-                      }
-                    }
-                  }
-                }
-              }
+      if(val.length === 0){
+        return
+      }
+      let  attrJoin = this.transformArrySku().join('_');
+      let  selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
+      let  skusTotalPrice = 0
+      if(!selectedSkuObj){
+        return false
+      }else{
+        if(this.getFoods.skus){
+          for(let i=0;i<this.getFoods.skus.length;i++) {
+            if (selectedSkuObj.id === this.getFoods.skus[i].id) {
+              console.log(this.getFoods.skus[i].normalPrice);
+              skusTotalPrice += this.getFoods.skus[i].normalPrice
             }
           }
-        }
-      } else {
-        if (this.oldTagArr.length > 0) {
-          for (let oldTag of this.oldTagArr) {
-            for (let originTag of this.getFoods.tags) {
-              if (oldTag == originTag.name && originTag.chargeType == 'charge') {
-                this.sideTagsPrice -= originTag.price;
-              }
-            }
-          }
+        }else {
+          return false
         }
       }
-      console.log('=====最新价格',this.getFoods.normalPrice);
+      this.basePrice = skusTotalPrice
+    },
+    selectedTags(val) {
+      let tagsTotalPrice = 0
+      if(this.getFoods.tags){
+        for(let i=0;i<this.getFoods.tags.length;i++){
+          if(val.length > 0 ){
+            for(let j=0;j<val.length;j++){
+              if(val[j] === this.getFoods.tags[i].name){
+                // console.log('得到价格',this.getFoods.tags[i].price);
+                tagsTotalPrice += this.getFoods.tags[i].price
+              }
+            }
+          }
+        }
+      }else {
+        return
+      }
+      this.tagsTotalPrice = tagsTotalPrice
     }
   },
   created () {
@@ -301,8 +282,6 @@ export default {
               }
             }
           }
-
-
         }
       }
     },
@@ -322,6 +301,12 @@ export default {
 
         for(var i=0;0<this.selectedTags.length;i++) {
           if(this.selectedTags.length === i){
+            // this.selectedTags.length === i的时候循环已经到尾了这个时候应该弹出
+            //selectedArryTags.push(response[j].id) id
+            // 但是这是个promise只有在这里面执行请求
+            //是最直接的
+
+
             _this.restaurantTagRes = selectedArryTags
             // console.log('selectedArryTags111111111111111',selectedArryTags);
             let attrTags = selectedArryTags.join(',');
@@ -359,7 +344,7 @@ export default {
             for (var j = 0; j < response.length; j++) {
               if(this.selectedTags[i] === response[j].name) {
                 selectedArryTags.push(response[j].id)
-                console.log('response[j].id',response[j].id);
+                // console.log('response[j].id',response[j].id);
               }
             }
           }
@@ -377,6 +362,7 @@ export default {
       this.dialogFormVisible = !this.dialogFormVisible
       this.$nextTick(() => {
         this.$refs['shop-cart'].drop(this.getData.event);
+        this.refreshNeedPay()
       });
     },
     confirmSku(){
@@ -421,15 +407,10 @@ export default {
         }).catch((err)=>{
           console.log('加入购物车失败',err);
         })
-        this.$nextTick(() => {
-          this.$refs['shop-cart'].drop(this.getData.event);
-        });
       }
-
-
-
     },
     incrementTotalAdd(g) {
+      this.getData.event = g.event
       this.sideTagsPrice = 0
       this.getData = g
       this.selectedSkuArr = []
@@ -476,10 +457,26 @@ export default {
         }
         this.$request(this.url.cart1,'json',data).then((res)=>{
           console.log(res);
+          this.refreshNeedPay()
         }).catch((err)=>{
           console.log(err);
         })
       }
+    },
+    refreshNeedPay(){
+      let data= {
+        restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        this.cartList = res.data.data.cartList
+        this.discountMoney = res.data.data.discountMoney
+        this.needPay = res.data.data.needPay
+        this.realPay = res.data.data.realPay
+      }).catch((err)=>{
+
+      })
     },
     findSkuByAttrJoin(selectedJoinAttr){
       for(let item of this.getFoods.skus){

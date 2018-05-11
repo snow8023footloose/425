@@ -11,7 +11,7 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay}}</div>
+        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay.toFixed(2)}}</div>
         <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
       </div>
@@ -264,11 +264,10 @@ const ERR_OK = 0
           this.$request(this.url.confirmOrder,'form',data).then((res)=>{
             this.cartList = res.data.data.cartList
             console.log('this.cartList',this.cartList);
-            this.discountMoney = res.data.data.discountMoney.toFixed(1)
-            this.needPay = res.data.data.needPay.toFixed(1)
-            this.realPay = res.data.data.realPay.toFixed(1)
-            console.log('confirmOrder',res);
-            console.log('111');
+            this.discountMoney = res.data.data.discountMoney
+            this.needPay = res.data.data.needPay
+            this.realPay = res.data.data.realPay
+
             _this._intScroll
             // alert(this.needPay)
             this.$nextTick(() => {
@@ -341,6 +340,7 @@ const ERR_OK = 0
                 success: function (response) {
                   if(response.errMsg == "chooseWXPay:ok"){
                     this.$router.push({path:'/order'})
+                    alert('支付成功')
                     this.$message({
                       type: 'success',
                       message: '支付成功！'
@@ -353,6 +353,7 @@ const ERR_OK = 0
                     type: 'info',
                     message: '支付未完成'
                   });
+                  alert('支付未完成')
                 }
               });
             });

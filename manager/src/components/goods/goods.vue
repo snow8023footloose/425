@@ -1308,7 +1308,7 @@ export default {
         id1: 12,
         id2: 13
       }
-      this.$request(this.url.restaurantWithdrawAccount,'json',data).then((res)=>{
+      this.$request(this.url.dishes2,'json',data).then((res)=>{
         console.log(res);
       }).catch((err)=>{
         console.log(err);

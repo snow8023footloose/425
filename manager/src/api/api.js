@@ -135,8 +135,7 @@ export  function urlColletion() {
     legalPerson3: BURL +'/legalPerson/delete',
     legalPerson4: BURL +'/legalPerson/update',
 
-    //订单确认
-    confirmOrder: BURL +'/userOrder/computePrepayInfo',
+
 
     //pre标签
     preTag1: BURL +'/predefineTag/add',
@@ -156,6 +155,9 @@ export  function urlColletion() {
     orderDelete: BURL + '/userOrder/delete',
     orderUpdate: BURL + '/userOrder/update',
     orderComputePrepayInfo: BURL + '/userOrder/computePrepayInfo',
+
+    //订单确认
+    confirmOrder: BURL +'/userOrder/computePrepayInfo',
 
     //订单菜品
     orderDishes1: BURL + '/orderDishes/add',
