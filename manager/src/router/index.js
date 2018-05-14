@@ -33,48 +33,47 @@ export default new Router({
       component: Touch
     },
     {
-      path:'/XWFs/goods',
+      path:'/manager/XWFs/goods',
       name:'Goods',
       component: Goods
     },
     {
-      path:'/XWFs/finance',
+      path:'/manager/XWFs/finance',
       name:'Finance',
       component: Finance
     },
     {
-      path:'/',
+      path:'/manager/',
       name:'Tables',
       component:Tables
-
     },
     {
-      path:'/XWFs/order',
+      path:'/manager/XWFs/order',
       name:'Order',
       component: Order
     },
     {
-      path:'/XWFs/apply',
+      path:'/manager/XWFs/apply',
       name:'Apply',
       component: Apply
     },
     {
-      path:'/XWFs/setting',
+      path:'/manager/XWFs/setting',
       name:'Setting',
       component: Setting
     },
     {
-      path:'/XWFer/xwfer',
+      path:'/platform/XWFer/xwfer',
       name:'Xwfer',
       component: Xwfer
     },
     {
-      path:'/XWFer/xwfcustom',
+      path:'/platform/XWFer/xwfcustom',
       name:'Xwfcustom',
       component: Xwfcustom
     },
     {
-      path:'/XWFer/xwffunction',
+      path:'/platform/XWFer/xwffunction',
       name:'Xwffunction',
       component: Xwffunction
     },

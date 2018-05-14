@@ -56,87 +56,26 @@
 
       <el-tab-pane label="历史订单" name="first">
         <template>
-          <!-- <span>{{msg}}</span> -->
-
-          <!--<el-button-group>-->
-            <!--<el-button type="primary" icon="el-icon-document">订单类型</el-button>-->
-            <!--<el-button type="primary" icon="el-icon-share"></el-button>-->
-            <!--<el-button type="primary" icon="el-icon-delete"></el-button>-->
-          <!--</el-button-group>-->
-          <!--<div class="filter" style="display: flex;justify-content: space-around">-->
-            <!--<el-select-->
-              <!--style="margin-right: 5px"-->
-              <!--v-model="filterOrderType"-->
-              <!--@change="filterOrderTypeFun"-->
-              <!--placeholder="请选择订单类型">-->
-              <!--<el-option-->
-                <!--v-for="(item,index) in optionsOrder"-->
-                <!--:key="index"-->
-                <!--:label="item.label"-->
-
-                <!--:value="item.value">-->
-              <!--</el-option>-->
-            <!--</el-select>-->
-            <!--<el-select-->
-              <!--style="margin-right: 5px"-->
-              <!--v-model="filterPayType"-->
-              <!--@change="filterPayTypeFun"-->
-              <!--placeholder="请选择支付类型">-->
-              <!--<el-option-->
-                <!--v-for="(item,index) in optionsPay"-->
-                <!--:key="index"-->
-                <!--:label="item.label"-->
-                <!--:value="item.value">-->
-              <!--</el-option>-->
-            <!--</el-select>-->
-            <!--<el-date-picker-->
-              <!--style="margin-right: 5px"-->
-              <!--v-model="filterOrderDate"-->
-              <!--type="daterange"-->
-              <!--align="right"-->
-              <!--unlink-panels-->
-              <!--@change="filterDateTypeFun"-->
-              <!--range-separator="至"-->
-              <!--start-placeholder="开始日期"-->
-              <!--end-placeholder="结束日期"-->
-              <!--:picker-options="pickerOptions">-->
-            <!--</el-date-picker>-->
-            <!--<el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>-->
-          <!--</div>-->
-
           <el-table
             :data="userOrder"
             style="width: 100%"
             height="600"
           >
-            <el-table-column type="expand" fixed="right">
-              <template slot-scope="props">
-                <el-form label-position="right" class="demo-table-expand">
-                  <el-form-item label="所点菜品">
-                    <span v-for="item in props.row.orderDishes">
-                      {{ item.dishes.name }}：数量 <span>{{ item.num }}</span>
+            <el-table-column type="expand" fixed="left">
+              <template slot-scope="props" style="width: 20%">
+                <div v-for="item in props.row.orderDishes" style="display: flex;margin: 10px 0px">
+                  <span style="width: 7%;padding-left: 30px">{{ item.dishes.name }}：</span>
+                  {{item.skus}}
+                  <span style="width: 6%"><i class="el-icon-close"></i>{{ item.num }}</span>
+                  <span style="width: 30%">
+                    <span v-for="tag in item.tags">
+                      {{ tag.name }} / <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
+                      <span v-else="tag.price">0.00 ￥</span>,&nbsp;&nbsp;&nbsp;
                     </span>
-                  </el-form-item>
-                  <el-form-item label="规格价格">
-                    <span v-for="item in props.row.orderDishes">
-                      <span v-if="item.sku.normalPrice">{{ item.sku.normalPrice.toFixed(2) }} ￥</span>
-                      <span v-else>0.00 ￥</span>
-                    </span>
-                  </el-form-item>
-                  <el-form-item label="标签价格">
-                    <span v-for="item in props.row.orderDishes">
-                      <span v-for="tag in item.tags">
-                        {{ tag.name }} / <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
-                        <span v-else="tag.price">0.00 ￥</span>
-                      </span>
-                    </span>
-                  </el-form-item>
-                  <el-form-item label="总价">
-                    <span v-for="item in props.row.orderDishes">
-                      {{ item.totalPrice.toFixed(2) }} ￥
-                    </span>
-                  </el-form-item>
-                </el-form>
+                  </span>
+                  <span style="width: 5%">{{ item.totalPrice.toFixed(2) }} ￥</span>
+                </div>
+                <el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>
               </template>
             </el-table-column>
             <!--<el-table-column-->
@@ -152,21 +91,49 @@
               fixed="left"
               prop="id"
               label="订单编号"
-              width="150"
+              width="160"
             >
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="130"
+              prop="payType"
+              label="支付方式"
+              :filters="[{text:'微信支付',value:'wechat-online'},{text:'支付宝支付',value:'alipay-online'}]"
+              :filter-method="filterPayArr"
+              filter-placement="bottom-end"
+            >
+              <template slot-scope="props">
+                <span v-if="props.row.payType === 'wechat-online'">微信支付</span>
+                <span v-if="props.row.payType === 'alipay-online'">支付宝支付</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="130"
+              prop="orderType"
+              label="订单类型"
+              :filters="[{text:'单人点餐',value:'single'},{text:'多人点餐',value:'multi'}]"
+              :filter-method="filterOrderTypeArr"
+              filter-placement="bottom-end"
+            >
+              <template slot-scope="props">
+                <span v-if="props.row.orderType === 'single'">单人点餐</span>
+                <span v-if="props.row.orderType === 'multi'">多人点餐</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               prop="needPay"
               label="应付金额"
-              width="150">
+              width="110">
               <template slot-scope="props">
                 {{props.row.needPay.toFixed(2)}}
               </template>
             </el-table-column>
             <el-table-column
               sortable
-              width="150"
+              width="110"
               prop="realPay"
               label="实付金额">
               <template slot-scope="props">
@@ -194,6 +161,7 @@
               width="100"
               prop="rating"
               label="退款金额">
+
             </el-table-column>
             <el-table-column
               sortable
@@ -201,26 +169,7 @@
               prop="discountType"
               label="打折类型">
             </el-table-column>
-            <el-table-column
-              sortable
-              width="130"
-              prop="payType"
-              label="支付方式">
-              <template slot-scope="props">
-                <span v-if="props.row.payType === 'wechat-online'">微信支付</span>
-                <span v-if="props.row.payType === 'alipay-online'">支付宝支付</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              sortable
-              width="100"
-              prop="orderType"
-              label="订单类型">
-              <template slot-scope="props">
-                <span v-if="props.row.orderType === 'single'">单人点餐</span>
-                <span v-if="props.row.orderType === 'multi'">多人点餐</span>
-              </template>
-            </el-table-column>
+
             <el-table-column
               sortable
               width="150"
@@ -234,6 +183,47 @@
               label="第三方名称">
             </el-table-column>
           </el-table>
+          <div class="filter">
+            <!--<el-select-->
+            <!--style="margin-right: 5px"-->
+            <!--v-model="filterOrderType"-->
+            <!--@change="filterOrderTypeFun"-->
+            <!--placeholder="请选择订单类型">-->
+            <!--<el-option-->
+            <!--v-for="(item,index) in optionsOrder"-->
+            <!--:key="index"-->
+            <!--:label="item.label"-->
+            <!--:value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+            <!--<el-select-->
+            <!--style="margin-right: 5px"-->
+            <!--v-model="filterPayType"-->
+            <!--@change="filterPayTypeFun"-->
+            <!--placeholder="请选择支付类型">-->
+            <!--<el-option-->
+            <!--v-for="(item,index) in optionsPay"-->
+            <!--:key="index"-->
+            <!--:label="item.label"-->
+            <!--:value="item.value">-->
+            <!--</el-option>-->
+            <!--</el-select>-->
+
+            <el-date-picker
+              style="margin-left: 45%;margin-top: 10px"
+              v-model="filterOrderDate"
+              type="daterange"
+              align="right"
+              unlink-panels
+              @change="filterDateTypeFun"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              :picker-options="pickerOptions">
+            </el-date-picker>
+            <el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>
+
+          </div>
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -255,80 +245,8 @@
         value: '',
         joinType:'endTime'
       },
-      optionsPay: [
-        {
-          value: {
-            feild: 'payType',
-            value: '',
-            joinType: 'ne',
-          },
-          label: '全部'
-        },
 
-        {
-          value: {
-            feild: 'payType',
-            value:'wechat-online',
-            joinType:'eq',
-          },
-          label: '微信支付'
-        },
-        {
-          value: {
-            feild: 'payType',
-            value:'alipay-online',
-            joinType:'eq',
-          },
-          label: '支付宝支付'
-        }
-      ],
-      optionsOrder: [
-        {
-          value: {
-            feild: 'orderType',
-            value:'',
-            joinType:'ne',
-          },
-          label: '全选'
-        },
-          {
-          value: {
-            feild: 'orderType',
-            value:'single',
-            joinType:'eq',
-          },
-          label: '单人点餐'
-        },
-          {
-          value: {
-            feild: 'orderType',
-            value:'multi',
-            joinType:'eq',
-          },
-          label: '多人点餐/服务员点餐'
-        }
-      ],
-      filterOrderType: {
-        feild: 'orderType',
-        value:'',
-        joinType:'ne',
-      },
-      filterPayType:{
-        feild: 'payType',
-        value: '',
-        joinType: 'ne',
-      },
       filters:[
-        {
-          feild: 'orderType',
-          value:'',
-          joinType:'ne',
-        },
-        {
-          feild: 'payType',
-          value:'',
-          joinType:'ne',
-        },
         {
           feild: 'startTime',
           value:'',
@@ -398,38 +316,6 @@
     },
     methods: {
       resetFilters(){
-        this.filters = [
-          {
-            feild: 'orderType',
-            value:'',
-            joinType:'ne',
-          },
-          {
-            feild: 'payType',
-            value:'',
-            joinType:'ne',
-          },
-          {
-            feild: 'startTime',
-            value:'',
-            joinType:'startTime',
-          },
-          {
-            feild: 'endTime',
-            value:'',
-            joinType:'endTime',
-          }
-        ]
-        this.filterOrderType = {
-          feild: 'orderType',
-          value:'',
-          joinType:'ne',
-        }
-        this.filterPayType = {
-          feild: 'payType',
-          value:'',
-          joinType:'ne',
-        }
         this.start = {
           feild:'startTime',
           value: '',
@@ -440,16 +326,6 @@
             value: '',
             joinType:'endTime'
         }
-      },
-      filterOrderTypeFun(){
-        this.filters =[]
-        console.log('filterOrderTypeFun',this.filterOrderType);
-        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
-      },
-      filterPayTypeFun(){
-        this.filters =[]
-        console.log('filterPayTypeFun',this.filterPayType);
-        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
       },
       filterDateTypeFun(){
         this.filters =[]
@@ -473,7 +349,7 @@
           value: endTime,
           joinType:'endTime'
         }
-        this.filters.push(this.filterOrderType,this.filterPayType,this.start,this.end)
+        this.filters.push(this.start,this.end)
       },
       formatter(row, column) {
         return row.address;
@@ -493,6 +369,12 @@
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`);
       },
+      filterPayArr(value,row){
+        return row.payType === value;
+      },
+      filterOrderTypeArr(value,row){
+        return row.orderType === value;
+      },
       _pullUserOrder(){
         // let data = [
         //   {
@@ -511,7 +393,9 @@
         ]
         this.$request(this.url.userOrder,'json',data).then((res)=>{
           console.log('orderComplexPageQuery',res);
-          this.userOrder = res.data.data
+          let response = res.data.data
+          this.userOrder = response
+
           this.loading = false
         }).catch((err)=>{
 

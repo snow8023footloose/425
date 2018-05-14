@@ -6,28 +6,27 @@
         <el-row :guter="0">
           <div class="table-container">
             <transition name="el-zoom-in-left"  v-for="(item,index) in listTable" :key="item.num">
-              <div v-show="show2" class="transition-box"">
+              <div v-show="show2" class="transition-box">
               <el-tooltip :content="item.description" placement="top">
                 <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
-                  <span class="left" style="float: left;margin-left: 7px">桌号：{{item.num}}</span>
-                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.seatNum}}</span>
+                  桌号：{{item.num}}
+                  人数：{{item.seatNum}}
                 </div>
                 <div class="box-header" v-else-if="item.status === 'preClear'">
-                  <span class="left" style="float: left;margin-left: 7px">桌号：{{item.num}}</span>
-                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.seatNum}}</span>
+                  桌号：{{item.num}}
+                  人数：{{item.seatNum}}
                 </div>
                 <div class="box-header" v-else-if="item.status === 'preOrder'">
-                  <span class="left" style="float: left;margin-left: 7px">桌号：{{item.num}}</span>
-                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.seatNum}}</span>
+                  桌号：{{item.num}}
+                  人数：{{item.seatNum}}
                 </div>
                 <div class="box-header" v-else-if="item.status === 'enable'">
-                  <span class="left" style="float: left;margin-left: 7px">桌号：{{item.num}}</span>
-                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.seatNum}}</span>
+                  桌号：{{item.num}}
+                  人数：{{item.seatNum}}
                 </div>
                 <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'prePay'">
-
-                  <span class="left" style="float: left;margin-left: 7px">桌号：{{item.num}}</span>
-                  <span class="right" style="float: right;margin-right: 7px">人数：{{item.seatNum}}</span>
+                  桌号：{{item.num}}
+                  人数：{{item.seatNum}}
                 </div>
               </el-tooltip>
                   <!--总：{{item.recommend.length}}项-->
@@ -49,6 +48,50 @@
                 </div>
               </div>
             </transition>
+            <transition name="el-zoom-in-left"  v-for="(item,index) in listTable" :key="item.num">
+              <div v-show="!show2" class="transition-box">
+                <el-tooltip :content="item.description" placement="top">
+                  <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'preClear'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'preOrder'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'enable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'prePay'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                </el-tooltip>
+                <!--总：{{item.recommend.length}}项-->
+                <div class="box-content"  @click="selectTable(item,index)">
+                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center"
+                     v-if="item.status === 'preClear'">未清台</p>
+                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center"
+                     v-if="item.status === 'preOrder'">未下单</p>
+                  <p style="
+                  font-size: 30px;
+                  color: rgba(0,0,0,0.15);
+                  font-weight: bolder;
+                  left: 13%;
+                  position: absolute;
+                  bottom: 17px;
+                  z-index: 100;
+                  text-align: center"
+                  >{{item.name}}</p>
+                </div>
+              </div>
+            </transition>
+
           </div>
         </el-row>
       </el-tab-pane>
@@ -113,7 +156,7 @@
     <div class="tableButtonGroup" v-if="tableShow === 1" v-show="true">
       <el-button type="danger" @click="handleDelete" icon="el-icon-delete" circle></el-button>
       <el-button @click="stopTableService" type="warning" icon="el-icon-time" circle></el-button>
-      <el-button @click="handleEdit" icon="el-icon-edit" circle></el-button>
+      <el-button @click="editTable" icon="el-icon-edit" circle></el-button>
       <el-button @click="refreshTable" v-loading.fullscreen.lock="fullscreenLoading" icon="el-icon-refresh" circle></el-button>
       <el-button @click="closeTable" class="closeTable" icon="el-icon-close" circle></el-button>
     </div>
@@ -1271,7 +1314,6 @@ export default {
         spinner: 'el-icon-loading',
         background: 'rgba(0, 0, 0, 0.7)'
       });
-
       let data = {
         id:this.tableForm.id,
         status: 'disable'
@@ -1289,6 +1331,7 @@ export default {
             message: '该餐桌二维码已经失效！',
             type: 'success'
           });
+          this._pullTable()
         }, 2000);
       }).catch((err)=>{
         this.$message({
@@ -1297,11 +1340,8 @@ export default {
         });
         console.log(err);
       })
-      this._pullTable()
+
     },
-
-
-
     singleAccounts(){
       this.dialogConfirmOrder = !this.dialogConfirmOrder
       let data = [
@@ -1433,7 +1473,7 @@ export default {
           message: '数据提交成功!'
         });
         this._pullTable()
-        // this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange
+        this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
         // this.dishesDataTable.push(data);
         // console.log(res);
       }).catch((err)=>{
@@ -1474,7 +1514,7 @@ export default {
       this.tableForm = {}
       this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
     },
-    handleEdit(){
+    editTable(){
       this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
     },
     selectTable(item,index){
@@ -1846,6 +1886,8 @@ Vue.directive("longtap",{
           height 15%
           display block
           background #409EFF
+          font-size 15px
+          text-overflow:ellipsis
         .box-content
           overflow-y scroll
           height 77%

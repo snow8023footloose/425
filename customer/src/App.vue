@@ -7,10 +7,10 @@
     <div class="tab">
       <router-link to="/mall/order" @click.native="active($event)">
         <div class="tab-item">
-          订单
+          订单1
         </div>
       </router-link>
-      <router-link to="/mall/" @click.native="active($event)">
+      <router-link :to="{path:'/mall/', query:{cartList:cartList}}" @click.native="active($event)">
         <div class="tab-item">
           商品
         </div>
@@ -41,30 +41,30 @@ export default {
   data () {
     return {
       seller: {},
-      SColor: 'SColor'
+      SColor: 'SColor',
+      cartList:[],
     }
   },
-  created () {
-    // alert(this.$route.query.auth_code);
-    // alert(this.$route.query.state);
-    // let dataLoginAli = {
-    //   auth_code: this.$route.query.auth_code,
-    //   state: this.$route.query.state
+  created(){
+    console.log('created');
+    let _this = this
+    this._pullCart()
 
-    // }
+
     let loginData = {};
-
     let clientType = localStorage.getItem('clientType');
-
-
+    alert(clientType);
     if(clientType && clientType == 'wechat'){
       loginData.auth_code = this.$route.query.code;
       loginData.state = this.$route.query.state;
-        // alert('接下来弹code和state')
-        // alert(loginData.auth_code);
-        // alert(loginData.state)
       this.$request(this.url.loginWechat,'form',loginData).then((res)=>{
         // alert(res)
+        this.$router.push({
+          path: '/mall/',
+          query: {
+            cartList: _this.cartList
+          }
+        })
         // alert('登录接口进入')
         // alert('欢迎光临'+res.data.data.nickname);
       }).catch((err)=>{
@@ -73,10 +73,18 @@ export default {
     } else {
       loginData.auth_code=this.$route.query.auth_code;
       loginData.state=this.$route.query.state;
+      alert(loginData.auth_code + ':' + loginData.state);
       this.$request(this.url.loginAlipay,'form',loginData).then((res)=>{
-        alert('欢迎光临'+res.data.data.nickname);
+        // alert('欢迎光临'+res.data.data.nickname);
+        _this.$router.push({
+          path: '/mall/',
+          query: {
+            cartList: _this.cartList
+          }
+        })
       }).catch((err)=>{
         console.log(err);
+        // alert('登陆失败'+err);
       })
     }
 
@@ -85,14 +93,45 @@ export default {
     this.$request(this.url.restaurant5,'form',{
       id:Number.parseInt(localStorage.getItem('rid'))
     }).then((res)=>{
-      this.seller = res.data.data[0]
+      this.seller = res.data.data
     }).catch((err)=>{
       console.log(err);
     })
+
+
+
+
+
+  },
+  mounted () {
+    console.log('mouted');
+    // alert(this.$route.query.auth_code);
+    // alert(this.$route.query.state);
+    // let dataLoginAli = {
+    //   auth_code: this.$route.query.auth_code,
+    //   state: this.$route.query.state
+    // }
+
+
   },
   methods: {
+    _pullCart(){
+      let Data = [
+        {
+          feild: 'rid',
+          value: parseInt(localStorage.getItem('rid')),
+          joinType: 'eq'
+        }
+      ];
+      this.$request(this.url.cart2,'json',Data).then((res)=>{
+
+        this.cartList = res.data.data
+        console.log('this.cartList',this.cartList);
+      }).catch((err)=>{
+      })
+    },
     active(event) {
-      console.log(this.SColor)
+      // console.log(this.SColor)
       // event.target.style = "color:black"
     },
     getParamByName(paramsArr,paramName){
@@ -185,4 +224,8 @@ body
    text-align 22px
    font-size 12px
    margin 5px 0px
+
+
+.dollar
+  font-size 1px
 </style>

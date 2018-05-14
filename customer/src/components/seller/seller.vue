@@ -2,6 +2,7 @@
   <!--商家优惠券-->
   <div class="seller" ref="sc-seller">
     <div class="coupon-content">
+
       <div class="overview">
         <ul>
           <li class="coupon-item" @click="buyCoupon(index,$event)">
@@ -32,17 +33,17 @@
       <!--</div>-->
       <split></split>
       <!--底部更多活动展示-->
-      <div class="pics">
-        <h1 class="title">更多活动，敬请期待……</h1>
-        <div class="pic-wrapper" ref="pic-wrapper">
-          <ul class="pic-list" ref="pic-list">
-            <li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">
-              <img :src="pic" width="120" height="90">
-            </li>
-          </ul>
-        </div>
-      </div>
-      <split></split>
+      <!--<div class="pics">-->
+        <!--<h1 class="title">更多活动，敬请期待……</h1>-->
+        <!--<div class="pic-wrapper" ref="pic-wrapper">-->
+          <!--<ul class="pic-list" ref="pic-list">-->
+            <!--<li class="pic-item" v-for="(pic,key) in seller.pics" :key="key">-->
+              <!--<img :src="pic" width="120" height="90">-->
+            <!--</li>-->
+          <!--</ul>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--<split></split>-->
     </div>
   </div>
 </template>
@@ -137,22 +138,20 @@
   background #2b333b
   position relative
   color white
-  &:first-child
-    display none
   .price
     margin 10px
-    opacity 0.8
+    opacity 0.5
     font-weight lighter
     font-family "Copperplate Gothic Light"
     font-size 30px
     position relative
     top 29px
     left 70px
-    opacity 0.1
   .rules
     font-size 10px
-    opacity 0.25
+    opacity 0.5
     padding 0px 10px
+    font-weight lighter
     position relative
     bottom 13px
     h5
@@ -214,7 +213,6 @@
 
 .info-item
   padding: 18px 18px 0 18px
-  color: rgb(7, 17, 27)
   font-size 12px
   color #Ccc
 

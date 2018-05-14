@@ -68,19 +68,19 @@
           @open="handleOpen"
           @close="handleClose">
 
-          <router-link :to="{path:'/XWFer/xwfcustom'}" class="vlink">
+          <router-link :to="{path:'/platform/XWFer/xwfcustom'}" class="vlink">
             <el-menu-item index="1">
               <i class="el-icon-tickets"></i>
               <span slot="title" class="title">我的客户</span>
             </el-menu-item>
           </router-link>
-          <router-link :to="{path:'/XWFer/xwfer'}" class="vlink">
+          <router-link :to="{path:'/platform/XWFer/xwfer'}" class="vlink">
             <el-menu-item index="2">
               <i class="el-icon-star-off"></i>
               <span slot="title" class="title">个人信息</span>
             </el-menu-item>
           </router-link>
-          <router-link :to="{path:'/XWFer/xwffunction'}" class="vlink">
+          <router-link :to="{path:'/platform/XWFer/xwffunction'}" class="vlink">
             <el-menu-item index="3">
               <i class="el-icon-setting"></i>
               <span slot="title" class="title">系统功能</span>
@@ -98,14 +98,14 @@
           class="el-menu-vertical-demo"
           @open="handleOpen"
           @close="handleClose">
-          <router-link :to="{path:'/'}" class="vlink">
+          <router-link :to="{path:'/manager/'}" class="vlink">
             <el-menu-item index="1">
               <i class="el-icon-document"></i>
               <span slot="title" class="title">餐桌收银</span>
             </el-menu-item>
           </router-link>
 
-          <router-link :to="{path:'/XWFs/order'}" class="vlink">
+          <router-link :to="{path:'/manager/XWFs/order'}" class="vlink">
           <!--<router-link :to="{path:'/touch'}" class="vlink">-->
             <el-menu-item index="2">
               <i class="el-icon-bell"></i>
@@ -113,20 +113,20 @@
             </el-menu-item>
           </router-link>
 
-          <router-link :to="{path:'/XWFs/goods'}" class="vlink">
+          <router-link :to="{path:'/manager/XWFs/goods'}" class="vlink">
             <el-menu-item index="3">
               <i class="el-icon-goods"></i>
               <span slot="title" class="title">菜品管理</span>
             </el-menu-item>
           </router-link>
-          <router-link :to="{path:'/XWFs/finance'}" class="vlink">
+          <router-link :to="{path:'/manager/XWFs/finance'}" class="vlink">
             <el-menu-item index="4">
               <i class="el-icon-news"></i>
               <span slot="title" class="title">财务信息</span>
             </el-menu-item>
           </router-link>
 
-          <router-link :to="{path:'/XWFs/setting'}" class="vlink">
+          <router-link :to="{path:'/manager/XWFs/setting'}" class="vlink">
             <el-menu-item index="5">
               <i class="el-icon-setting"></i>
               <span slot="title" class="title">系统设置</span>
@@ -267,7 +267,7 @@ export default {
                   type: 'success',
                   message: '欢迎登录新沃丰系统'
                 });
-                this.$router.push({path:'/'})
+                this.$router.push({path:'/manager/'})
               }else if(res.data.msg === "username is not exist or password is incorrect"){
                 this.$message({
                   duration: 1000,
@@ -302,7 +302,7 @@ export default {
                   type: 'success',
                   message: '欢迎登录新沃丰系统'
                 });
-                this.$router.push({path:'/XWFer/xwfcustom'})
+                this.$router.push({path:'/platform/XWFer/xwfcustom'})
               }else if(res.data.msg === "username is not exist or password is incorrect"){
                 this.$message({
                   duration: 1000,
@@ -539,6 +539,12 @@ td
 
 
 @media screen and (max-width: 900px)
+  th
+    padding 0px !important
+
+  .filter
+    display none
+
   .el-table--fit
     height 500px !important
 

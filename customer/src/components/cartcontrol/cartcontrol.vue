@@ -1,12 +1,12 @@
 <template>
   <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.stop.prevent="decreaseCart">
-        <i class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
+      <div class="cart-decrease icon-add_circle" v-show="food.num>0" @click.stop.prevent="decreaseCart">
+        <i style="padding: 5px;font-size: 26px" class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
       </div>
     </transition>
-    <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
-    <i class="el-icon-circle-plus cart-add icon-add_circle" @click.stop.prevent="addCart"></i>
+    <div class="cart-count" v-show="food.num>0">{{food.num}}</div>
+    <i style="padding: 5px;font-size: 26px" class="el-icon-circle-plus cart-add icon-add_circle" @click.stop.prevent="addCart"></i>
     <div class="skuSelect"></div>
   </div>
 </template>
@@ -20,26 +20,14 @@
       food: {
         type: Object,
       },
-      confirmMessage:{
-        type: Object,
-      }
     },
     data() {
       return {
-        SColor: 'SColor',
-        dialogVisible: true,
-        spce: [],
-        falg1: '大份',
-        falg2: '热',
-        falg3: '辣'
       }
-    },
-    mounted(){
-      this._pullSpec();
     },
     methods: {
       addCart(event) {
-        console.log(this.food);
+        console.log('cartcontrol',this.food);
         if (!event._constructed) {
           return;
         }
@@ -76,9 +64,7 @@
           }
         ];
         this.$request(this.url.spec2, 'json', Data).then((res)=>{
-          // console.log(res)
           _this.spce = res.data.data;
-          // console.log(_this.spce)
         })
       }
     }
@@ -96,19 +82,19 @@
       line-height: 24px
       text-align: center
       font-size: 10px
-      color: rgb(147, 153, 159)
+      color: #7c4646
     .cart-add
       display: inline-block
       padding: 6px
       line-height: 24px
       font-size: 24px
-      color: rgb(0, 160, 220)
+      color: #7c4646
 
   .inner
     display: inline-block
     line-height: 24px
     font-size: 24px
-    color: rgb(0, 160, 220)
+    color: #7c4646
     transition: all 0.2s linear
     transform: rotate(0deg)
 
@@ -116,6 +102,7 @@
   .cart-decrease
     display: inline-block
     padding: 6px
+    color #7c4646
     transition: all 0.2s linear
     &.move-enter-active
       opacity: 1

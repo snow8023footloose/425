@@ -90,108 +90,122 @@
 
 
 
-            <el-form-item label="打印类型">
-              <el-select v-model="settingForm.printType" placeholder="请选择打印类型">
-                <el-option label="整单打印" value="whole"></el-option>
-                <el-option label="分类打印" value="part"></el-option>
-              </el-select>
-            </el-form-item>
+            <div class="matter2">
+              <el-form-item label="促销状态" label-width="120px">
+                <el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">
+                  <el-option label="未促销" value="close"></el-option>
+                  <el-option label="会员促销" value="member"></el-option>
+                  <el-option label="活动促销" value="promotion"></el-option>
+                </el-select>
+              </el-form-item>
 
-            <el-form-item label="促销状态">
-              <el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">
-                <el-option label="未促销" value="close"></el-option>
-                <el-option label="会员促销" value="member"></el-option>
-                <el-option label="活动促销" value="promotion"></el-option>
-              </el-select>
-            </el-form-item>
+              <el-form-item label="提现类型" label-width="120px">
+                <el-select v-model="settingForm.withdrawType" placeholder="请选择提现类型">
+                  <el-option label="实时到账" value="realtime"></el-option>
+                  <el-option label="主动提现" value="withdraw"></el-option>
+                </el-select>
+              </el-form-item>
 
-            <el-form-item label="提现类型">
-              <el-select v-model="settingForm.withdrawType" placeholder="请选择提现类型">
-                <el-option label="实时到账" value="realtime"></el-option>
-                <el-option label="主动提现" value="withdraw"></el-option>
-              </el-select>
-            </el-form-item>
+              <el-form-item label="服务提现类型" label-width="120px">
+                <el-select v-model="settingForm.serviceRemindType" placeholder="请选择提现类型">
+                  <el-option label="文字提醒" value="text"></el-option>
+                  <el-option label="音频+文字提醒" value="audioText"></el-option>
+                </el-select>
+              </el-form-item>
+            </div>
+            <div class="matter2">
 
-            <el-form-item label="服务提现类型" label-width="100px">
-              <el-select v-model="settingForm.serviceRemindType" placeholder="请选择提现类型">
-                <el-option label="文字提醒" value="text"></el-option>
-                <el-option label="音频+文字提醒" value="audioText"></el-option>
-              </el-select>
-            </el-form-item>
-          <el-form :inline="true">
-            <el-form-item label="厨房打印机" label-width="100px">
-              <el-select
-                style="display: inline-block"
-                v-model="settingForm.kitchenPrinterId"
-                placeholder="请选择厨房打印机">
-                <el-option
-                  v-for="(item,index) in printerTable"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="厨房打印模板" label-width="100px">
-              <el-select
-                style="display: inline-block"
-                v-model="settingForm.kitchenPrinterTemplate"
-                placeholder="请选择厨房打印模板">
-                <el-option
-                  v-for="(item,index) in printerTemplateTable"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <el-form>
-            <el-form-item label="厨房打印份数" label-width="100px">
-            <el-input
-            v-model="settingForm.kitchenPrinterNum"
-            placeholder="请输入厨房打印份数"></el-input>
-            </el-form-item>
-          </el-form>
-          <el-form :inline="true">
-            <el-form-item label="收银台打印机" label-width="100px">
-              <el-select
-                style="display: inline-block"
-                v-model="settingForm.cashierPrinterId"
-                placeholder="请选择厨房打印机">
-                <el-option
-                  v-for="(item,index) in printerTable"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="收银台打印模板" label-width="120px">
-              <el-select
-                style="display: inline-block"
-                v-model="settingForm.cashierPrinterTemplate"
-                placeholder="请选择收银台打印模板">
-                <el-option
-                  v-for="(item,index) in printerTemplateTable"
-                  :key="index"
-                  :label="item.name"
-                  :value="item.id"
-                >
-                </el-option>
-              </el-select>
-            </el-form-item>
-          </el-form>
-          <el-form>
-            <el-form-item label="收银台打印份数" label-width="120px">
-              <el-input
-                v-model="settingForm.cashierPrinterNum"
-                placeholder="请输入收银台打印份数"></el-input>
-            </el-form-item>
-          </el-form>
+              <el-form-item label="打印类型" label-width="120px">
+                <el-select v-model="settingForm.printType" placeholder="请选择打印类型">
+                  <el-option label="整单打印" value="whole"></el-option>
+                  <el-option label="分类打印" value="part"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form :inline="true">
+                <el-form-item label="厨房打印机" label-width="120px">
+                  <el-select
+                    style="display: inline-block"
+                    v-model="settingForm.kitchenPrinterId"
+                    placeholder="请选择厨房打印机">
+                    <el-option
+                      v-for="(item,index) in printerTable"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="厨房打印模板" label-width="100px">
+                  <el-select
+                    style="display: inline-block"
+                    v-model="settingForm.kitchenPrinterTemplate"
+                    placeholder="请选择厨房打印模板">
+                    <el-option
+                      v-for="(item,index) in printerTemplateTable"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+
+              <el-form>
+                <el-form-item label="厨房打印份数" label-width="120px">
+                  <el-input
+                    v-model="settingForm.kitchenPrinterNum"
+                    placeholder="请输入厨房打印份数"></el-input>
+                </el-form-item>
+              </el-form>
+              <el-form :inline="true">
+                <el-form-item label="收银台打印机" label-width="120px">
+                  <el-select
+                    style="display: inline-block"
+                    v-model="settingForm.cashierPrinterId"
+                    placeholder="请选择厨房打印机">
+                    <el-option
+                      v-for="(item,index) in printerTable"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+                <el-form-item label="收银台打印模板" label-width="120px">
+                  <el-select
+                    style="display: inline-block"
+                    v-model="settingForm.cashierPrinterTemplate"
+                    placeholder="请选择收银台打印模板">
+                    <el-option
+                      v-for="(item,index) in printerTemplateTable"
+                      :key="index"
+                      :label="item.name"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+              </el-form>
+              <el-form>
+                <el-form-item label="收银台打印份数" label-width="120px">
+                  <el-input
+                    v-model="settingForm.cashierPrinterNum"
+                    placeholder="请输入收银台打印份数"></el-input>
+                </el-form-item>
+              </el-form>
+              <span
+                class="matter2-hint"
+              >打印机快速设置
+                &nbsp;&nbsp;<el-button @click="toPrinterSetting1" type="primary" plain style="padding: 4px" size="mini" round>&nbsp;打印机&nbsp;</el-button>&nbsp;&nbsp;
+                或者
+                <el-button @click="toPrinterSetting2" type="primary" plain style="padding: 4px" size="mini" round>&nbsp;打印模板&nbsp;</el-button>
+                编辑
+              </span>
+            </div>
+
             <!--<el-form-item label="会员生日优惠" label-width="100px">-->
               <!--<el-select v-model="settingForm.birthdayDiscountStatus" placeholder="请选择会员优惠方式">-->
                 <!--<el-option label="开启" value="open"></el-option>-->
@@ -262,7 +276,7 @@
         <!--</el-tab-pane>-->
 
         <!--打印机-->
-        <el-tab-pane style="padding-top: 15px" label="打印设置" name="third">
+        <el-tab-pane style="padding-top: 15px" label="打印机" name="third">
           <template>
             <el-table
               :data="printerTable"
@@ -307,7 +321,7 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="100">
+                width="60">
                 <template slot-scope="scope">
                   <el-button
                     @click.native.prevent="deletePrinter(scope.row)"
@@ -336,7 +350,7 @@
                 fixed="left"
                 prop="name"
                 label="模板名"
-                width="120">
+                width="150">
               </el-table-column>
               <el-table-column
                 sortable
@@ -365,7 +379,7 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="100">
+                width="60">
                 <template slot-scope="scope">
                   <el-button
                     @click.native.prevent="deletePrinterTemplate(scope.row)"
@@ -842,6 +856,12 @@ export default {
         console.log(err);
       })
     },
+    toPrinterSetting1(){
+      this.activeName = 'third'
+    },
+    toPrinterSetting2(){
+      this.activeName = 'fourth'
+    },
     plusPrinter(){
       this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
     },
@@ -953,4 +973,16 @@ export default {
 
   .el-tab-pane[data-v-60204f04]
     width 100% !important
+
+
+  .matter2
+    border-radius: 5px
+    padding: 10px
+    span
+      margin: 5px 0px 10px 20px
+      display: block
+      font-size: 10px
+      font-weight: lighter
+    &:hover
+      background rgba(0, 0, 0, 0.02)
 </style>

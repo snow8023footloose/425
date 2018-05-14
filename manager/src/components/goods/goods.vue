@@ -16,11 +16,6 @@
               height="600"
             >
               <el-table-column
-                fixed="left"
-                type="selection"
-                width="30">
-              </el-table-column>
-              <el-table-column
                 sortable
                 fixed="left"
                 prop="name"
@@ -95,7 +90,15 @@
                 label="售卖情况"
                 width="120">
               </el-table-column>
-
+              <el-table-column
+                sortable
+                width="130"
+                prop="cid"
+                label="类">
+                <template slot-scope="scope">
+                  <span v-for="item in filterTagArr" v-if="scope.row.cid === item.value">{{item.text}}</span>
+                </template>
+              </el-table-column>
               <el-table-column
                 sortable
                 width="100"
@@ -114,6 +117,7 @@
                 prop="promotionPrice"
                 label="活动价">
               </el-table-column>
+
               <el-table-column
                 sortable
                 prop="stock"
@@ -138,8 +142,18 @@
                   </el-popover>
                 </template>
               </el-table-column>
-
-
+              <el-table-column
+                prop="cid"
+                label=""
+                width="40"
+                fixed="left"
+                :filters="filterTagArr"
+                :filter-method="filterTag"
+                filter-placement="bottom-end"
+              >
+                <template slot-scope="scope">
+                </template>
+              </el-table-column>
               <!--<el-table-column-->
                 <!--sortable-->
                 <!--width="150"-->
@@ -1031,6 +1045,7 @@ export default {
       ],
       PreTag:[],
       PreSpec:[],
+      filterTagArr:[],
       PrePopularizeTag:[],
       tagType:[
         {
@@ -1106,17 +1121,7 @@ export default {
       inputVisible1: false,
       inputValue1: '',
       toDynamicTags2:[],
-      dynamicTags2: [
-        // {
-        //   zindex:'0',
-        //   name:'份量',
-        //   attrs: [
-        //     {
-        //       name:''
-        //     }
-        //   ],
-        // },
-      ],
+      dynamicTags2: [],
       inputVisible2: false,
       inputValue2: '',
       inputVisible3: false,
@@ -1125,7 +1130,7 @@ export default {
       toDynamicTags3:[],
       value4: '',
       valueOfSKU: [],
-      valueOfSKU1:[],
+      valueOfSKU1:[],  //修改菜品时已选的规格
       valueOfSKUOldShow:0,
       valueOfTags: [],
       valueOfTagsPopularize: [],
@@ -1135,8 +1140,7 @@ export default {
       dynamicTagsOldShow:0,
       normalPrice:12,
       value6: '',
-      fileList2: [
-      ],
+      fileList2: [],
       rules: {
         zindex: [
           {required: true, message:'请输入序号', trigger:'blur'},
@@ -1198,6 +1202,9 @@ export default {
     }
   },
   computed:{
+    cidToName(){
+
+    },
     normalPrice1: function(){
       return this.dishes.normalPrice
     },
@@ -1381,7 +1388,7 @@ export default {
         {
           feild:'status',
           value:'enable',
-          joinType:'ne'
+          joinType:'eq'
         }
       ]
       this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
@@ -1516,6 +1523,12 @@ export default {
         console.log(response);
         this.dynamicTags1 = response
         // console.log(this.dynamicTags1);
+        for(let i=0;i<response.length;i++){
+          this.filterTagArr.push({
+            text:response[i].name,
+            value:response[i].id
+          })
+        }
       }).catch((err)=>{
         console.log(err);
       })
@@ -1745,6 +1758,11 @@ export default {
         });
         console.log(err);
       })
+    },
+    filterTag(value, row) {
+      console.log(value);
+      console.log(row);
+      return row.cid === value;
     },
     updateSpec(){
       console.log('得到sku内部分',this.toDynamicTags2.attrs);
@@ -2534,6 +2552,7 @@ export default {
       this.valueOfSKUOldShow = 0
       this.dishes ={}
       this.valueOfSKU = []
+      this.valueOfSKU1 = []  //修改菜品时已选的规格
       this.valueOfTags = []
       this.valueOfTagsPopularize = []
       this.startTimePre = '请选择开始时间'
@@ -2541,7 +2560,8 @@ export default {
       this.generatTable = false
       this.dynamicTagsOld =[]
       this.valueOfTagsPopularize1 = []
-      this.valueOfSKU1 = []
+
+
       this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
     },
     plusGoods(){
@@ -2552,7 +2572,7 @@ export default {
       return row.address;
     },
     filterTag(value, row) {
-      return row.tag === value;
+      return row.cid === value;
     },
     filterHandler(value, row, column) {
       const property = column['property'];

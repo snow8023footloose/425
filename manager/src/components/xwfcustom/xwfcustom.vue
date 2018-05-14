@@ -334,7 +334,7 @@
               <!--:target="this.restaurantPerson.idcardBackImg"></upload>-->
           <!--</el-form-item>-->
           <el-form-item v-if="addNewPerson === 1" label="手机号" :label-width="formLabelWidth">
-            <el-input v-model.number="restaurantPerson.phone" auto-complete="off" placeholder="请填写法人手机号"></el-input>
+            <el-input v-model="restaurantPerson.phone" auto-complete="off" placeholder="请填写法人手机号"></el-input>
           </el-form-item>
           <span v-if="addNewRestaurant === 1">
           <el-form-item label="餐厅名称" :label-width="formLabelWidth" prop="name">
@@ -344,10 +344,10 @@
             <el-input v-model="restaurantData.description" auto-complete="off" placeholder="请填写简要餐厅介绍"></el-input>
           </el-form-item>
           <el-form-item label="电话" :label-width="formLabelWidth" prop="phone">
-            <el-input v-model.number="restaurantData.phone" auto-complete="off" placeholder="请填写餐厅常用电话"></el-input>
+            <el-input v-model="restaurantData.phone" auto-complete="off" placeholder="请填写餐厅常用电话"></el-input>
           </el-form-item>
           <el-form-item label="备用电话" :label-width="formLabelWidth" prop="backupPhone">
-            <el-input v-model.number="restaurantData.backupPhone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
+            <el-input v-model="restaurantData.backupPhone" auto-complete="off" placeholder="请填写餐厅固定电话"></el-input>
           </el-form-item>
           <el-form-item label="餐厅类型" :label-width="formLabelWidth" prop="tid" style="text-align: left">
             <el-select v-model.number="restaurantData.tid" placeholder="请选择餐厅类型">
@@ -475,6 +475,12 @@
           <el-form-item label="服务费" :label-width="formLabelWidth">
             <el-input v-model.number="restaurantData.serviceCharge" auto-complete="off" placeholder="请填写软件服务费"></el-input>
           </el-form-item>
+            <el-form-item label="经度" :label-width="formLabelWidth">
+            <el-input v-model.number="restaurantData.longitude" auto-complete="off" placeholder="备注"></el-input>
+          </el-form-item>
+            <el-form-item label="纬度" :label-width="formLabelWidth">
+            <el-input v-model.number="restaurantData.latitude" auto-complete="off" placeholder="备注"></el-input>
+          </el-form-item>
           <el-form-item label="备注" :label-width="formLabelWidth">
             <el-input v-model="restaurantData.remark" auto-complete="off" placeholder="备注"></el-input>
           </el-form-item>
@@ -546,7 +552,6 @@
       computed: {},
       data (){
         return{
-
           restaurantDatapid:0,
           picCollection: {
             brandLogo: 'restaurant/brandLogo/',
@@ -630,7 +635,6 @@
           restaurantData: {
           },
           restaurantIndex: 0,
-
           options2: [{
             label: '江苏',
             cities: []
@@ -661,8 +665,7 @@
             //   {required: true, message:'请输入状态', trigger:'change'},
             // ],
             phone: [
-              {required: true, message:'请输入电话号码', trigger:'blur'},
-              {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
+              {required: true, message:'请输入电话号码', trigger:'blur'}
             ],
             // address: [
             //   {required: true, message:'请输入地址', trigger:'blur'},

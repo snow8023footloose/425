@@ -10,7 +10,7 @@
           <span class="name">{{seller.name}}</span>
         </div>
         <div class="description">
-          <span>点击查看商家信息：</span>{{seller.description}}
+          <span>商家信息：</span>{{seller.description}}
         </div>
         <div v-if="seller.supports" class="support">
           <span class="icon" :class="classMap[seller.supports[0].type]"></span>
@@ -56,14 +56,6 @@
 
               <div class="info">
                 <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
 
                 <ul>
                   <li class="info-item" v-for="(info,key) in seller.infos" :key="key">{{info}}</li>
@@ -78,14 +70,6 @@
 
               <div class="info">
                 <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
-                <p class="content">{{seller.description}}</p>
 
                 <ul>
                   <li class="info-item" v-for="(info,key) in seller.infos" :key="key">{{info}}</li>
@@ -99,7 +83,7 @@
               </div>
 
               <div class="bulletin">
-                <p class="content">{{seller.description}}</p>
+                <span class="content">{{seller.description}}</span>
               </div>
 
               <div class="headertitle">
@@ -202,7 +186,7 @@ export default {
 
 }
 </script>
-<style  lang="stylus" rel="stylesheet/stylus">
+<style scoped lang="stylus" rel="stylesheet/stylus">
 @import "../../common/style.css";
 @import "../../common/animate.css";
 @import "../../common/styles/mixin.styl";

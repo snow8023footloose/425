@@ -23,7 +23,7 @@ export  function urlColletion() {
   return {
     //餐厅请求接口
 
-    //login2: BURL + '/xwfUser/login',
+    login2: BURL + '/xwfUser/login',
     loginAlipay: BURL + '/xwfUser/alipayLogin',
     loginWechat: BURL + '/xwfUser/wechatLogin',
 
@@ -80,6 +80,7 @@ export  function urlColletion() {
     cart2: BURL + '/cart/complexPageQuery',
     cart3: BURL + '/cart/delete',
     cart4: BURL + '/cart/update',
+    cart5: BURL + '/cart/updateNum',
 
 
     //餐桌
@@ -173,7 +174,6 @@ export function goodsArr(self) {
         joinType: 'eq'
       }
     ]))
-    console.log(promiseArr,'11111111111111');
   }
   Promise.all(promiseArr).then((res)=>{
     console.log(res);

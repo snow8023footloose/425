@@ -21,17 +21,17 @@ export default new Router({
       component: Entrance
     },
     {
-      path: '/',
+      path: '/mall/',
       name: 'Goods',
       component: Goods
     },
     {
-      path: '/order',
+      path: '/mall/order',
       name: 'Order',
       component: Order
     },
     {
-      path: '/seller',
+      path: '/mall/seller',
       name: 'Seller',
       component: Seller
     },

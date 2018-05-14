@@ -11,13 +11,13 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay.toFixed(2)}}</div>
-        <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>
+        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}"><span class="dollar">￥</span>{{totalPrice.toFixed(2)}}</div>
+        <!--<div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div>-->
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
       </div>
       <div class="content-right" @click.stop.prevent="prePay">
-        <div class="pay" :class="payClass" >
-          {{payDesc}}
+        <div class="pay" :class="payClass" style="background: rgba(0,180,60,.8)">
+          结算
         </div>
       </div>
     </div>
@@ -36,32 +36,34 @@
     </div>
     <transition name="fold" enter-active-class="fadeInUp" leave-active-class="fadeOutDown">
       <div class="shopcart-list animated" v-show="listShow">
-      <div class="list-header">
-        <h1 class="title">购物车</h1>
-        <span class="empty" @click="empty">清空</span>
+        <div class="list-header">
+          <h1 class="title" style="line-height: 41px;">购物车</h1>
+          <!--<span class="empty" @click="empty">清空</span>-->
+        </div>
+        <div class="list-content" ref="list-content">
+          <ul>
+            <li class="food" @click="selectCart(good)" v-for="(good,key) in cartList" :key="key" v-if="good.num > 0">
+              <span class="name" >{{good.dishes.name}}</span>
+              <span class="dishseNumber" style="margin-left: 10px"><i class="el-icon-close"></i>{{good.num}}</span>
+                <span>￥{{good.totalPrice}}</span>
+              <div class="cartcontrol-wrapper">
+                <cartcontrol
+                  :confirmMessage="confirmMessage"
+                  :food="good"
+                  @incrementmi="incrementTotalDecre"
+                  @increment="incrementTotalAdd">
+                </cartcontrol>
+              </div>
+              <div class="cartShowDetil">
+                <span style="font-size: 10px" v-for="tags in good.tags">{{tags.name}}&nbsp;</span><span style="font-size: 10px" v-if="good.skus">{{good.sid}}</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="list-header2" style="background: white">
+
+        </div>
       </div>
-      <div class="list-content" ref="list-content">
-        <ul>
-          <li class="food" v-for="(food,key) in selectFoods" :key="key">
-            <span class="name">{{food.name}}</span>
-            <div class="price">
-              <span>￥{{needPay.toFixed(2)}}</span>
-            </div>
-            <div class="cartcontrol-wrapper">
-              <cartcontrol
-                :confirmMessage="confirmMessage"
-                :food="food"
-                @incrementmi="incrementTotalDecre"
-                @increment="incrementTotalAdd">
-              </cartcontrol>
-            </div>
-            <!--<div class="delete-wrapper">-->
-              <!--<el-button type="danger" icon="el-icon-delete" circle size="mini" @click="deleteSelect"></el-button>-->
-            <!--</div>-->
-          </li>
-        </ul>
-      </div>
-    </div>
     </transition>
     <transition name="fade" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
       <div style="color: white" v-show="prePayShow" class="detail animated">
@@ -70,13 +72,6 @@
           <div class="scroll" style="height: 490px" ref="confirm-scroll">
             <div class="s-scroll" style="background: rgba(255,255,255,0);width: 100%;margin: 0px auto;">
               <h1 class="name">确认订单</h1>
-              <!--<div class="favorite">
-                <span class="icon-favorite" :class="{'active':favorite}" @click="toggleFavorite()"></span>
-                <span class="text">{{favoriteText}}</span>
-              </div>-->
-              <!--<div class="star-wrapper">-->
-              <!--<star :size="48" :score="seller.score"></star>-->
-              <!--</div>-->
               <div class="headertitle">
                 <div class="line"></div>
                 <div class="text">备注</div>
@@ -91,17 +86,12 @@
                   v-model="markTxt">
                 </el-input>
               </div>
-
-
-
               <div class="headertitle">
                 <div class="line"></div>
                 <div class="text">账单信息</div>
                 <div class="line"></div>
               </div>
-
               <div class="info">
-
                 <ul>
                   <li class="orderList info-item">
                     <span> 优惠金额 </span> <span> </span><span>￥{{discountMoney}} </span>
@@ -114,35 +104,14 @@
                   </li>
                 </ul>
               </div>
-
-              <!--<div class="headertitle">
-                <div class="line"></div>
-                <div class="text">优惠信息</div>
-                <div class="line"></div>
-              </div>
-
-              <div class="info">
-                <ul>
-                  <li class="info-item"></li>
-                </ul>
-              </div>-->
-
-
               <div class="headertitle">
                 <div class="line"></div>
                 <div class="text">订单详情</div>
                 <div class="line"></div>
               </div>
-
               <div class="info">
-
-                <!--<p class="content">订单状态：{{seller.description}}</p>-->
-                <!--<p class="content">订单号：{{seller.description}}</p>-->
-                <!--<p class="content">支付方式：{{seller.description}}</p>-->
-                <!--<p class="content">下单时间：{{seller.description}}</p>-->
-
                 <ul>
-                  <li class="orderList info-item" v-for="item in cartList" v-if="item.num > 0">
+                  <li class="orderList info-item" v-for="item in PreCartList" v-if="item.num > 0">
                     <span > {{item.dishes.name}} </span> <span>x{{item.num}} </span><span>￥{{item.totalPrice}} </span>
                   </li>
                 </ul>
@@ -169,15 +138,14 @@
 </template>
 
 <script type="text/ecmascript-6">
-/* eslint-disable */
+  /* eslint-disable */
   import BScroll from 'better-scroll';
   import cartcontrol from '@/components/cartcontrol/cartcontrol';
-const ERR_OK = 0
+  const ERR_OK = 0
 
   export default {
     props: {
       selectFoods: {
-
         type: Array,
         default() {
           return [
@@ -188,26 +156,17 @@ const ERR_OK = 0
           ];
         }
       },
-      deliveryPrice: {
-        type: Number,
-        default: 0
-      },
-      minPrice: {
-        type: Number,
-        default: 0
-      },
-      needPay: {
-        type: Number,
-        default: 0
+      cartList: {
+        type: Array,
       },
     },
     data() {
       return {
         markTxt:'',
-        confirmOnce:0,
-        cartList:[],
         discountMoney:'',
+        PreCartList:[],
         realPay:'',
+        needPay:0,
         prePayShow:false,
         balls: [
           {
@@ -232,65 +191,46 @@ const ERR_OK = 0
         confirmMessage: {
           is: 0
         },
-        getFoods:{},
-
-        specs:[],
-        selectedTags:[],
-        selectedSkuArr : [],
         dialogFormVisible:false,
         formLabelWidth: '50px',
       };
     },
     watch:{
-      selectFoods(val){
-        this.confirmOnce = 0
-      }
+
     },
     methods: {
+      selectCart(val){
+        console.log(val);
+      },
       prePay() {
-        // if (this.totalPrice < this.minPrice) {
-        //   return;
-        // }
-          let _this = this
-        // if(this.confirmOnce === 0){
-          this.prePayShow = !this.prePayShow
-          let data= {
-            restaurantId: parseInt(localStorage.getItem('rid')),
-            // restaurantId: 1000000000,
-            orderType:'single',
-            // tableId: localStorage.getItem('tid')
-            tableId: parseInt(localStorage.getItem('tid'))
-          }
-          this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-            this.cartList = res.data.data.cartList
-            console.log('this.cartList',this.cartList);
-            this.discountMoney = res.data.data.discountMoney
-            this.needPay = res.data.data.needPay
-            this.realPay = res.data.data.realPay
-
-            _this._intScroll
-            // alert(this.needPay)
-            this.$nextTick(() => {
-              if (!this.scroll) {
-                this.scroll = new BScroll(this.$refs['confirm-scroll'], {
-                  click: true
-                });
-              } else {
-                this.scroll.refresh();
-              }
-            });
-            // window.alert(`支付${this.totalPrice}元`);
-          }).catch((err)=>{
-            console.log(err);
-          })
-        //   this.confirmOnce ++;
-        // }else {
-        //   this.prePayShow = !this.prePayShow
-        // }
-        // window.alert(`支付${this.totalPrice}元`);
+        let _this = this
+        this.prePayShow = !this.prePayShow
+        let data= {
+          restaurantId: parseInt(localStorage.getItem('rid')),
+          orderType:'single',
+          tableId: parseInt(localStorage.getItem('tid'))
+        }
+        this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+          this.PreCartList = res.data.data.cartList
+          console.log('this.cartList',this.cartList);
+          this.discountMoney = res.data.data.discountMoney
+          this.needPay = res.data.data.needPay
+          this.realPay = res.data.data.realPay
+          _this._intScroll
+          this.$nextTick(() => {
+            if (!this.scroll) {
+              this.scroll = new BScroll(this.$refs['confirm-scroll'], {
+                click: true
+              });
+            } else {
+              this.scroll.refresh();
+            }
+          });
+        }).catch((err)=>{
+          console.log(err);
+        })
       },
       _intScroll(){
-        console.log('222');
         this.$nextTick(() => {
           if (!this.scroll) {
             this.scroll = new BScroll(this.$refs['confirm-scroll'], {
@@ -302,22 +242,15 @@ const ERR_OK = 0
         });
       },
       confirmPay(){
-        alert('===========进入支付');
-        alert(localStorage.getItem('rid'));
-        alert(localStorage.getItem('tid'));
-        alert(localStorage.getItem('clientType'));
+
         var data = {
           restaurantId: parseInt(localStorage.getItem('rid')),
-          // restaurantId: 1000000000,
           orderType:'single',
-          // payType:'alipay-online',
           serverType:'real-time',
-          //tableId: localStorage.getItem('tid')
           tableId: parseInt(localStorage.getItem('tid'))
         }
         let clientType = localStorage.getItem('clientType');
         if(clientType && clientType == 'wechat'){
-          alert('========微信');
           data.payType = 'wechat-online';
           this.$request(this.url.payOrder, 'form', data).then((res) => {
             wx.config({
@@ -330,7 +263,6 @@ const ERR_OK = 0
               // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
             });
             wx.ready(function () {
-              alert(res.data.data.package);
               wx.chooseWXPay({
                 timestamp: res.data.data.timeStamp + "", // 支付签名时间戳，注意微信jssdk中的所有使用timestamp字段均为小写。但最新版的支付后台生成签名使用的timeStamp字段名需大写其中的S字符
                 nonceStr: res.data.data.nonceStr, // 支付签名随机串，不长于 32 位
@@ -339,37 +271,33 @@ const ERR_OK = 0
                 paySign: res.data.data.paySign, // 支付签名
                 success: function (response) {
                   if(response.errMsg == "chooseWXPay:ok"){
-                    this.$router.push({path:'/order'})
-                    alert('支付成功')
-                    this.$message({
-                      type: 'success',
-                      message: '支付成功！'
-                    });
+                    location.reload()
+                    this.$emit('updateCart',true);
+                    this.$router.push({path:'mall/order'})
+                    // alert('支付成功')
 
                   }
                 },
                 cancel: function(res) {
-                  this.$message({
-                    type: 'info',
-                    message: '支付未完成'
-                  });
-                  alert('支付未完成')
+                  this.$emit('updateCart',true);
+
+                  location.reload();
+                  this.$router.push({path:'mall/order'})
                 }
               });
             });
             wx.error(function (res) {
-              this.$message({
-                type: 'success',
-                message: '签名错误'
-              });
+              this.$emit('updateCart',true);
+              this.$router.push({path:'mall/order'})
             });
           }).catch((err) => {
-            console.log(err);
+            this.$emit('updateCart',true);
+            this.$router.push({path:'mall/order'})
           })
         } else {
-          alert('========支付宝')
+          // alert('========支付宝')
           data.payType = 'alipay-online'
-          alert(data.payType);
+          // alert(data.payType);
           this.$request(this.url.payOrder, 'form', data).then((res) => {
             console.log('confirmOrder', res);
             console.log(res.data);
@@ -382,166 +310,89 @@ const ERR_OK = 0
             document.body.appendChild(div);
             div.children[0].submit();
           }).catch((err) => {
-            console.log(err);
+            this.$emit('updateCart',true);
+            this.$router.push({path:'mall/order'})
+          }).then(_=>{
+            location.reload();
           })
         }
-        this.empty()
+        this.$emit('updateCart',true);
       },
       hidePrePayShow(){
         this.prePayShow = !this.prePayShow
       },
-      deleteSelect(){
-        let data = {
-          did: this.getFoods.id,
-          rid: this.getFoods.rid,
-          tid: 12,
-          type: 'single',
-        }
-
-        this.$request(this.url.cart3,'json',data).then((res)=>{
-          console.log(res);
-        }).catch((err)=>{
-          console.log(err);
-        })
-      },
-      transformArrySku(){
-        let selectedSkuArr = []
-        for(var i=0;0<this.selectedSkuArr.length;i++){
-          if(this.selectedSkuArr.length === i){
-            return selectedSkuArr
-          }else {
-            for(var j=0;j<this.specs[i].attrs.length;j++){
-              // console.log(this.specs[i].attrs);
-              if(this.selectedSkuArr.length === i){
-                continue
-              }else if(this.selectedSkuArr[i] === this.specs[i].attrs[j].name){
-                selectedSkuArr.push(this.specs[i].attrs[j].id)
-              }
-            }
-          }
-        }
-      },
-      transformArryTags(){
-        let selectedArryTags = []
-        let data = [
+      incrementTotalAdd(g) {
+        let _this = this
+        let Data = [
           {
-            feild:'status',
-            value:'enable',
+            feild: 'rid',
+            value: parseInt(localStorage.getItem('rid')),
             joinType: 'eq'
           }
-        ]
-        this.$request(this.url.restaurantTag2,'json',data).then((res)=>{
-          console.log(res);
+        ];
+        this.$request(this.url.cart2,'json',Data).then((res)=>{
           let response = res.data.data
-          for(var i=0;0<this.selectedTags.length;i++){
-            if(this.selectedTags.length === i){
-              this.transformArryTag = selectedArryTags
-              return true
-            }else {
-              for(var j=0;j<this.response.length;j++){
-                // console.log(this.specs[i].attrs);
-                if(this.selectedTags.length === i){
-                  continue
-                }else if(this.selectedTags[i] === this.response[j].name){
-                  selectedArryTags.push(this.response[j].id)
-                }
+          for(var i = 0;i<response.length;i++){
+            //通过循环，找到购物车id，然后将其加1
+            if(response[i].id == g.food.id){
+              let data = {
+                id:g.food.id,
+                delta:1
               }
+              this.$request(this.url.cart5,'form',data).then((res)=>{
+                this.$emit('updateCart',true);
+              }).catch((err)=>{
+                console.log('加入购物车失败',err);
+              })
             }
           }
         }).catch((err)=>{
-          console.log(err);
         })
-      },
-      findSkuByAttrJoin(selectedJoinAttr){
-        for(let item of this.getFoods.skus){
-          if(item.attrJion === selectedJoinAttr){
-            return item;
-          }
-        }
-
-      },
-      confirmSku(){
-        // console.log(this.specs);
-        // console.log(this.selectedSkuArr);
-        console.log(this.selectedTags);
-        // console.log(this.trueLabelofSpecs+'trueLabelofSpecs');
-        // console.log(this.trueLabelofTags+'trueLabelofTags');
-        let attrJoin = this.transformArrySku().join('_');
-        // this.transformArryTags()
-        // console.log(this.transformArryTags());
-        let attrTags = this.selectedTags.join(',');
-        let selectedSkuObj = this.findSkuByAttrJoin(attrJoin);
-        let data = {
-          num:1,
-          sid: selectedSkuObj.id,
-          did: this.getFoods.id,
-          rid: this.getFoods.rid,
-          tid: 12,
-          type: 'single',
-          tagIds: attrTags
-        }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
-        }).catch((err)=>{
-          console.log(err);
-        })
-        if (!this.getFoods.count) {
-          Vue.set(this.getFoods, 'count', 1);
-        } else {
-          this.getFoods.count++;
-        }
-        this.dialogFormVisible = !this.dialogFormVisible
-      },
-      incrementTotalAdd(g) {
-        console.log(g.event,g.food,'456546456456')
-        //体验优化,异步执行下落动画
-        if(g.specs){
-          this.dialogFormVisible = !this.dialogFormVisible
-          this.getFoods = g.food
-          this.specs = g.food.specs
-        }else{
-
-          let data = {
-            num: 1,
-            did: g.food.id,
-            rid: g.food.rid,
-            tid: 12,
-            type: 'single',
-          }
-          this.$request(this.url.cart1,'json',data).then((res)=>{
-            console.log(res);
-          }).catch((err)=>{
-            console.log(err);
-          })
-        }
       },
       incrementTotalDecre(g){
-        // console.log(g.event,g.food,'456546456456')
-        //体验优化,异步执行下落动画
-        if(g.specs){
-          this.dialogFormVisible = !this.dialogFormVisible
-          this.getFoods = g.food
-          this.specs = g.food.specs
-        }else{
-          let data = {
-            num: -1,
-            did: g.food.id,
-            rid: g.food.rid,
-            tid: 12,
-            type: 'single',
+        let _this = this
+        let Data = [
+          {
+            feild: 'rid',
+            value: parseInt(localStorage.getItem('rid')),
+            joinType: 'eq'
           }
-          this.$request(this.url.cart1,'json',data).then((res)=>{
-            console.log(res);
-          }).catch((err)=>{
-            console.log(err);
-          })
-        }
+        ];
+        this.$request(this.url.cart2,'json',Data).then((res)=>{
+          let response = res.data.data
+          for(var i = 0;i<response.length;i++){
+            if(response[i].id == g.food.id){
+              let data = {
+                delta:-1,
+                id:g.food.id
+              }
+              this.$request(this.url.cart5,'form',data).then((res)=>{
+                this.$emit('updateCart',true);
+              }).catch((err)=>{
+                console.log('加入购物车失败',err);
+              })
+            }
+          }
+        }).catch((err)=>{
+        })
+      },
+      _pullCart(){
+        let Data = [
+          {
+            feild: 'rid',
+            value: parseInt(localStorage.getItem('rid')),
+            joinType: 'eq'
+          }
+        ];
+        this.$request(this.url.cart2,'json',Data).then((res)=>{
+        }).catch((err)=>{
+        })
       },
       serveCall() {
         alert("已为您呼叫服务")
       },
       drop(el) {
-        // console.log("shopcart")
+        //小球落下
         for(let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
           if(!ball.show) {
@@ -553,6 +404,7 @@ const ERR_OK = 0
         }
       },
       beforeDrop(el) {
+        //小球落下之前
         let count = this.balls.length;
         while (count--) {
           let ball = this.balls[count];
@@ -587,6 +439,7 @@ const ERR_OK = 0
         }
       },
       cookBook(event) {
+        //特色菜单
         this.book = !this.book
         let Goods = document.getElementById("goods");
         if(this.book){
@@ -594,10 +447,13 @@ const ERR_OK = 0
         }else if(!this.book){
           Goods.className = "goods"
         }
+
+        // /restaurant/13f1ffe7-2715-4c4f-bdd0-e3474118f3bd
+        // 中国题材
         let BgOfBook = document.getElementById('foods-wrapper')
         let BgOfBookUl = document.getElementById('foods-ul')
-        BgOfBook.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com/restaurant/860ad5a4-6a07-4ce1-a90f-4f12988abb84)'
-        BgOfBookUl.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com/restaurant/860ad5a4-6a07-4ce1-a90f-4f12988abb84)'
+        BgOfBook.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com//restaurant/13f1ffe7-2715-4c4f-bdd0-e3474118f3bd)'
+        BgOfBookUl.style.background = 'url(https://order-online.oss-cn-shenzhen.aliyuncs.com/restaurant/13f1ffe7-2715-4c4f-bdd0-e3474118f3bd)'
         BgOfBook.style.backgroundSize = '100%'
         BgOfBookUl.style.backgroundSize = '100%'
 
@@ -620,19 +476,29 @@ const ERR_OK = 0
     },
     computed: {
       totalPrice() {
-        let total = 0;
-        this.selectFoods.forEach((food) => {
-          total += food.normalPrice * food.count;
-
-        });
-        return total;
+        let res = this.cartList
+        var cartListTotalPrice = 0
+        if(res === null){
+          return 0
+        }else {
+          for(let i=0;i<res.length;i++){
+            cartListTotalPrice += res[i].totalPrice
+          }
+        }
+        return cartListTotalPrice
       },
       totalCount() {
-        let count = 0;
-        this.selectFoods.forEach((food) => {
-          count += food.count;
-        });
-        return count;
+        let res = this.cartList
+        let totalCount = 0
+        console.log(res);
+        if(res === null){
+          return
+        }else {
+          for(let i=0;i<res.length;i++){
+            totalCount += res[i].num
+          }
+        }
+        return totalCount
       },
       payDesc() {
         if (this.totalPrice < this.minPrice) {
@@ -670,9 +536,6 @@ const ERR_OK = 0
         }
         return show;
       }
-    },
-    created () {
-
     },
     components: {
       cartcontrol
@@ -783,9 +646,10 @@ const ERR_OK = 0
     .shopcart-list
       position: absolute
       /*right: 36px*/
-      bottom: 26px
+      bottom: 220px
       z-index: -1
       width: 95%
+      height 120px
       .list-header
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
         height: 40px
@@ -804,13 +668,19 @@ const ERR_OK = 0
           padding-top: 2px
           font-size: 12px
           color: rgb(0, 160, 220)
+      .list-header2
+        height: 200px
+        line-height: 31px
+        width : 100%
+        padding: 0 2.5%
+        background: #f3f5f7
+        border-bottom: 1px solid rgba(7, 17, 27, 0.1)
 
       .list-content
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
         padding: 0 2.5%
         max-height: 200px
-        bottom : 40px
-        padding-bottom 20px
+        bottom : 300px
+        padding-bottom 50px
         width : 100%
         overflow hidden
         background: #fff
@@ -819,13 +689,16 @@ const ERR_OK = 0
           padding: 12px 0
           box-sizing: border-box
           border-1px(rgba(7, 17, 27, 0.1))
+          &:last-child:after
+            {content "台词："}
           .name
             line-height: 24px
             display inline-block
-            font-size: 13px
+            font-size: 14px
             color: rgb(7, 17, 27)
             font-weight :100
             text-overflow: clip
+            text-align left
             width 135px
           .price
             position: absolute
@@ -846,50 +719,56 @@ const ERR_OK = 0
             .el-button
               padding 5px !important
 
-.ball-container
-  .ball
-    position fixed
-    left 32px
-    bottom 22px
-    z-index 200
-    transition all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41)
-    .inner
-      width 16px
-      height 16px
-      border-radius 50%
-      background-color rgb(0,160,220)
-      transition all 0.4s linear
+  .ball-container
+    .ball
+      position fixed
+      left 32px
+      bottom 22px
+      z-index 200
+      transition all 0.4s cubic-bezier(0.49,-0.29,0.75,0.41)
+      .inner
+        width 16px
+        height 16px
+        border-radius 50%
+        background-color rgb(0,160,220)
+        transition all 0.4s linear
 
 
-.detail
-  position: fixed
-  z-index: 100
-  top: 0
-  left: 0
-  width: 100%
-  height: 100%
-  /*overflow: hidden*/
-  transition: all 0.5s
-  backdrop-filter: blur(10px)
-  background: rgba(7, 17, 27, 0.8)
-  .detail-wrapper
-    display flex
+  .detail
+    position: fixed
+    z-index: 100
+    top: 0
+    left: 0
     width: 100%
-    height: 589px
-    margin-top: 30px
-    justify-content center
+    height: 100%
+    /*overflow: hidden*/
+    transition: all 0.5s
+    backdrop-filter: blur(10px)
+    background: rgba(7, 17, 27, 0.8)
+    .detail-wrapper
+      display flex
+      width: 100%
+      height: 589px
+      margin-top: 30px
+      justify-content center
 
 
-.orderList
-  display: flex
-  justify-content: space-between
-  span:nth-child(1)
-    display block
-    width 60%
-  span:nth-child(2)
-    display block
-    width 20%
-  span:nth-child(3)
-    display block
-    width 25%
+  .orderList
+    display: flex
+    justify-content: space-between
+    span:nth-child(1)
+      display block
+      width 60%
+    span:nth-child(2)
+      display block
+      width 20%
+    span:nth-child(3)
+      display block
+      width 25%
+
+
+.cartShowDetil
+  position absolute
+  bottom 2px
+  color rgba(0, 0, 0, 0.45)
 </style>
