@@ -7,7 +7,7 @@
     <div class="tab">
       <router-link to="/mall/order" @click.native="active($event)">
         <div class="tab-item">
-          订单1
+          订单
         </div>
       </router-link>
       <router-link :to="{path:'/mall/', query:{cartList:cartList}}" @click.native="active($event)">

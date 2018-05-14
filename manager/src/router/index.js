@@ -7,13 +7,10 @@ import Tables from '@/components/tables/tables'
 import Finance from '@/components/finance/finance'
 import Apply from '@/components/test/apply'
 import Setting from '@/components/setting/setting'
-import Xwfer from '@/components/xwfer/xwfer'
 import Xwfcustom from '@/components/xwfcustom/xwfcustom'
-import Xwffunction from '@/components/xwffunction/xwffunction'
 import upLoad from '@/components/upload/upload'
-import Modle from '@/components/test/modle'
-import Computer from '@/components/comput/computer'
 import Touch from '@/components/test/touch'
+import Coupon from '@/components/coupon/coupon'
 
 
 Vue.use(Router)
@@ -23,9 +20,9 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path:'/Computer',
-      name:'Computer',
-      component: Computer
+      path:'/manager/xwfs/coupon',
+      name:'Coupon',
+      component: Coupon
     },
     {
       path:'/touch',
@@ -33,12 +30,12 @@ export default new Router({
       component: Touch
     },
     {
-      path:'/manager/XWFs/goods',
+      path:'/manager/xwfs/goods',
       name:'Goods',
       component: Goods
     },
     {
-      path:'/manager/XWFs/finance',
+      path:'/manager/xwfs/finance',
       name:'Finance',
       component: Finance
     },
@@ -48,45 +45,29 @@ export default new Router({
       component:Tables
     },
     {
-      path:'/manager/XWFs/order',
+      path:'/manager/xwfs/order',
       name:'Order',
       component: Order
     },
     {
-      path:'/manager/XWFs/apply',
+      path:'/manager/xwfs/apply',
       name:'Apply',
       component: Apply
     },
     {
-      path:'/manager/XWFs/setting',
+      path:'/manager/xwfs/setting',
       name:'Setting',
       component: Setting
     },
     {
-      path:'/platform/XWFer/xwfer',
-      name:'Xwfer',
-      component: Xwfer
-    },
-    {
-      path:'/platform/XWFer/xwfcustom',
+      path:'/platform/xwfer/xwfcustom',
       name:'Xwfcustom',
       component: Xwfcustom
-    },
-    {
-      path:'/platform/XWFer/xwffunction',
-      name:'Xwffunction',
-      component: Xwffunction
     },
     {
       path:'/up',
       name:'upLoad',
       component: upLoad
-    }
-    ,
-    {
-      path:'/modle',
-      name:'Modle',
-      component: Modle
     }
   ]
 })

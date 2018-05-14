@@ -12,7 +12,7 @@
               抵<span class="realworth">456</span>元
             </div>
             <img class="bg-coupon" alt="">
-            <div class="rules"><h5>使用规则</h5>456456，满<span class="text">456</span>可用</div>
+            <div class="rules"><h5>使用规则</h5>满<span class="text">456</span>可用</div>
             <div class="quantity">剩余23张</div>
           </li>
         </ul>
@@ -140,7 +140,7 @@
   color white
   .price
     margin 10px
-    opacity 0.5
+    opacity 0.2
     font-weight lighter
     font-family "Copperplate Gothic Light"
     font-size 30px
