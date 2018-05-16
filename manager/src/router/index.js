@@ -7,7 +7,6 @@ import Tables from '@/components/tables/tables'
 import Finance from '@/components/finance/finance'
 import Apply from '@/components/test/apply'
 import Setting from '@/components/setting/setting'
-import Xwfcustom from '@/components/xwfcustom/xwfcustom'
 import upLoad from '@/components/upload/upload'
 import Coupon from '@/components/coupon/coupon'
 import Member from '@/components/member/member'
@@ -58,11 +57,6 @@ export default new Router({
       path:'/manager/xwfs/setting',
       name:'Setting',
       component: Setting
-    },
-    {
-      path:'/platform/xwfer/xwfcustom',
-      name:'Xwfcustom',
-      component: Xwfcustom
     },
     {
       path:'/up',

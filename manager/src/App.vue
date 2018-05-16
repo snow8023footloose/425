@@ -45,52 +45,7 @@
       ref="main-content"
       v-loading.fullscreen.lock="fullscreenLoading"
     >
-
-      <!--<el-switch-->
-        <!--class="person-close person-close1"-->
-        <!--style="display: block"-->
-        <!--v-model="value4"-->
-        <!--active-color="#13ce66"-->
-        <!--inactive-color="#ff4949"-->
-        <!--active-text="营业"-->
-        <!--inactive-text="休息"-->
-        <!--@click="atSwitch"-->
-      <!--&gt;-->
-      <!--</el-switch>-->
       <i style="color: #ff525b" class="el-icon-circle-close person-close" @click="loginOut"></i>
-
-
-      <el-col :span="5" v-show="owner">
-        <img src="./logo.png" alt="">
-        <el-menu
-          default-active="1"
-          class="el-menu-vertical-demo"
-          @open="handleOpen"
-          @close="handleClose">
-
-          <router-link :to="{path:'/platform/xwfer/xwfcustom'}" class="vlink">
-            <el-menu-item index="1">
-              <i class="el-icon-tickets"></i>
-              <span slot="title" class="title">我的客户</span>
-            </el-menu-item>
-          </router-link>
-          <!--<router-link :to="{path:'/platform/xwfer/xwfer'}" class="vlink">-->
-            <!--<el-menu-item index="2">-->
-              <!--<i class="el-icon-star-off"></i>-->
-              <!--<span slot="title" class="title">个人信息</span>-->
-            <!--</el-menu-item>-->
-          <!--</router-link>-->
-          <!--<router-link :to="{path:'/platform/xwfer/xwffunction'}" class="vlink">-->
-            <!--<el-menu-item index="3">-->
-              <!--<i class="el-icon-setting"></i>-->
-              <!--<span slot="title" class="title">系统功能</span>-->
-            <!--</el-menu-item>-->
-          </router-link>
-
-        </el-menu>
-      </el-col>
-
-
       <el-col :span="5" v-show="manager">
         <img src="./logo.png" alt="">
         <el-menu
@@ -185,25 +140,10 @@ export default {
       mydata:{},
       fullscreenLoading: false,
       value5:100,
-
-      // // 客户登录
       loginstate: false,
       loginShow: true,
       owner: false,
       manager: true,
-
-      //
-      // 新沃丰公司内部登录 不需账号设置
-      // loginstate: true,
-      // loginShow: false,  //false不需账号设置
-      // owner: false,
-      // manager: true,
-
-      // 新沃丰公司内部登录 需账号设置
-      // loginstate: false,
-      // loginShow: true,  //true需账号设置
-      // owner: false,
-      // manager: true,
 
 
       // manager 为false 客户登录
@@ -226,7 +166,6 @@ export default {
   },
   directives: {
     focus: {
-      // 指令的定义
       inserted: function (el) {
         el.focus()
       }
@@ -246,8 +185,6 @@ export default {
             username:this.ruleForm2.username,
             password:this.ruleForm2.password
           }
-          console.log(data,'提交时的登录信息');
-          if(this.manager === true){
             this.$request(this.url.loginRestaurantManager,'form',data).then((res)=>{
               console.log(res.data,'这是登录返回的信息');
 
@@ -279,42 +216,6 @@ export default {
             }).catch((err)=>{
               console.log(err);
             })
-          }else {
-            this.$message({
-              duration: 1000,
-              type: 'info',
-              message: '即将登陆新沃丰公司内部系统'
-            });
-            this.$request(this.url.loginEmploy,'form',data).then((res)=>{
-              console.log(res.data,'这是登录返回的信息');
-
-              if(res.data.msg === 'username is not exist'){
-                this.$message({
-                  duration: 1000,
-                  type: 'info',
-                  message: '用户名不存在'
-                });
-              }else if(res.data.msg === 'success'){
-
-                this.loginstate = true
-                this.loginShow = false
-                this.$message({
-                  duration: 1000,
-                  type: 'success',
-                  message: '欢迎登录新沃丰系统'
-                });
-                this.$router.push({path:'/platform/xwfer/xwfcustom'})
-              }else if(res.data.msg === "username is not exist or password is incorrect"){
-                this.$message({
-                  duration: 1000,
-                  type: 'info',
-                  message: '用户不存在或者密码不正确'
-                });
-              }
-            }).catch((err)=>{
-              console.log(err);
-            })
-          }
 
         } else {
           console.log('提交失败');
@@ -325,19 +226,6 @@ export default {
     clearLocalStorage(){
       localStorage.clear()
     },
-    keyEvent (ev) {
-      alert(ev.keyCode)
-    },
-    show:function(ev){
-      if(ev.keyCode == 13){
-        alert('你按回车键了');
-      }
-    },
-    // onkeydown(function () {
-    //   if(event.keyCode === 13){
-    //     alert("按下了enter键")
-    //   }
-    // }),
     loginOut(){
       this.$confirm('即将退出系统, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -359,7 +247,6 @@ export default {
           message: '已取消'
         });
       });
-
     },
     handleOpen(key, keyPath) {
       console.log(key, keyPath);
@@ -371,7 +258,6 @@ export default {
       let mainHeigh = document.querySelector("#main-content")
       let appHeigh = document.querySelector("html").clientHeight;
       mainHeigh.style.top =(appHeigh/mainHeigh.clientHeight) + "%"
-
     },
     open11() {
       this.$notify({
