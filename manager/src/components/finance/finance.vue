@@ -38,7 +38,7 @@
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="提现" :visible.sync="dialogFormVisible">
+    <el-dialog title="提现" :visible.sync="showForm">
       <div class="withDraw" v-show="loginShow">
         <span slot="footer" class="dialog-footer">
             </span>
@@ -115,7 +115,7 @@ export default {
     buttonShow:0,
     height: 300,
     loginShow:true,
-    dialogFormVisible:false,
+    showForm:false,
     radio: '1',
     data: [
       {name: '3.24', value: 742},
@@ -186,7 +186,7 @@ export default {
       this.type = 'line'
       this.buttonShow = 1
     }else {
-      this.height = 500
+      this.height = 400
     }
   },
   methods: {
@@ -198,10 +198,10 @@ export default {
         });
         return
       }
-      this.dialogFormVisible = !this.dialogFormVisible
+      this.showForm = !this.showForm
     },
     closeForm() {
-      this.dialogFormVisible = !this.dialogFormVisible
+      this.showForm = !this.showForm
     },
     submitConfirmPassWord(){
 
@@ -218,7 +218,7 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
-      this.dialogFormVisible = !this.dialogFormVisible
+      this.showForm = !this.showForm
       // this.$confirm('确认关闭？')
       //   .then(_ => {
       //
@@ -270,7 +270,7 @@ export default {
     },
 
     withDraw(){
-      this.dialogFormVisible = !this.dialogFormVisible
+      this.showForm = !this.showForm
     }
   },
   computed:{

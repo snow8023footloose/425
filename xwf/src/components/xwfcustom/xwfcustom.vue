@@ -6,7 +6,7 @@
         @tab-click="handleClick"
       >
         <!--餐厅信息表模块-->
-        <el-tab-pane label="餐厅表" name="first">
+        <el-tab-pane label="餐厅列表" name="first">
           <template>
             <!-- <span>{{msg}}</span> -->
             <el-table
@@ -35,6 +35,10 @@
                 width="80"
                 prop="status"
                 label="状态">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.status === 'disable'">不可用</span>
+                  <span v-if="scope.row.status === 'enable'">可用</span>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -276,7 +280,7 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="150">
+                width="100">
                 <template slot-scope="scope">
                   <el-button
                     type="primary"
@@ -292,10 +296,10 @@
                     circle
                     @click.native.prevent="deleteRestaurant(scope.row,scope.$index)">
                   </el-button>
-                  <el-button-group>
-                    <el-button size="mini" icon="el-icon-sort-up"></el-button>
-                    <el-button size="mini" icon="el-icon-sort-down"></el-button>
-                  </el-button-group>
+                  <!--<el-button-group>-->
+                    <!--<el-button size="mini" icon="el-icon-sort-up"></el-button>-->
+                    <!--<el-button size="mini" icon="el-icon-sort-down"></el-button>-->
+                  <!--</el-button-group>-->
                 </template>
               </el-table-column>
             </el-table>

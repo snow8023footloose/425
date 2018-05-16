@@ -34,7 +34,7 @@
                         type="primary"
                         size="mini"
                         round
-                        @click="editDishes(scope.row,scope.$index); visible2 = false ;dialogFormVisibleGoodsPlus = true"
+                        @click="editDishes(scope.row,scope.$index); visible2 = false ;showFormGoodsPlus = true"
                         icon="el-icon-edit">编辑</el-button>
                       <el-button
                         size="mini"
@@ -94,6 +94,9 @@
                 sortable
                 width="130"
                 prop="cid"
+                :filters="filterTagArr"
+                :filter-method="filterTag"
+                filter-placement="bottom-end"
                 label="类">
                 <template slot-scope="scope">
                   <span v-for="item in filterTagArr" v-if="scope.row.cid === item.value">{{item.text}}</span>
@@ -142,18 +145,8 @@
                   </el-popover>
                 </template>
               </el-table-column>
-              <el-table-column
-                prop="cid"
-                label=""
-                width="40"
-                fixed="left"
-                :filters="filterTagArr"
-                :filter-method="filterTag"
-                filter-placement="bottom-end"
-              >
-                <template slot-scope="scope">
-                </template>
-              </el-table-column>
+
+              <!--排序勿删-->
               <!--<el-table-column-->
                 <!--sortable-->
                 <!--width="150"-->
@@ -180,7 +173,7 @@
                     <!--&lt;!&ndash;size="mini"&ndash;&gt;-->
                     <!--&lt;!&ndash;icon="el-icon-edit"&ndash;&gt;-->
                     <!--&lt;!&ndash;circle&ndash;&gt;-->
-                    <!--&lt;!&ndash;@click="editDishes(scope.row,scope.$index); dialogFormVisibleGoodsPlus = true">&ndash;&gt;-->
+                    <!--&lt;!&ndash;@click="editDishes(scope.row,scope.$index); showFormGoodsPlus = true">&ndash;&gt;-->
                   <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
                   <!--&lt;!&ndash;<el-button&ndash;&gt;-->
                     <!--&lt;!&ndash;type="danger"&ndash;&gt;-->
@@ -196,7 +189,13 @@
                 <!--</template>-->
               <!--</el-table-column>-->
             </el-table>
-            <editcontrol @plusMethods="plusMethodsThis"></editcontrol>
+            <el-button
+              size="large"
+              type="primary"
+              icon="el-icon-plus"
+              @click="plusMethodsThis"
+              style="position: fixed;right: 50px;bottom: 60px;"
+            >添加菜品</el-button>
           </template>
         </el-tab-pane>
         <!--特性模块-->
@@ -349,7 +348,7 @@
     <!--标签弹框-->
     <el-dialog
       width="80%" title="标签编辑"
-      :visible.sync="dialogFormVisibleTagEdit"
+      :visible.sync="showFormTagEdit"
       ref="showTags">
       <el-form  :label-width="formLabelWidth" status-icon :model="toDynamicTags" :rules="rules" ref="DynamicTags">
         <el-form-item label="标签名" :label-width="formLabelWidth" prop="name">
@@ -390,7 +389,7 @@
           </el-input>
         </el-form-item>
         <el-form-item style="display: flex;justify-content: flex-end;">
-          <el-button @click="dialogFormVisibleTagEdit = false">取 消</el-button>
+          <el-button @click="showFormTagEdit = false">取 消</el-button>
           <el-button type="primary" @click="updateTags('DynamicTags','showTags')">确 定</el-button>
         </el-form-item>
       </el-form>
@@ -400,7 +399,7 @@
     <!--推广标签弹框-->
     <el-dialog
       width="80%" title="推广标签编辑"
-      :visible.sync="dialogFormVisiblePopularizeTagEdit"
+      :visible.sync="showFormPopularizeTagEdit"
       ref="showTags">
       <el-form
         :label-width="formLabelWidth"
@@ -410,9 +409,10 @@
         <el-form-item label="标签名" :label-width="formLabelWidth" prop="name">
           <el-input v-model="toDynamicTagsPopularize.name" auto-complete="off" placeholder="请输入标签名"></el-input>
         </el-form-item>
-        <el-form-item label="排序" :label-width="formLabelWidth" prop="zindex">
-          <el-input v-model.number="toDynamicTagsPopularize.zindex" auto-complete="off" placeholder="请输入数字"></el-input>
-        </el-form-item>
+        <!--推广标签没有排序，可以加排序-->
+        <!--<el-form-item label="排序" :label-width="formLabelWidth" prop="zindex">-->
+          <!--<el-input v-model.number="toDynamicTagsPopularize.zindex" auto-complete="off" placeholder="请输入数字"></el-input>-->
+        <!--</el-form-item>-->
         <el-form-item label="状态" style="text-align: left">
           <el-select clearable v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
             <el-option
@@ -441,7 +441,7 @@
         </el-form-item>
 
         <el-form-item style="display: flex;justify-content: flex-end;">
-          <el-button @click="dialogFormVisiblePopularizeTagEdit = false">取 消</el-button>
+          <el-button @click="showFormPopularizeTagEdit = false">取 消</el-button>
           <el-button type="primary" @click="updatePopularizeTags('DynamicTags','showTags')">确 定</el-button>
         </el-form-item>
       </el-form>
@@ -453,7 +453,7 @@
       top="5vh"
       width="80%"
       title="分类编辑"
-      :visible.sync="dialogFormVisibleCategoryEdit"
+      :visible.sync="showFormCategoryEdit"
       ref="showCategory">
       <el-form :label-width="formLabelWidth" status-icon :model="toDynamicTags1" :rules="rules1" ref="toDynamicTags1">
         <el-form-item label="分类名" prop="name">
@@ -517,7 +517,7 @@
           </el-select>
         </el-form-item>
         <el-form-item style="display: flex;justify-content: flex-end;">
-            <el-button @click="dialogFormVisibleCategoryEdit = false">取 消</el-button>
+            <el-button @click="showFormCategoryEdit = false">取 消</el-button>
             <el-button type="primary" @click="updateCategory('toDynamicTags1','showCategory')">确 定</el-button>
         </el-form-item>
       </el-form>
@@ -528,7 +528,7 @@
     <el-dialog
       width="80%"
       title="规格编辑"
-      :visible.sync="dialogFormVisibleSKUEdit">
+      :visible.sync="showFormSKUEdit">
       <el-form :model="toDynamicTags2" :rules="rules">
         <div class="SKUGroup">
           <el-form-item label="规格名" prop="name" :label-width="formLabelWidth">
@@ -582,20 +582,20 @@
       </el-form>
 
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisibleSKUEdit = false">取 消</el-button>
+        <el-button @click="showFormSKUEdit = false">取 消</el-button>
         <el-button type="primary" @click="updateSpec">确 定</el-button>
       </div>
     </el-dialog>
 
     <!--SKU内部弹框 属性修改-->
-    <!--<el-dialog width="80%" title="SKU编辑" :visible.sync="dialogFormVisibleInSKUEdit">-->
+    <!--<el-dialog width="80%" title="SKU编辑" :visible.sync="showFormInSKUEdit">-->
       <!--<el-form :model="toDynamicTags3">-->
         <!--<el-form-item label="排序" :label-width="formLabelWidth">-->
           <!--<el-input v-model="toDynamicTags3.zindex" auto-complete="off" placeholder="请输入数字"></el-input>-->
         <!--</el-form-item>-->
       <!--</el-form>-->
       <!--<div slot="footer" class="dialog-footer">-->
-        <!--<el-button @click="dialogFormVisibleInSKUEdit = false">取 消</el-button>-->
+        <!--<el-button @click="showFormInSKUEdit = false">取 消</el-button>-->
         <!--<el-button type="primary" @click="updateAttrs()">确 定</el-button>-->
       <!--</div>-->
     <!--</el-dialog>-->
@@ -605,7 +605,7 @@
       top="3vh"
       width="80%"
       title="增加菜品"
-      :visible.sync="dialogFormVisibleGoodsPlus"
+      :visible.sync="showFormGoodsPlus"
       ref="showDishesData">
       <div class="matter2">
         <span
@@ -925,21 +925,20 @@
 
       <!--其他-->
       <div slot="footer" class="dialog-footer" v-if="addOrEdit === 2">
-        <el-button @click="dialogFormVisibleGoodsPlus = false">取 消</el-button>
+        <el-button @click="showFormGoodsPlus = false">取 消</el-button>
         <el-button type="primary" @click="updateDishes('confirmDishesData','showDishesData')">修改</el-button>
       </div>
 
 
       <div slot="footer" class="dialog-footer" v-if="addOrEdit === 1">
         <el-button @click="addDishesDelay('confirmDishesData','showDishesData')" icon="el-icon-time">暂不上架</el-button>
-        <el-button @click="dialogFormVisibleGoodsPlus = false">取 消</el-button>
+        <el-button @click="showFormGoodsPlus = false">取 消</el-button>
         <el-button type="primary" @click="addDishes('confirmDishesData','showDishesData')">立即上架</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 <script>
-import editcontrol from '@/components/editcontrol/editcontrol';
 import upload from '@/components/upload/upload'
 
 const ERR_OK = 0
@@ -985,12 +984,12 @@ export default {
       generatTable:false,
       addOrEdit: 0,
       currentPage1:5,
-      dialogFormVisibleGoodsPlus:false,
-      dialogFormVisibleTagEdit: false,
-      dialogFormVisibleSKUEdit: false,
-      dialogFormVisibleCategoryEdit: false,
-      dialogFormVisibleInSKUEdit: false,
-      dialogFormVisiblePopularizeTagEdit:false,
+      showFormGoodsPlus:false,
+      showFormTagEdit: false,
+      showFormSKUEdit: false,
+      showFormCategoryEdit: false,
+      showFormInSKUEdit: false,
+      showFormPopularizeTagEdit:false,
       activeName: 'first',
       checked1: true,
       checked2: false,
@@ -1392,7 +1391,6 @@ export default {
         }
       ]
       this.$request(this.url.printerComplexPageQuery,'json',data).then((res)=>{
-        console.log('11111111111111111111',res);
         this.pid = res.data.data
       }).catch((err)=>{
         console.log(err);
@@ -1520,7 +1518,7 @@ export default {
       ]
       this.$request(this.url.dishesCategory2,'json',Data).then((res)=>{
         let response = res.data.data
-        console.log(response);
+        // console.log(response);
         this.dynamicTags1 = response
         // console.log(this.dynamicTags1);
         for(let i=0;i<response.length;i++){
@@ -1579,19 +1577,15 @@ export default {
       for(let i=0;i<popularizeTags.length;i++){
         popularizeTags[i].zindex = i
       }
-      console.log(this.valueOfSKU);
-
+      // console.log(this.valueOfSKU);
       if(this.valueOfSKU){
         for(let i=0;i<this.valueOfSKU.length;i++){
           this.valueOfSKU[i].zindex = i
         }
         this.dishes.specs = this.valueOfSKU
       }
-
       this.dishes.zindex = this.dishesIndex
       this.dishes.skus = this.generateSkuDate
-
-
       let data = {}
       data = Object.assign({},this.dishes);
       data.tags = tags
@@ -1606,7 +1600,7 @@ export default {
               message: '数据提交成功!'
             });
             this._pullDishes()
-            this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
+            this.showFormGoodsPlus = !this.showFormGoodsPlus
           }).catch((err)=>{
             this.$message({
               type: 'info',
@@ -1666,7 +1660,7 @@ export default {
               message: '数据提交成功!'
             });
             this.dishesDataTable.push(data);
-            this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
+            this.showFormGoodsPlus = !this.showFormGoodsPlus
           }).catch((err)=>{
             this.$message({
               type: 'info',
@@ -1698,7 +1692,7 @@ export default {
       console.log(this.toDynamicTags1.showTime);
     },
     //更新标签
-    updateTags(){
+    updateTags(formName1,formName2){
       console.log('2222222222');
       console.log(this.toDynamicTags);
       let index = this.categoryIndex
@@ -1713,26 +1707,32 @@ export default {
       }
       console.log(updateObj,'updateTags');
 
-      this.$request(this.url.restaurantTag4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        this.dialogFormVisibleTagEdit = !this.dialogFormVisibleTagEdit
-
-        this._pullTags()
-
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.restaurantTag4,'json',updateObj).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormTagEdit = !this.showFormTagEdit
+            this._pullTags()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else {
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
+
     },
-    updatePopularizeTags(){
-      console.log('2222222222');
-      console.log(this.toDynamicTagsPopularize);
+    updatePopularizeTags(formName1,formName2){
       let index = this.categoryIndex
       let updateObj = {
         id:this.toDynamicTagsPopularize.id,
@@ -1743,28 +1743,38 @@ export default {
         }
         updateObj[key] = this.toDynamicTagsPopularize[key];
       }
-      console.log(updateObj,'updateTags');
-      this.$request(this.url.restaurantPopularizeTag4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        this.dialogFormVisiblePopularizeTagEdit = !this.dialogFormVisiblePopularizeTagEdit
-        this._pullPopularizeTag()
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.restaurantPopularizeTag4,'json',updateObj).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormPopularizeTagEdit = !this.showFormPopularizeTagEdit
+            this._pullPopularizeTag()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
+
     },
     filterTag(value, row) {
       console.log(value);
       console.log(row);
       return row.cid === value;
     },
-    updateSpec(){
+    updateSpec(formName1,formName2){
       console.log('得到sku内部分',this.toDynamicTags2.attrs);
       let index = this.categoryIndex
       let updateObj = {
@@ -1774,38 +1784,42 @@ export default {
         attrs:this.toDynamicTags2.attrs,
         status:'enable'
       }
-      // for(let key in this.toDynamicTags2){
-      //   if(this.toDynamicTags2[key] === this.dynamicTags2[index][key]){
-      //     continue;
-      //   }
-      //   updateObj[key] = this.toDynamicTags2[key];
-      // }
-      console.log(updateObj,'specspec');
-      this.$request(this.url.spec4,'json',updateObj).then((res)=>{
-        if(res.data.msg === 'success'){
-          this.$message({
-            type: 'success',
-            message: '数据提交成功!'
-          });
-          this._pullPopularizeTag()
-        }else {
-          this.$message({
-            type: 'info',
-            message: '数据问题!'
-          });
 
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.spec4,'json',updateObj).then((res)=>{
+            if(res.data.msg === 'success'){
+              this.$message({
+                type: 'success',
+                message: '数据提交成功!'
+              });
+              this._pullPopularizeTag()
+            }else {
+              this.$message({
+                type: 'info',
+                message: '数据问题!'
+              });
+
+            }
+            this.showFormSKUEdit = !this.showFormSKUEdit
+            this._pullSpec()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
         }
-        this.dialogFormVisibleSKUEdit = !this.dialogFormVisibleSKUEdit
-        this._pullSpec()
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
       })
+
     },
-    updateCategory(){
+    updateCategory(formName1,formName2){
       console.log(this.toDynamicTags1,'打印category');
       console.log('2222222222');
       let index = this.categoryIndex
@@ -1819,25 +1833,40 @@ export default {
         updateObj[key] = this.toDynamicTags1[key];
       }
       console.log(updateObj,'updateCategory之前');
-      this.$request(this.url.dishesCategory4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        this.dialogFormVisibleCategoryEdit = !this.dialogFormVisibleCategoryEdit
-        this._pullCategory()
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+
+
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.dishesCategory4,'json',updateObj).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormCategoryEdit = !this.showFormCategoryEdit
+            this._pullCategory()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
+
+
+
+
     },
     getUnit(){
       console.log(this.dishes.uid);
     },
-    updateSKU(){
+    updateSKU(formName1,formName2){
       let specs = []
       for(let i=0; i<this.valueOfSKU.length; i++){
         specs.unshift({
@@ -1853,21 +1882,29 @@ export default {
         specs: specs,
         skus: this.generateSkuDate
       }
-      console.log(this.generateSkuDate,'ssssssssss');
-      console.log(updateObj)
-
-      this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
+
+
     },
     // 删除菜品
     deleteDishes (row,index) {
@@ -1971,8 +2008,7 @@ export default {
         this.endTimePre = start[1]
       }
     },
-    updateDishes(){
-
+    updateDishes(formName1,formName2){
       if(!this.dishes.normalPrice){
         this.$message({
           type: 'info',
@@ -1980,7 +2016,6 @@ export default {
         });
         return false
       }
-      console.log(this.dishes.normalPrice);
       if(this.dishes.normalPrice === ''){
         this.$message({
           type: 'info',
@@ -1995,7 +2030,6 @@ export default {
         });
         return false
       }
-      console.log(this.picReceive);
       let index = this.dishesIndex
       let updateObj = {
         id:this.dishes.id
@@ -2048,20 +2082,31 @@ export default {
       updateObj.skus = this.generateSkuDate
       console.log(updateObj,'提交的数据');
 
-      this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
-        this._pullDishes()
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+
+      this.$refs[formName1].validate((valid)=>{
+        if(valid){
+          this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormGoodsPlus = !this.showFormGoodsPlus
+            this._pullDishes()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else {
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
+
     },
 
     // 0
@@ -2189,7 +2234,7 @@ export default {
       this.toDynamicTags = Object.assign({},tag);
       this.categoryIndex = index;
       console.log(this.toDynamicTags);
-      this.dialogFormVisibleTagEdit = !this.dialogFormVisibleTagEdit
+      this.showFormTagEdit = !this.showFormTagEdit
     },
     editTagsPopularize(tag,index){
       console.log(tag.id,'id是多少');
@@ -2199,7 +2244,7 @@ export default {
       this.toDynamicTagsPopularize = Object.assign({},tag);
       this.categoryIndex = index;
       console.log(this.toDynamicTagsPopularize);
-      this.dialogFormVisiblePopularizeTagEdit = !this.dialogFormVisiblePopularizeTagEdit
+      this.showFormPopularizeTagEdit = !this.showFormPopularizeTagEdit
     },
 
     handleClosePopularize(tag,index) {
@@ -2325,7 +2370,7 @@ export default {
       this.toDynamicTags1 = Object.assign({},tag);
       this.categoryIndex = index;
       console.log(this.toDynamicTags1);
-      this.dialogFormVisibleCategoryEdit = !this.dialogFormVisibleCategoryEdit
+      this.showFormCategoryEdit = !this.showFormCategoryEdit
       if(tag.showTime){
         let start = tag.showTime.split('-')
         this.categoryStartTimePre = start[0]
@@ -2437,7 +2482,7 @@ export default {
       this.toDynamicTags2 = Object.assign({},tag);
       this.categoryIndex = index;
       console.log(this.toDynamicTags2);
-      this.dialogFormVisibleSKUEdit = !this.dialogFormVisibleSKUEdit
+      this.showFormSKUEdit = !this.showFormSKUEdit
     },
 
     handleClose2(tag,index) {
@@ -2529,7 +2574,7 @@ export default {
       // console.log(file, fileList);
     },
     toNature(){
-      this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
+      this.showFormGoodsPlus = !this.showFormGoodsPlus
       this.activeName = 'second'
     },
     handlePreview(file) {
@@ -2562,11 +2607,11 @@ export default {
       this.valueOfTagsPopularize1 = []
 
 
-      this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
+      this.showFormGoodsPlus = !this.showFormGoodsPlus
     },
     plusGoods(){
       console.log(this.pushShowType)
-      this.dialogFormVisibleGoodsPlus = !this.dialogFormVisibleGoodsPlus
+      this.showFormGoodsPlus = !this.showFormGoodsPlus
     },
     formatter(row, column) {
       return row.address;
@@ -2650,7 +2695,6 @@ export default {
     },
   },
   components: {
-    editcontrol,
     upload
   }
 }

@@ -30,7 +30,7 @@ export  function urlColletion() {
     //订单确认
     confirmOrder: BURL +'/userOrder/computePrepayInfo',
 
-    //订单确认
+    //订单支付
     payOrder: BURL +'/userOrder/submit',
 
     restaurant1: BURL + '/restaurant/add',

@@ -1,12 +1,13 @@
 <template>
   <div class="tables">
     <!--table模块-->
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleShowTable">
+      <!--餐桌信息-->
       <el-tab-pane label="餐桌信息" name="first">
         <el-row :guter="0">
           <div class="table-container">
             <transition name="el-zoom-in-left"  v-for="(item,index) in listTable" :key="item.num">
-              <div v-show="show2" class="transition-box">
+              <div v-show="showTable" class="transition-box">
               <el-tooltip :content="item.description" placement="top">
                 <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
                   桌号：{{item.num}}
@@ -48,123 +49,28 @@
                 </div>
               </div>
             </transition>
-            <transition name="el-zoom-in-left"  v-for="(item,index) in listTable" :key="item.num">
-              <div v-show="!show2" class="transition-box">
-                <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
-                    桌号：{{item.num}}
-                    人数：{{item.seatNum}}
-                  </div>
-                  <div class="box-header" v-else-if="item.status === 'preClear'">
-                    桌号：{{item.num}}
-                    人数：{{item.seatNum}}
-                  </div>
-                  <div class="box-header" v-else-if="item.status === 'preOrder'">
-                    桌号：{{item.num}}
-                    人数：{{item.seatNum}}
-                  </div>
-                  <div class="box-header" v-else-if="item.status === 'enable'">
-                    桌号：{{item.num}}
-                    人数：{{item.seatNum}}
-                  </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'prePay'">
-                    桌号：{{item.num}}
-                    人数：{{item.seatNum}}
-                  </div>
-                </el-tooltip>
-                <!--总：{{item.recommend.length}}项-->
-                <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preClear'">未清台</p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preOrder'">未下单</p>
-                  <p style="
-                  font-size: 30px;
-                  color: rgba(0,0,0,0.15);
-                  font-weight: bolder;
-                  left: 13%;
-                  position: absolute;
-                  bottom: 17px;
-                  z-index: 100;
-                  text-align: center"
-                  >{{item.name}}</p>
-                </div>
-              </div>
-            </transition>
-
           </div>
         </el-row>
       </el-tab-pane>
-      <!--<el-tab-pane label="餐桌特性" name="second">
-        <div class="categoryGroup">
-          <h6>请不要建立同名分类</h6>
-          <span style="width: 20%;">分类：</span>
-          <span style="width: 80%;">
-            <el-tag
-              :key="tag.zindex"
-              v-for="(tag,index) in dynamicTags1"
-              closable
-              :disable-transitions="false"
-              @close="handleClose1(tag,index)"
-            >
-              {{tag.name}}
-              <el-button
-                type="primary"
-                style="padding: 5px"
-                size="mini"
-                icon="el-icon-edit"
-                circle
-                @click.native="editCategory(tag,index)"
-              ></el-button>
-            </el-tag>
 
-            <el-input
-              class="input-new-tag"
-              v-if="inputVisible1"
-              v-model="inputValue1"
-              ref="saveTagInput1"
-              @keyup.enter.native="handleInputConfirm1"
-              @blur="handleInputConfirm1"
-            >
-            </el-input>
-            <el-button v-else class="button-new-tag" @click="showInput1">+ 新分类</el-button>
-            </span>
-        </div>
-      </el-tab-pane>-->
-      <!--<el-tab-pane label="餐桌记录" name="third">
-        <div style="margin-top: 15px; display: flex;justify-content: space-between">
-          <el-select v-model="tableSearchSelect1" slot="prepend" placeholder="请选择桌号/订单号">
-            <el-option label="桌号" value="1"></el-option>
-            <el-option label="订单号" value="2"></el-option>
-          </el-select>
-          <el-time-picker
-            v-model="valueSearchSelect"
-            :picker-options="{
-              selectableRange: '18:30:00 - 20:30:00'
-            }"
-            placeholder="今日任意时间点">
-          </el-time-picker>
-          <el-input placeholder="请输入内容" v-model="input5" class="input-with-select">
-          <el-button slot="append" icon="el-icon-search"></el-button>
-          </el-input>
-        </div>
-      </el-tab-pane>-->
     </el-tabs>
     <!--table遮罩-->
     <div class="mask-black" v-if="tableShow === 1"></div>
+
     <!--table操作按钮-->
     <div class="tableButtonGroup" v-if="tableShow === 1" v-show="true">
-      <el-button type="danger" @click="handleDelete" icon="el-icon-delete" circle></el-button>
+      <el-button type="danger" @click="deleteTable" icon="el-icon-delete" circle></el-button>
       <el-button @click="stopTableService" type="warning" icon="el-icon-time" circle></el-button>
       <el-button @click="editTable" icon="el-icon-edit" circle></el-button>
       <el-button @click="refreshTable" v-loading.fullscreen.lock="fullscreenLoading" icon="el-icon-refresh" circle></el-button>
       <el-button @click="closeTable" class="closeTable" icon="el-icon-close" circle></el-button>
     </div>
+
     <!--table订单按钮：个人订单详请-->
     <div class="tableButtonGroup1" v-if="tableShow === 1" v-show="true">
       <span class="singleContainer">
         <el-radio-group v-model="selectSingleOrder">
-          <span v-for="(item,index,key) in orderCollection" :key="key">
+          <span v-for="(item,index,key) in tableOrderList" :key="key">
             <el-popover
               placement="bottom"
               title="个人账单详情"
@@ -174,34 +80,53 @@
               :visible-arrow= "true"
               :popper-class="popperClass"
             >
+              <p v-if="item.status === 'not-payed'">未支付</p>
               <div style="text-align: right; margin: 0">
                 <div class="shopcart-list">
                   <div class="list-header" @click.stop="toggleList">
                   </div>
-                  <div class="list-content" ref="list-content">
+                  <div class="single-list-content">
                     <ul style="padding: 0px">
                       <li
                         style="display: flex;align-items:center; justify-content: space-around"
                         class="food"
-                        v-for="(food,key) in item.dishes"
+                        v-for="(food,key) in item.orderDishes"
                         :key="key">
-                        <span style="display:block;text-align: left;font-weight: lighter; width: 50%;margin: 5px 0px" class="name">{{food.dishes.name}}</span>
-                        <span style="display: block;width: 10%">x{{food.num}}</span>
+                        <span style="display:block;text-align: left;font-weight: lighter; width: 50%;margin: 5px 0px" class="name">
+                          {{food.dishes.name}}</span>
+                        <span style="display: block;width: 20%"><i class="el-icon-close"></i>
+                          {{food.num}}</span>
                         <div class="price" style="width: 20%">
-                          <span>￥{{food.totalPrice}}</span>
+                          <span class="dollar">￥</span>{{food.totalPrice}}
                         </div>
                       </li>
                     </ul>
                   </div>
                 </div>
-                <span class="price" style="font-size: 20px;font-weight: bolder;margin-right: 85px">总计 ￥{{needPay.toFixed(2)}}</span>
-                <!--<el-button size="mini" type="text" @click="minusCustomer">删除</el-button>-->
+                <span class="price"
+                      style="font-size: 20px;font-weight: bolder;margin-right: 85px">
+                  总计 <span class="dollar">￥</span>{{item.needPay.toFixed(2)}}</span>
                 <el-button type="success" @click="singleAccounts">结账</el-button>
               </div>
-              <el-radio-button slot="reference" icon="el-icon-document" @click.native.stop="selectOrder(item,$event)" :label="index">订单{{index+1}}</el-radio-button>
+              <el-button
+                v-if="item.status === 'has-pay'"
+                style="border-radius: 10px"
+                slot="reference"
+                type="success" plain
+                icon="el-icon-document"
+                @click="selectOrder(item,$event)"
+                :label="index">订单{{index+1}}</el-button>
+              <el-button
+                v-if="item.status === 'not-payed'"
+                style="border-radius: 10px"
+                slot="reference"
+                type="primary" plain
+                icon="el-icon-document"
+                @click="selectOrder(item,$event)"
+                :label="index">订单{{index+1}}</el-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
-            <el-badge :value="selectFoods.count" class="item">
+            <el-badge :value="item.orderDishes.length" class="item">
             </el-badge>
           </span>
         </el-radio-group>
@@ -214,6 +139,7 @@
         round
       >下单</el-button>
     </div>
+
     <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
     <transition>
         <div class="goodse" id="goods" ref="goods-top" v-if="tableShow === 1">
@@ -223,16 +149,12 @@
           width="200"
           trigger="hover"
         >
-          <div v-model="toAccountBox" ></div>
-          <!--<p v-for="(item,index) in toAccountBox.recommend">{{index+1}}.{{item}}</p>-->
-          <!--<div style="text-align: right; margin: 0">-->
-            <!--<el-button type="success" size="mini" @click="singleAccounts">结账</el-button>-->
-          <!--</div>-->
+          <div v-model="tableForm" ></div>
           <div slot="reference" class="tableNumber">{{tableTitle}}</div>
         </el-popover>
         <!--分类-->
         <transition enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
-          <div class="menu-wrapper animated" ref="menu-wrapper" v-show="show">
+          <div class="menu-wrapper animated" ref="menu-wrapper" v-show="showMenu">
             <ul class="menu-ul">
               <li
                 v-for="(item,index) in goods"
@@ -241,14 +163,14 @@
                 :class="{'current':currentIndex===index}"
                 @click="selectMenu(index,$event)">
                 <span class="text border-1px">
-                  <!-- <span v-show="item.type>0" class="icon" :class="classMap[item.type]"></span> -->
+                  <!-- <span v-showMenu="item.type>0" class="icon" :class="classMap[item.type]"></span> -->
                   {{item.name }}
                 </span>
               </li>
             </ul>
           </div>
         </transition>
-        <div @click="show=!show" class="menu-button">
+        <div @click="showMenu=!showMenu" class="menu-button">
         </div>
         <!--菜品展示-->
         <div class="foods-wrapper" id="foods-wrapper" ref="foods-wrapper">
@@ -267,7 +189,8 @@
                       <span class="count">月售{{food.stock}}份</span><span>好评率{{food.rating}}%</span>
                     </div>
                     <div class="price">
-                      <span class="now">￥{{food.normalPrice}}</span><span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
+                      <span class="now"><span class="dollar">￥</span>{{food.normalPrice}}</span>
+                      <span class="old" v-show="food.oldPrice"><span class="dollar">￥</span>{{food.oldPrice}}</span>
                     </div>
                     <div class="cartcontrol-wrapper" id="cartcontrol-wrapper">
                       <cartcontrol
@@ -283,7 +206,6 @@
             </li>
           </ul>
         </div>
-        <!--加入购物车-->
         <shopcart
           ref="shop-cart"
           :select-foods="selectFoods"
@@ -291,55 +213,6 @@
           :needPay="needPay"></shopcart>
       </div>
       </transition>
-    <!--丢弃弹框-->
-    <el-dialog :title="tableTitle" :model="tableForm" :visible.sync="dialogFormVisibleTable" width="70%">
-      <!--此处省略搜索输入框-->
-      <!-- <el-select v-model="value" placeholder="请选择类别，默认全部">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-select
-        v-model="value9"
-        multiple
-        filterable
-        remote
-        label="搜索"
-        reserve-keyword
-        placeholder="可输入首字母搜索"
-        :remote-method="remoteMethod"
-        :loading="loading">
-        <el-option
-          v-for="item in options4"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select>
-      <el-form :model="tableForm">
-        <el-form-item label="已点" :label-width="formLabelWidth">
-          <div>
-          <span v-for="item in tableForm.type" v-model="tableForm.type">
-            <el-checkbox :label="item" name="type"></el-checkbox>
-          </span>
-          </div>
-        </el-form-item>
-      </el-form>
-      <el-form :model="tableForm">
-        <el-form-item label="备注" :label-width="formLabelWidth">
-          <el-input v-model="tableForm.content" auto-complete="off" placeholder="请输入备注"></el-input>
-        </el-form-item>
-      </el-form> -->
-      <div slot="footer" class="dialog-footer">
-        <el-button size="large" type="danger" icon="el-icon-delete" @click="dialogFormVisibleTable = false">删除</el-button>
-        <el-button @click="dialogFormVisibleTable = false">暂停</el-button>
-        <el-button @click="dialogFormVisibleTable = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisibleTable = false">立即开启</el-button>
-      </div>
-    </el-dialog>
 
     <!--订单确认-->
     <el-dialog
@@ -353,17 +226,22 @@
           <h1 class="title">购物车</h1>
           <span class="empty" @click="empty">清空</span>
         </div>-->
-        <el-input
-          type="textarea"
-          :rows="2"
-          placeholder="请输入备注"
-          v-model="textarea">
-        </el-input>
+        <!--<el-input-->
+          <!--type="textarea"-->
+          <!--:rows="2"-->
+          <!--placeholder="请输入备注"-->
+          <!--v-model="textarea">-->
+        <!--</el-input>-->
 
-        <div class="list-content" ref="list-content">
+        <div class="list-content" ref="list-content" style="width: 50%;margin: 0px auto">
           <ul>
             <li class="orderList info-item" v-for="item in cartList">
-              <span> {{item.dishes.name}} </span> <span>x{{item.num}} </span><span style="text-align: right">￥{{item.totalPrice}} </span>
+              <span> {{item.dishes.name}} </span>
+              <span><i class="el-icon-close"></i>{{item.num}} </span>
+              <span>
+                <span style="display: inline;" class="dollar">￥</span>
+                {{item.totalPrice}}
+              </span>
             </li>
           </ul>
         </div>
@@ -379,11 +257,20 @@
         margin: 5px auto;
         padding: 10px">
           <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
-            优惠 <span>￥{{discountMoney.toFixed(2)}}</span></div>
+            优惠 <span style="width: 100px;display: inline-block">
+            <span class="dollar" >￥</span>{{discountMoney.toFixed(2)}}</span></div>
           <div class="price" style="font-size: 20px;text-align: center;display: flex;justify-content: space-around">
-            需付 <span>￥{{needPay.toFixed(2)}}</span></div>
+            需付
+            <span style="width: 100px;display: inline-block">
+              <span class="dollar">￥</span>{{needPay.toFixed(2)}}
+            </span>
+          </div>
           <div class="price" style="font-size: 20px;font-weight: bolder;text-align: center;display: flex;justify-content: space-around">
-            总计 <span>￥{{realPay.toFixed(2)}}</span></div>
+            总计
+            <span style="width: 100px;display: inline-block">
+              <span class="dollar">￥</span>{{realPay.toFixed(2)}}
+            </span>
+          </div>
           <el-button-group style="position: fixed;bottom: 30px;left: 50%;width: 246;margin-left: -123px" >
             <el-button type="success" round @click="confirmOrder" plain icon="el-icon-download">确认下单</el-button>
             <el-button type="success" round @click="confirmOrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
@@ -397,33 +284,48 @@
       <!--</el-table>-->
     </el-dialog>
 
-    <!--添加餐桌弹框-->
-    <el-dialog title="增加餐桌" :visible.sync="dialogFormVisibleTablePlus">
-      <el-form :model="tableForm" :label-width="formLabelWidth">
-        <el-form-item label="名称" >
+    <!--添加/修改餐桌弹框-->
+    <el-dialog title="增加餐桌" :visible.sync="showFormTablePlus">
+      <el-form :model="tableForm" :label-width="formLabelWidth" ref="confirmTableData">
+        <el-form-item
+          label="名称"
+          prop="name"
+          :rules="[{ required: true, message: '请输入名称', trigger: 'blur' },]"
+        >
           <el-input
             autofocus="true"
             v-model="tableForm.name"
             auto-complete="off"
             @keyup="onkeyup(e)"
-            placeholder="请输入名称"></el-input>
+            placeholder="请输入名称"
+          ></el-input>
         </el-form-item>
-        <el-form-item label="桌号">
+        <el-form-item
+          prop="num"
+          :rules="[{ required: true, message: '请输入桌号', trigger: 'blur' },]"
+          label="桌号">
           <el-input
             v-model.number="tableForm.num"
             auto-complete="off"
             placeholder="请输入桌号"></el-input>
         </el-form-item>
-        <el-form-item label="容纳人数">
+        <el-form-item
+          prop="seatNum"
+          :rules="[{ required: true, message: '请输入人数', trigger: 'blur' },]"
+          label="容纳人数">
           <el-input
             v-model.number="tableForm.seatNum"
             auto-complete="off" placeholder="请输入容纳人数"></el-input>
         </el-form-item>
-        <el-form-item label="餐桌类型" style="text-align: left">
+        <el-form-item
+          label="餐桌类型"
+          style="text-align: left"
+          prop="tid"
+          :rules="[{ required: true, message: '请输入餐桌类型', trigger: 'change' },]"
+        >
           <el-select
             style="display: inline-block"
             v-model="tableForm.tid"
-            @change="tableTypeChange"
             placeholder="请选择餐桌类型">
             <el-option
               v-for="(item,index) in tableType"
@@ -435,11 +337,15 @@
           </el-select>
         </el-form-item>
 
-        <el-form-item label="收费类型" style="text-align: left">
+        <el-form-item
+          label="收费类型"
+          style="text-align: left"
+          prop="chargeType"
+          :rules="[{ required: true, message: '请输入收费类型', trigger: 'change' },]"
+        >
           <el-select
             style="display: inline-block"
             v-model="tableForm.chargeType"
-            @change="tableTypeChange"
             placeholder="请选择收费类型">
             <el-option
               v-for="(item,index) in chargeType"
@@ -457,81 +363,36 @@
           <el-input v-model.number="tableForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="large" @click="plusTable1" icon="el-icon-time">暂停</el-button>
-        <el-button @click="dialogFormVisibleTablePlus = false; tableForm = {}">取 消</el-button>
-        <el-button type="primary" @click="plusTable">立即开启</el-button>
-      </div>
-    </el-dialog>
-
-    <!--修改餐桌弹框-->
-    <el-dialog title="修改餐桌" :visible.sync="dialogFormVisibleTableChange">
-      <el-form :model="toAccountBox" :label-width="formLabelWidth">
-        <el-form-item label="名称" >
-          <el-input
-            autofocus="true"
-            v-model="toAccountBox.name" auto-complete="off" placeholder="请输入名称"></el-input>
-        </el-form-item>
-        <el-form-item label="桌号">
-          <el-input v-model.number="toAccountBox.num" auto-complete="off" placeholder="请输入桌号"></el-input>
-        </el-form-item>
-        <el-form-item label="容纳人数">
-          <el-input v-model.number="toAccountBox.seatNum" auto-complete="off" placeholder="请输入容纳人数"></el-input>
-        </el-form-item>
-        <el-form-item label="餐桌类型" style="text-align: left">
-          <el-select
-            style="display: inline-block"
-            v-model="toAccountBox.tid"
-            @change="tableTypeChange"
-            placeholder="请选择餐桌类型">
-            <el-option
-              v-for="item in tableType"
-              :key="item.typeIndex"
-              :label="item.typeName"
-              :value="item.typeIndex"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="收费类型" style="text-align: left">
-          <el-select
-            style="display: inline-block"
-            v-model="toAccountBox.chargeType"
-            placeholder="请选择收费类型">
-            <el-option
-              v-for="(item,index) in chargeType"
-              :key="index"
-              :label="item.name"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item v-if="toAccountBox.chargeType === 'charge'" label="价格">
-          <el-input v-model.number="toAccountBox.money" auto-complete="off" placeholder="请输入价格"></el-input>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model.number="toAccountBox.description" auto-complete="off" placeholder="请输入描述"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
+      <div slot="footer" class="dialog-footer" v-if="editOrAdd === 2">
         <el-button size="large" @click="changeTable1" icon="el-icon-time">暂停</el-button>
-        <el-button @click="dialogFormVisibleTableChange = false; tableForm = {}">取 消</el-button>
-        <el-button type="primary" @click="changeTable">修改&开启</el-button>
+        <el-button @click="showFormTableChange = false; tableForm = {}">取 消</el-button>
+        <el-button type="primary" @click="changeTable('confirmTableData','1')">修改并开启</el-button>
+      </div>
+      <div slot="footer" class="dialog-footer" v-if="editOrAdd === 1">
+        <el-button size="large" @click="addTable1" icon="el-icon-time">暂不开台</el-button>
+        <el-button @click="showFormTablePlus = false; tableForm = {}">取 消</el-button>
+        <el-button type="primary" @click="addTable('confirmTableData','1')">立即开台</el-button>
       </div>
     </el-dialog>
 
     <!--添加组件-->
-    <editcontrol @plusMethods="plusMethodsThis"></editcontrol>
+    <el-button
+      size="large"
+      type="primary"
+      icon="el-icon-plus"
+      @click="addTablePre"
+      style="position: fixed;right: 50px;bottom: 60px;"
+    >添加餐桌</el-button>
 
+    <!--规格对话框-->
     <el-dialog
       width="70%"
       title="选择规格"
-      :visible.sync="dialogFormVisible"
+      :visible.sync="showForm"
       :append-to-body="true"
       style="z-index: 9999"
     >
-      <el-form v-for="(item,index) in specs" label-position="left" :label-width="formLabelWidth1">
+      <el-form v-for="(item,index) in specs" label-position="left" label-width="51px">
         <el-form-item :label="item.name">
           <el-radio-group v-model="selectedSkuArr[index]">
             <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
@@ -547,8 +408,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <span style="float: left">价格：￥ {{basePrice+tagsTotalPrice}}</span>
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <span style="float: left">价格：<span class="dollar">￥</span> {{basePrice+tagsTotalPrice}}</span>
+        <el-button @click="showForm = false">取 消</el-button>
         <el-button type="primary" @click="confirmSku">确 定</el-button>
       </div>
     </el-dialog>
@@ -560,57 +421,55 @@ import BScroll from 'better-scroll'
 import Vue from 'vue';
 import shopcart from '@/components/tables/shopcart.vue'
 import cartcontrol from '@/components/tables/cartcontrol.vue'
-import editcontrol from '@/components/editcontrol/editcontrol';
 const ERR_OK = 0
 export default {
   name: 'tables',
   data: () => ({
+    tid:0,
+    listTable:[],
     cartList:[],
     discountMoney:0,
     needPay:0,
+    editOrAdd:0,
     realPay:0,
     tableShow:0,
-    confirmMessage: {
-      is: 0
-    },
+    confirmMessage: {is: 0},
     specs:[],
     getFoods:{},
-    selectedSpec:'',
-    screenWidth: document.body.clientWidth,
     getData:{},
     selectedTags:[],
     selectedSkuArr : [],
-    trueLabelofSpecs:[],
-    trueLabelofTags:[],
-    transformArryTag:[],
     popperClass:'popperClass',
-    show3: false,
-    inputCustomer:'',
-    input5: '',
     dishesCategory:'',
-    fullscreenLoading: false,
-    tableSearchSelect1: '',
-    tableSearchSelect2: '',
-    valueSearchSelect: new Date(2016, 9, 10, 18, 40),
     goods: [],
     listHeight: [],
     scrollY: 0,
     selectedFood: {},
-    show: false,
-    divTop: "divTop",
-    SColor: 'SColor',
-    show2: false,
+    showMenu: false,
+    showTable: true,
     activeName: 'first',
     textarea:'',
+    tableOrderList:[],
+    fullscreenLoading: false,
     dialogConfirmOrder:false,
-    dialogFormVisible:false,
-    dialogFormVisibleTable: false,
-    dialogFormVisibleTablePlus: false,
-    dialogFormVisibleTableChange: false,
-    listTable:[],
-    goodsTable:[],
-    value5:[],
-    tableData:[],
+    showForm:false,
+    showFormTable: false,
+    showFormTablePlus: false,
+    screenWidth: document.body.clientWidth,
+    tableOrderConfirm:[],
+    formLabelWidth:'80px',
+    tableTitle:"",
+    orderCollection:[],
+    tableForm: {},
+    scrollOnce:0,
+    restaurantTagRes:[],
+    selectSingleOrder: 0,
+    singleOrder:[],
+    loading: false,
+    tagsPrice:0,
+    sideTagsPrice:0,
+    tagsTotalPrice:0,
+    basePrice:0,
     tableType:[
       {
         typeName: '大厅',
@@ -625,21 +484,6 @@ export default {
         typeIndex: 34,
       },
     ],
-    tid:0,
-    tableOrderConfirm:[],
-    currentDate: new Date(),
-    formLabelWidth:'80px',
-    formLabelWidth1:'50px',
-    tableTitle:"",
-    toCustomer:'',
-    visible2: false,
-    toAccountBox: [],
-    tableVisible:false,
-    classes:[],
-    food1:[],
-    orderCollection:[
-    ],
-    tableForm: {},
     chargeType:[
       {
         name:'免费',
@@ -650,47 +494,8 @@ export default {
         value:'charge'
       }
     ],
-    value6:'',
-    options4: [],
-    restaurantTagRes:[],
-    selectSingleOrder: 0,
-    singleOrder:[],
-    scrollOnce:0,
-    value9: [],
-    list: [],
-    loading: false,
-    states: ["Alabama", "Alaska", "Arizona",
-      "Arkansas", "California", "Colorado",
-      "Connecticut", "Delaware", "Florida",
-      "Georgia", "Hawaii", "Idaho", "Illinois",
-      "Indiana", "Iowa", "Kansas", "Kentucky",
-      "Louisiana", "Maine", "Maryland",
-      "Massachusetts", "Michigan", "Minnesota",
-      "Mississippi", "Missouri", "Montana",
-      "Nebraska", "Nevada", "New Hampshire",
-      "New Jersey", "New Mexico", "New York",
-      "North Carolina", "North Dakota", "Ohio",
-      "Oklahoma", "Oregon", "Pennsylvania",
-      "Rhode Island", "South Carolina",
-      "South Dakota", "Tennessee", "Texas",
-      "Utah", "Vermont", "Virginia",
-      "Washington", "West Virginia", "Wisconsin",
-      "Wyoming"],
-    options: [],
-    value: '',
-    foodss:[],
-    tagsPrice:0,
-    sideTagsPrice:0,
-    skusPrice:0,
-    sideSkusPrice:0,
-    oldTagArr : [],
-    oldSkuArr : [],
-    tagsTotalPrice:0,
-    basePrice:0,
   }),
-
   computed: {
-
     listShow() {
       if (!this.totalCount) {
         this.fold = true;
@@ -793,7 +598,6 @@ export default {
       }
       this.basePrice = skusTotalPrice
     },
-
     selectedTags(val) {
       let tagsTotalPrice = 0
       if(this.getFoods.tags){
@@ -811,131 +615,14 @@ export default {
         return
       }
       this.tagsTotalPrice = tagsTotalPrice
-      // console.log('最后得到的总价',this.tagsTotalPrice);
-
-      // console.log('this.getFoods.tags',this.getFoods,val);
-      // if (val.length > 0) {
-      //   if (this.getFoods.tags) {
-      //     if (this.oldTagArr.length == 0) {
-      //       for (let newTag of val) {
-      //         for (let originTag of this.getFoods.tags) {
-      //           if (newTag == originTag.name && originTag.chargeType == 'charge') {
-      //             this.sideTagsPrice += originTag.price;
-      //             console.log('第一次赋值');
-      //             this.oldTagArr = Object.assign({}, val);
-      //             break;
-      //           }
-      //         }
-      //       }
-      //     } else {
-      //       if (val.length > this.oldTagArr.length) {
-      //         for (let newTag of val) {
-      //           for (let oldTag of this.oldTagArr) {
-      //             if (newTag != oldTag) {
-      //               for (let orininTag of this.getFoods.tags) {
-      //                 if (orininTag.name == newTag && orininTag.chargeType == 'charge') {
-      //                   this.sideTagsPrice += orininTag.price;
-      //                   console.log('第二次赋值');
-      //                   break;
-      //                 }
-      //               }
-      //             }
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }
-      // } else {
-      //   if (this.oldTagArr.length > 0) {
-      //     for (let oldTag of this.oldTagArr) {
-      //       for (let originTag of this.getFoods.tags) {
-      //         if (oldTag == originTag.name && originTag.chargeType == 'charge') {
-      //           this.sideTagsPrice -= originTag.price;
-      //           console.log('第二次赋值');
-      //         }
-      //       }
-      //     }
-      //   }
-      // }
-      // this.oldTagArr = []
-      // console.log('选中的标签', val);
-      // console.log('this.oldTagArr', this.oldTagArr);
-      // console.log('该菜品所有的标签', this.getFoods.tags);
-      // console.log('选中标签的价格',this.sideTagsPrice);
     }
   },
   methods: {
-    confirmOrder(){
-      console.log('not-payed');
-      let i = this.orderCollection.length
-      this.dialogConfirmOrder = !this.dialogConfirmOrder
-      var dish = Object.assign([],this.cartList);
-
-      let data= {
-        restaurantId: parseInt(localStorage.getItem('rid')),
-        // restaurantId: 1524988356660049,
-        orderType:'multi',
-        // tableId: localStorage.getItem('tid')
-        tableId: this.tid,
-        mid: 200,
-        payStatus:'not-payed'
-      }
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log(res);
-        this.orderCollection.push(
-          {
-            id:i+1,
-            needPay:this.totalPrice,
-            dishes: dish
-          }
-        )
-        this.selectFoods.forEach((food) => {
-          food.count = 0;
-        });
-      }).catch((err)=>{
-        console.log(err);
-      })
-    },
-    confirmOrderPay(){
-      console.log('payed');
-      let data= {
-        restaurantId: parseInt(localStorage.getItem('rid')),
-        // restaurantId: 1524988356660049,
-        orderType:'multi',
-        // tableId: localStorage.getItem('tid')
-        tableId: this.tid,
-        mid: 200,
-        payStatus:'payed'
-      }
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log(res);
-      }).catch((err)=>{
-        console.log(err);
-      })
-    },
     toggleList() {
       if (!this.totalCount) {
         return;
       }
       this.fold = !this.fold;
-    },
-    pay(){
-      if (this.totalPrice < this.minPrice) {
-        return;
-      }
-      let data= {
-        // restaurantId: localStorage.getItem('rid'),
-        orderType:'multi',
-        tableId: this.tid
-      }
-
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log('confirmOrder',res);
-      }).catch((err)=>{
-        console.log(err);
-      })
-
-      window.alert(`支付${this.totalPrice}元`);
     },
     transformArrySku(){
       let selectedSkuArr = []
@@ -997,12 +684,13 @@ export default {
             }
             //删掉相关联的规格都会引起id出现问题
             //删掉相关联的分类都会引起forEach出现问题
+            console.log(_this.getFoods);
             console.log(_this.getFoods.id);
             let data = {
               num:1,
               sid: selectedSkuObj.id,
               did: _this.getFoods.id,
-              rid: _this.getFoods.rid,
+              rid: parseInt(localStorage.getItem('rid')),
               tid: _this.tid,
               type: 'multi',
               tagIds: attrTags
@@ -1025,6 +713,153 @@ export default {
             }
           }
         }
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+
+    refreshNeedPay(){
+      let data= {
+        restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        this.cartList = res.data.data.cartList
+        this.discountMoney = res.data.data.discountMoney
+        this.needPay = res.data.data.needPay
+        this.realPay = res.data.data.realPay
+      }).catch((err)=>{
+
+      })
+    },
+    incrementTotalAdd(g) {
+      this.getData.event = g.event
+      // console.log('餐桌',this.tableForm);
+      this.tagsTotalPrice = 0
+      this.selectedSkuArr = []
+      this.selectedTags = []
+      this.sideTagsPrice = 0
+      // console.log(g.event,g.food,'456546456456')
+      //体验优化,异步执行下落动画
+      this.getFoods = Object.assign({},g.food)
+      // console.log(this.getFoods);
+      if(g.specs){
+        this.showForm = !this.showForm
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        console.log('g.event',g.event);
+        this.$nextTick(() => {
+          this.$refs['shop-cart'].drop(g.event);
+        });
+        let data = {
+          num: 1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: this.tid,
+          type: 'multi',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log('加入购物车成功',res);
+          this.refreshNeedPay()
+        }).catch((err)=>{
+          console.log('加入购物车失败',err);
+        })
+      }
+    },
+    incrementTotalDecre(g){
+      if(g.specs){
+        this.showForm = !this.showForm
+        this.getFoods = g.food
+        this.specs = g.food.specs
+      }else{
+        let data = {
+          num: -1,
+          did: g.food.id,
+          rid: g.food.rid,
+          tid: this.tid,
+          type: 'multi',
+        }
+        this.$request(this.url.cart1,'json',data).then((res)=>{
+          console.log(res);
+          this.refreshNeedPay()
+        }).catch((err)=>{
+          console.log(err);
+        })
+      }
+    },
+    findSkuByAttrJoin(selectedJoinAttr){
+      // console.log('findSkuByAttrJoin', selectedJoinAttr);
+      // console.log('this.getFoods.skus', this.getFoods.skus);
+      for(let item of this.getFoods.skus){
+        if(item.attrJion === selectedJoinAttr){
+          console.log('item',item);
+          return item;
+        }
+      }
+
+    },
+
+
+    pay(){
+      if (this.totalPrice < this.minPrice) {
+        return;
+      }
+      let data= {
+        // restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        tableId: this.tid
+      }
+
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        console.log('confirmOrder',res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+
+      window.alert(`支付${this.totalPrice}元`);
+    },
+    empty() {
+      this.selectFoods.forEach((food) => {
+        food.count = 0;
+      });
+    },
+    confirmOrder(){
+      let i = this.orderCollection.length
+      this.dialogConfirmOrder = !this.dialogConfirmOrder
+      var dish = Object.assign([],this.cartList);
+
+      var data = {
+
+        restaurantId: parseInt(localStorage.getItem('rid')),
+        orderType:'multi',
+        tableId: this.tid,
+        payType:'underline',
+        serverType:'real-time',
+      }
+      this.$request(this.url.payOrder,'form',data).then((res)=>{
+        console.log(res);
+        this.selectFoods.forEach((food) => {
+          food.count = 0;
+        });
+        this._pullTableOrder()
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    confirmOrderPay(){
+
+      var data = {
+        restaurantId: parseInt(localStorage.getItem('rid')),
+        orderType:'multi',
+        serverType:'real-time',
+        tableId: this.tid,
+        payStatus:'payed',
+        payType:'underline'
+      }
+      this.$request(this.url.payOrder,'form',data).then((res)=>{
+        console.log(res);
       }).catch((err)=>{
         console.log(err);
       })
@@ -1068,119 +903,6 @@ export default {
         })
       }
     },
-    ballDrop(){
-      if (!this.getFoods.count) {
-        Vue.set(this.getFoods, 'count', 1);
-      } else {
-        this.getFoods.count++;
-      }
-      this.dialogFormVisible = !this.dialogFormVisible
-      this.$nextTick(() => {
-        // console.log(this.getData.event);
-        this.$refs['shop-cart'].drop(this.getData.event);
-        this.refreshNeedPay()
-      });
-    },
-    refreshNeedPay(){
-      let data= {
-        restaurantId: localStorage.getItem('rid'),
-        orderType:'multi',
-        tableId: this.tid
-      }
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        this.cartList = res.data.data.cartList
-        this.discountMoney = res.data.data.discountMoney
-        this.needPay = res.data.data.needPay
-        this.realPay = res.data.data.realPay
-      }).catch((err)=>{
-
-      })
-    },
-    incrementTotalAdd(g) {
-
-      this.getData.event = g.event
-      // console.log('餐桌',this.tableForm);
-      this.tagsTotalPrice = 0
-      this.selectedSkuArr = []
-      this.selectedTags = []
-      this.sideTagsPrice = 0
-      // console.log(g.event,g.food,'456546456456')
-      //体验优化,异步执行下落动画
-      this.getFoods = Object.assign({},g.food)
-      // console.log(this.getFoods);
-      if(g.specs){
-        this.dialogFormVisible = !this.dialogFormVisible
-        this.getFoods = g.food
-        this.specs = g.food.specs
-      }else{
-        console.log('g.event',g.event);
-        this.$nextTick(() => {
-          this.$refs['shop-cart'].drop(g.event);
-        });
-        let data = {
-          num: 1,
-          did: g.food.id,
-          rid: g.food.rid,
-          tid: this.tid,
-          type: 'multi',
-        }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log('加入购物车成功',res);
-          this.refreshNeedPay()
-        }).catch((err)=>{
-          console.log('加入购物车失败',err);
-        })
-      }
-    },
-    incrementTotalDecre(g){
-      if(g.specs){
-        this.dialogFormVisible = !this.dialogFormVisible
-        this.getFoods = g.food
-        this.specs = g.food.specs
-      }else{
-        let data = {
-          num: -1,
-          did: g.food.id,
-          rid: g.food.rid,
-          tid: this.tid,
-          type: 'multi',
-        }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-          console.log(res);
-          this.refreshNeedPay()
-        }).catch((err)=>{
-          console.log(err);
-        })
-      }
-    },
-    findSkuByAttrJoin(selectedJoinAttr){
-      // console.log('findSkuByAttrJoin', selectedJoinAttr);
-      // console.log('this.getFoods.skus', this.getFoods.skus);
-      for(let item of this.getFoods.skus){
-        if(item.attrJion === selectedJoinAttr){
-          console.log('item',item);
-          return item;
-        }
-      }
-
-    },
-
-    selectFoodss(){
-      let foods = [];
-      this.goods.forEach((good) => {
-        good.foods.forEach((food) => {
-          if (food.count) {
-            foods.push(food);
-          }
-        });
-      });
-      this.foodss = foods
-    },
-    empty() {
-      this.selectFoods.forEach((food) => {
-        food.count = 0;
-      });
-    },
     payConfirm() {
       if (this.totalPrice < this.minPrice) {
         return;
@@ -1189,19 +911,8 @@ export default {
       console.log(this.selectFoods);
       this.dialogTableVisible = !this.dialogTableVisible
     },
-    toggleList() {
-      if (!this.totalCount) {
-        return;
-      }
-    },
     plusOrder(){
       console.log(this.selectFoods);
-      // if(){
-      //   this.$message({
-      //     type: 'info',
-      //     message: '未选中菜品!'
-      //   });
-      // }
       let i = this.orderCollection.length
       // console.log(this.selectFoods,'获得选择li');
       this.dialogConfirmOrder = !this.dialogConfirmOrder
@@ -1233,40 +944,271 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
-
-      // this.selectFoods.forEach((food) => {
-      //   food.count = 0;
-      // });
-      console.log('this.orderCollection',this.orderCollection);
-      console.log('this.orderCollection',this.selectFoods);
     },
-
     selectOrder(item,event){
       console.log(item);
     },
-    refreshTable(){
-      console.log(this.selectFoods);
-      console.log(this.goods);
-      console.log(this.singleOrder,'已经得到所选菜品');
+    selectMenu(index, event) {
 
-      this._pullTable()
+      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
+      let el = foodList[index];
+      // console.log(el,'111111111');
+      this.foodsScroll.scrollToElement(el, 300);
     },
-    handleDelete(tag) {
+    singleAccounts(){
+      alert("结账中……")
+    },
+
+    incrementTotal(target) {
+      //体验优化,异步执行下落动画
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(target);
+      });
+    },
+    _initScroll() {
+      this.menuScroll = new BScroll(this.$refs['menu-wrapper'], {
+        click: true
+      });
+      this.foodsScroll = new BScroll(this.$refs['foods-wrapper'], {
+        click: true,
+        probeType: 3
+      });
+      this.foodsScroll.on('scroll', (pos) => {
+        this.scrollY = Math.abs(Math.round(pos.y));
+      });
+    },
+    _calculateHeight() {
+      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
+      let height = 0;
+      this.listHeight.push(height);
+      for (let i = 0; i < foodList.length; i++) {
+        let item = foodList[i];
+        height += item.clientHeight;
+        this.listHeight.push(height);
+      }
+    },
+    ballDrop(){
+      if (!this.getFoods.count) {
+        Vue.set(this.getFoods, 'count', 1);
+      } else {
+        this.getFoods.count++;
+      }
+      this.showForm = !this.showForm
+      this.$nextTick(() => {
+        this.$refs['shop-cart'].drop(this.getData.event);
+        this.refreshNeedPay()
+      });
+    },
+
+    _pullTable(){
+      let data2 = [
+        {
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        }
+      ]
+      this.$request(this.url.table2,'json',data2).then((res)=>{
+        // console.log(res.data.data);
+        this.listTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    addTablePre(data){
+      this.tableForm = {}
+      this.showFormTablePlus = !this.showFormTablePlus;
+    },
+    addTable(confirmData,a){
+      this.editOrAdd = 1
+      // this.tableForm.rid = localStorage.getItem("rid");
+      this.tableForm.status = 'enable'
+      let data = this.tableForm
+      console.log(data);
+      this.$refs[confirmData].validate((valid) => {
+        if (valid) {
+          this.$request(this.url.table1, 'json', data).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+
+            this.showFormTablePlus =!this.showFormTablePlus
+            this._pullTable()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
+      });
+    },
+    addTable1(){
+      // this.tableForm.rid = localStorage.getItem("rid");
+      this.tableForm.status = 'disable'
+      let data = this.tableForm
+      console.log(data);
+      this.$request(this.url.table1, 'json', data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        // this.dishesDataTable.push(data);
+        console.log(res);
+
+        this.showFormTablePlus =!this.showFormTablePlus
+        this._pullTable()
+        // console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    changeTable(confirmData,a){
+      this.tableForm.status = 'enable'
+      let data = this.tableForm
+      this.$refs[confirmData].validate((valid) => {
+        if (valid) {
+          this.$request(this.url.table4, 'json', data).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormTablePlus =!this.showFormTablePlus
+            this._pullTable()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
+      });
+    },
+    changeTable1(){
+      let data = {
+        id:this.tableForm.id,
+        status: this.tableForm.status
+      }
+      console.log(data);
+      this.$request(this.url.table4, 'json', data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '数据提交成功!'
+        });
+        // this.dishesDataTable.push(data);
+
+        this.showFormTablePlus =!this.showFormTablePlus
+        console.log(res);
+      }).catch((err)=>{
+        this.$message({
+          type: 'info',
+          message: '数据提交失败!'
+        });
+        console.log(err);
+      })
+    },
+    _pullTableOrder(){
+      this.$request(this.url.orderComplexPageQuery,'json',[
+        {
+          feild:'tid',
+          value:this.tid,
+          joinType:'eq'
+        },
+        {
+          feild:'rid',
+          value:localStorage.getItem('rid'),
+          joinType:'eq'
+        }
+      ]).then((res)=>{
+        this.tableOrderList = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    selectTable(item,index){
+
+      this.tableForm = item
+      this.tid = item.id
+      this._pullTableOrder()
+
+      var _this = this;
+      var Data = [
+        {
+          feild: '',
+          value: '',
+          joinType: ''
+        }
+      ];
+      this.$request(this.url.loginRestaurantManager,'form',{
+        thirdId:123456789
+      }).then((res)=>{
+        _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
+          _this.dishesCategory = res.data.data;
+        }).catch((err)=>{
+          console.log(err)
+        }).then(function () {
+          _this.goods = _this.goodsArr(_this);
+        })
+      })
+      setTimeout(() => {
+        if(this.scrollOnce === 0){
+          this._initScroll()
+          this._calculateHeight()
+          this.scrollOnce= 1
+        }
+        loading.close();
+      }, 500);
+      this.tableShow = 1
+
+      this.tableTitle = this.tableForm.num
+      const loading = this.$loading({
+        lock: true,
+        text: 'Loading',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)'
+      });
+
+    },
+    editTable(){
+      this.showFormTablePlus = !this.showFormTablePlus
+      this.editOrAdd = 2
+    },
+    closeTable(){
+      this.tableShow = 0
+      this.tableForm = {}
+      this.scrollOnce= 0
+    },
+    deleteTable(tag) {
       this.$confirm('即将删除该餐桌, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
         let data = {
-          id:this.toAccountBox.id
+          id:this.tableForm.id
         }
         this.$request(this.url.table3,'form',data).then((res)=>{
           this.$message({
             type: 'success',
             message: '数据提交成功!'
           });
-          // this.dishesDataTable.push(data);
-          // this.show3 = false
           this._pullTable()
           this.tableShow = 0
         }).catch((err)=>{
@@ -1276,7 +1218,6 @@ export default {
           });
           console.log(err);
         })
-
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -1287,25 +1228,6 @@ export default {
           message: '已取消删除'
         });
       });
-
-    },
-    selectMenu(index, event) {
-
-      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
-      let el = foodList[index];
-      // console.log(el,'111111111');
-      this.foodsScroll.scrollToElement(el, 300);
-    },
-    incrementTotal(target) {
-      //体验优化,异步执行下落动画
-      this.$nextTick(() => {
-        this.$refs['shop-cart'].drop(target);
-      });
-    },
-
-    tableTypeChange(){
-      console.log(this.value5);
-      console.log(this.tableForm);
     },
     stopTableService(){
       const loading = this.$loading({
@@ -1342,380 +1264,18 @@ export default {
       })
 
     },
-    singleAccounts(){
-      this.dialogConfirmOrder = !this.dialogConfirmOrder
-      let data = [
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        },
-        {
-          feild:'tid',
-          value:this.tid,
-          joinType:'eq'
-        }
-      ]
-      console.log('确认订单时提交的数据', data);
-      this.$request(this.url.cart2,'json',data).then((res)=>{
-        this.tableOrderConfirm = res.data.data
-        console.log(res);
-        console.log('这个餐厅，这个餐桌的订单数据',res.data.data);
-      }).catch((err)=>{
-        console.log(err);
-      })
-
-
-      alert("结账中……")
+    handleShowTable() {
+      this.showTable = !this.showTable
     },
-    minusCustomer(){
-      let numberOfpeople = this.tableForm.name;
-      if (numberOfpeople) {
-        numberOfpeople--;
-        this.tableForm.name = numberOfpeople
-        // this.toCustomer.push(numberOfpeople);
-      }
-    },
-    _initScroll() {
-      this.menuScroll = new BScroll(this.$refs['menu-wrapper'], {
-        click: true
-      });
-      this.foodsScroll = new BScroll(this.$refs['foods-wrapper'], {
-        click: true,
-        probeType: 3
-      });
-      this.foodsScroll.on('scroll', (pos) => {
-        this.scrollY = Math.abs(Math.round(pos.y));
-      });
-    },
-    _calculateHeight() {
-      let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
-      let height = 0;
-      this.listHeight.push(height);
-      for (let i = 0; i < foodList.length; i++) {
-        let item = foodList[i];
-        height += item.clientHeight;
-        this.listHeight.push(height);
-      }
-    },
+    refreshTable(){
+      console.log(this.selectFoods);
+      console.log(this.goods);
+      console.log(this.singleOrder,'已经得到所选菜品');
 
-
-    remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.options4 = this.list.filter(item => {
-            return item.label.toLowerCase()
-              .indexOf(query.toLowerCase()) > -1;
-          });
-        }, 200);
-      } else {
-        this.options4 = [];
-      }
+      this._pullTable()
     },
-    plusTable(){
-      // this.tableForm.rid = localStorage.getItem("rid");
-      this.tableForm.status = 'enable'
-      let data = this.tableForm
-      console.log(data);
-      this.$request(this.url.table1, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        // this.dishesDataTable.push(data);
-        console.log(res);
-
-        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
-        this._pullTable()
-        // console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
-      })
-    },
-    plusTable1(){
-      // this.tableForm.rid = localStorage.getItem("rid");
-      this.tableForm.status = 'disable'
-      let data = this.tableForm
-      console.log(data);
-      this.$request(this.url.table1, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        // this.dishesDataTable.push(data);
-        console.log(res);
-
-        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
-        this._pullTable()
-        // console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
-      })
-    },
-    changeTable(){
-      this.toAccountBox.status = 'enable'
-      console.log(this.toAccountBox);
-      let data = this.toAccountBox
-      console.log(data);
-      this.$request(this.url.table4, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        this._pullTable()
-        this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
-        // this.dishesDataTable.push(data);
-        // console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
-      })
-    },
-    vuetouch(){
-      console.log('1');
-    },
-    changeTable1(){
-      let data = {
-        id:this.tableForm.id,
-        status: this.tableForm.status
-      }
-      console.log(data);
-      this.$request(this.url.table4, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        // this.dishesDataTable.push(data);
-
-        this.dialogFormVisibleTablePlus =!this.dialogFormVisibleTablePlus
-        console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
-      })
-    },
-    plusMethodsThis(data){
-      this.tableForm = {}
-      this.dialogFormVisibleTablePlus = !this.dialogFormVisibleTablePlus;
-    },
-    editTable(){
-      this.dialogFormVisibleTableChange = !this.dialogFormVisibleTableChange;
-    },
-    selectTable(item,index){
-
-      // if(this.screenWidth < 760){
-      //   var splusOrder = document.getElementById('splusOrder')
-      //   console.log(splusOrder);
-      // }
-
-      this.$request(this.url.orderComplexPageQuery,'json',[
-        {
-          feild:'tid',
-          value:this.tid,
-          joinType:'eq'
-        },
-        {
-          feild:'rid',
-          value:localStorage.getItem('rid'),
-          joinType:'eq'
-        }
-      ]).then((res)=>{
-        console.log(res);
-      }).catch((err)=>{
-        console.log(err);
-      })
-
-      this.toAccountBox = item;
-      this.tableForm = item
-      this.tid = item.id
-      console.log('选中餐桌数据',item);
-      var _this = this;
-      var Data = [
-        {
-          feild: '',
-          value: '',
-          joinType: ''
-        }
-      ];
-      this.$request(this.url.loginRestaurantManager,'form',{
-        thirdId:123456789
-      }).then((res)=>{
-        _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
-          _this.dishesCategory = res.data.data;
-        }).catch((err)=>{
-          console.log(err)
-        }).then(function () {
-          _this.goods = _this.goodsArr(_this);
-          console.log('selectTable - _this.goods', _this.goods);
-        }).then((res)=>{
-
-        })
-      })
-      console.log('selectTable - this.goods',this.goods);
-      this.tableVisible = !this.tableVisible
-      this.tableShow = 1
-
-      var Title = new Array("桌号"+(index+1))
-      this.tableTitle = Title.join('——')
-
-      const loading = this.$loading({
-        lock: true,
-        text: 'Loading',
-        spinner: 'el-icon-loading',
-        background: 'rgba(0, 0, 0, 0.7)'
-      });
-      setTimeout(() => {
-        if(this.scrollOnce === 0){
-          this._initScroll()
-          this._calculateHeight()
-          this.scrollOnce= 1
-        }
-        loading.close();
-      }, 500);
-
-    },
-    // getTable() {
-    //   const loading = this.$loading({
-    //     lock: true,
-    //     text: 'Loading',
-    //     spinner: 'el-icon-loading',
-    //     background: 'rgba(0, 0, 0, 0.7)'
-    //   });
-    //   setTimeout(() => {
-    //     if(this.scrollOnce === 0){
-    //       this._initScroll()
-    //       this._calculateHeight()
-    //       this.scrollOnce= 1
-    //     }
-    //     loading.close();
-    //   }, 2000);
-    // },
-    // getTable(){
-    //   if(this.scrollOnce === 0){
-    //     this._initScroll()
-    //     this._calculateHeight()
-    //     this.scrollOnce= 1
-    //   }
-    //
-    // },
-    // vuetap:function(s){
-    //   console.log(s);
-    //   if(this.scrollOnce === 0){
-    //     this._initScroll()
-    //     this._calculateHeight()
-    //     this.scrollOnce= 1
-    //   }
-    // },
-    closeTable(){
-      this.tableShow = 0
-      console.log('12321');
-      this.scrollOnce= 0
-      // this.goods = this.goodsArr(this)
-      // this.show3 = false
-
-      // location.reload();
-    },
-    handleClick(tab, event) {
-      this.show2 = !this.show2
-    },
-    labelHideSroll(){
-    },
-    openMsg(msg){
-      const h = this.$createElement;
-      this.$msgbox({
-        title: '结账',
-        message: h('p', null, [
-          h('span', null, '内容可以是 '),
-          h('el-button', { style: 'color: teal' }, 'VNode')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        beforeClose: (action, instance, done) => {
-          if (action === 'confirm') {
-            instance.confirmButtonLoading = true;
-            instance.confirmButtonText = '结账中...';
-            setTimeout(() => {
-              done();
-              setTimeout(() => {
-                instance.confirmButtonLoading = false;
-              }, 300);
-            }, 3000);
-          } else {
-            done();
-          }
-        }
-      }).then(action => {
-        this.$message({
-          type: 'info',
-          message: 'action: ' + action
-        });
-      });
-      // this.$alert(
-      //   '<el-row>\n' +
-      //   '  <el-col :span="8" v-for="(o, index) in 2" :key="o" :offset="index > 0 ? 2 : 0">\n' +
-      //   '    <el-card :body-style="{ padding: \'0px\' }">\n' +
-      //   '      <div style="padding: 14px;">\n' +
-      //   '        <span>好吃的汉堡</span>\n' +
-      //   '        <div class="bottom clearfix">\n' +
-      //   '          <time class="time">' +
-      //                 this.currentDate+
-      //               '</time>\n' +
-      //   '          <el-button type="text" class="button">操作按钮</el-button>\n' +
-      //   '        </div>\n' +
-      //   '      </div>\n' +
-      //   '    </el-card>\n' +
-      //   '  </el-col>\n' +
-      //   '</el-row>',
-      //   '确认结账', {
-      //   dangerouslyUseHTMLString: true
-      // });
-    },
-    _pullTable(){
-      let data2 = [
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        }
-      ]
-      this.$request(this.url.table2,'json',data2).then((res)=>{
-        console.log(res.data.data);
-        this.listTable = res.data.data
-      }).catch((err)=>{
-        console.log(err);
-      })
-    }
-  },
-  mounted() {
-    setTimeout(this.show2 = !this.show2,2000);
-    this.list = this.states.map(item => {
-      return { value: item, label: item };
-    });
-
-
   },
   created() {
-
-
-
-    console.log('1');
     let data1 = [{
       feild: 'status',
       value: 'enable',
@@ -1723,15 +1283,13 @@ export default {
     }]
     this.$request(this.url.dishesCategory2,'json',data1).then((res)=>{
       this.dishesCategory = res.data.data
-      console.log(res);
+      // console.log(res);
     }).catch((err)=>{
       console.log(err);
     })
     this._pullTable()
-
   },
   components:{
-    editcontrol,
     shopcart,
     cartcontrol
   },
@@ -1740,122 +1298,8 @@ export default {
       this._drop(target);
     }
   },
-
 }
 
-
-
-function vueTouch(el,binding,type,vnode){
-  var _this=this;
-  this.obj=el;
-  this.binding=binding;
-  this.touchType=type;
-  this.vueTouches={x:0,y:0};
-  this.vueMoves=true;
-  this.vueLeave=true;
-  this.longTouch=true;
-  this.vueCallBack=typeof(binding.value)=="object"?binding.value.fn:binding.value;
-  this.obj.addEventListener("touchstart",function(e){
-    _this.start(e);
-  },false);
-  this.obj.addEventListener("touchend",function(e){
-    _this.end(e);
-  },false);
-  this.obj.addEventListener("touchmove",function(e){
-    _this.move(e);
-  },false);
-  vnode.key = this.randomString()
-};
-vueTouch.prototype={
-  start:function(e){
-    this.vueMoves=true;
-    this.vueLeave=true;
-    this.longTouch=true;
-    this.vueTouches={x:e.changedTouches[0].pageX,y:e.changedTouches[0].pageY};
-    this.time=setTimeout(function(){
-      if(this.vueLeave&&this.vueMoves){
-        this.touchType=="longtap"&&this.vueCallBack(this.binding.value,e);
-        this.longTouch=false;
-      };
-    }.bind(this),1000);
-  },
-  end:function(e){
-    var disX=e.changedTouches[0].pageX-this.vueTouches.x;
-    var disY=e.changedTouches[0].pageY-this.vueTouches.y;
-    clearTimeout(this.time);
-    if(Math.abs(disX)>10||Math.abs(disY)>100){
-      this.touchType=="swipe"&&this.vueCallBack(this.binding.value,e);
-      if(Math.abs(disX)>Math.abs(disY)){
-        if(disX>10){
-          this.touchType=="swiperight"&&this.vueCallBack(this.binding.value,e);
-        };
-        if(disX<-10){
-          this.touchType=="swipeleft"&&this.vueCallBack(this.binding.value,e);
-        };
-      }else{
-        if(disY>10){
-          this.touchType=="swipedown"&&this.vueCallBack(this.binding.value,e);
-        };
-        if(disY<-10){
-          this.touchType=="swipeup"&&this.vueCallBack(this.binding.value,e);
-        };
-      };
-    }else{
-      if(this.longTouch&&this.vueMoves){
-        this.touchType=="tap"&&this.vueCallBack(this.binding.value,e);
-        this.vueLeave=false
-      };
-    };
-  },
-  move:function(e){
-    this.vueMoves=false;
-  },
-  randomString:function(){
-    var len = 10;
-    var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';
-    var maxPos = $chars.length;
-    var pwd = '';
-    for (var i = 0; i < len; i++) {
-      pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
-    }
-    return pwd;
-  }
-};
-Vue.directive("tap",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"tap",vnode);
-  }
-});
-Vue.directive("swipe",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"swipe",vnode);
-  }
-});
-Vue.directive("swipeleft",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"swipeleft",vnode);
-  }
-});
-Vue.directive("swiperight",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"swiperight",vnode);
-  }
-});
-Vue.directive("swipedown",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"swipedown",vnode);
-  }
-});
-Vue.directive("swipeup",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"swipeup",vnode);
-  }
-});
-Vue.directive("longtap",{
-  bind:function(el,binding,vnode){
-    new vueTouch(el,binding,"longtap",vnode);
-  }
-});
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -1937,7 +1381,7 @@ Vue.directive("longtap",{
     overflow-x scroll
     .singleContainer
       height 40px
-      width 2000px
+      width 4000px
       display inline-block
       span
         .popover
@@ -1951,7 +1395,7 @@ Vue.directive("longtap",{
       margin-left 2px
       position fixed
       right 13%
-      bottom: 35px
+      bottom: 45px
 
 
   .el-badge
@@ -2189,4 +1633,9 @@ Vue.directive("longtap",{
 .foods-ul
   li:last-child
     margin-bottom 50px
+
+
+.dollar
+  font-size 10px !important
+  font-weight lighter !important
 </style>

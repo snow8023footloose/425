@@ -186,27 +186,10 @@ export default {
       fullscreenLoading: false,
       value5:100,
 
-      // // 客户登录
       loginstate: false,
       loginShow: true,
       owner: false,
-      manager: true,
-
-      //
-      // 新沃丰公司内部登录 不需账号设置
-      // loginstate: true,
-      // loginShow: false,  //false不需账号设置
-      // owner: false,
-      // manager: true,
-
-      // 新沃丰公司内部登录 需账号设置
-      // loginstate: false,
-      // loginShow: true,  //true需账号设置
-      // owner: false,
-      // manager: true,
-
-
-      // manager 为false 客户登录
+      manager: false,
       labelPosition: 'top',
       show2: true,
       footer: '新沃丰网络科技',
@@ -396,8 +379,8 @@ export default {
   created() {
     this.owner = !this.manager
     if (localStorage.rid){
-      this.ruleForm2.username = 18670360154
-      this.ruleForm2.password = 18670360154
+      this.ruleForm2.username = 17375636967
+      this.ruleForm2.password = 17375636967
     }
     //开启
     //this.$router.push({path:'/XWFer/xwfcustom'})

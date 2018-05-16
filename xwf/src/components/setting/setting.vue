@@ -437,7 +437,7 @@
 
       </el-tabs>
       <!--增加打印模板-->
-      <el-dialog title="增加打印机" :visible.sync="showFormPrinterPlus">
+      <el-dialog title="增加打印机" :visible.sync="dialogFormVisiblePrinterPlus">
         <el-form :model="printerForm" :label-width="formLabelWidth">
           <el-form-item label="名称" >
             <el-input
@@ -476,12 +476,12 @@
 
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="showFormPrinterPlus = false;">取 消</el-button>
+          <el-button @click="dialogFormVisiblePrinterPlus = false;">取 消</el-button>
           <el-button type="primary" @click="plusPrinterConfirm">确定</el-button>
         </div>
       </el-dialog>
       <!--增加打印模板-->
-      <el-dialog title="增加打印模板" :visible.sync="showFormPrinterTemplatePlus">
+      <el-dialog title="增加打印模板" :visible.sync="dialogFormVisiblePrinterTemplatePlus">
         <el-form :model="printerTemplateForm" :label-width="formLabelWidth">
           <el-form-item label="模板名" >
             <el-input
@@ -503,7 +503,7 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="showFormPrinterTemplatePlus = false;">取 消</el-button>
+          <el-button @click="dialogFormVisiblePrinterTemplatePlus = false;">取 消</el-button>
           <el-button type="primary" @click="plusPrinterTemplateConfirm">确定</el-button>
         </div>
       </el-dialog>
@@ -561,8 +561,8 @@ export default {
       value4: true,
       value5: 100,
       printerForm:{},
-      showFormPrinterPlus:false,
-      showFormPrinterTemplatePlus:false,
+      dialogFormVisiblePrinterPlus:false,
+      dialogFormVisiblePrinterTemplatePlus:false,
       settingForm:{},
       value6: 100,
       serviceStatus:'',
@@ -779,7 +779,7 @@ export default {
     plusPrinterConfirm(){
       this.$request(this.url.printerAdd,'json',this.printerForm).then((res)=>{
 
-        this.showFormPrinterPlus = !this.showFormPrinterPlus;
+        this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
         this._pullPrinter()
       }).catch((err)=>{
         console.log(err);
@@ -792,21 +792,21 @@ export default {
       this.activeName = 'fourth'
     },
     plusPrinter(){
-      this.showFormPrinterPlus = !this.showFormPrinterPlus;
+      this.dialogFormVisiblePrinterPlus = !this.dialogFormVisiblePrinterPlus;
     },
     plusPrinterTemplateConfirm(){
       // this.printerTemplateForm.rid = localStorage.getItem('rid')
       console.log('提交打印机数据',this.printerTemplateForm);
       this.$request(this.url.printerTemplateAdd,'json',this.printerTemplateForm).then((res)=>{
         console.log(res);
-        this.showFormPrinterTemplatePlus = !this.showFormPrinterTemplatePlus;
+        this.dialogFormVisiblePrinterTemplatePlus = !this.dialogFormVisiblePrinterTemplatePlus;
         this._pullPrinterTemplate()
       }).catch((err)=>{
         console.log(err);
       })
     },
     plusPrinterTemplate(){
-      this.showFormPrinterTemplatePlus = !this.showFormPrinterTemplatePlus;
+      this.dialogFormVisiblePrinterTemplatePlus = !this.dialogFormVisiblePrinterTemplatePlus;
     },
     deletePrinterTemplate(row){
       let data = {

@@ -439,7 +439,7 @@ const ERR_OK = 0
 
     .shopcart-list
       position: absolute
-      right: 36px
+      right: 250px
       bottom: 46px
       z-index: -1
       width: 260px
@@ -465,7 +465,7 @@ const ERR_OK = 0
       .list-content
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.4)
         padding: 0 18px
-        max-height: 200px
+        max-height: 400px
         bottom : 80px
         width : 100%
         overflow hidden

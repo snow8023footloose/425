@@ -9,8 +9,8 @@ import Apply from '@/components/test/apply'
 import Setting from '@/components/setting/setting'
 import Xwfcustom from '@/components/xwfcustom/xwfcustom'
 import upLoad from '@/components/upload/upload'
-import Touch from '@/components/test/touch'
 import Coupon from '@/components/coupon/coupon'
+import Member from '@/components/member/member'
 
 
 Vue.use(Router)
@@ -20,14 +20,14 @@ export default new Router({
   mode: 'history',
   routes: [
     {
+      path:'/manager/xwfs/member',
+      name:'Member',
+      component: Member
+    },
+    {
       path:'/manager/xwfs/coupon',
       name:'Coupon',
       component: Coupon
-    },
-    {
-      path:'/touch',
-      name:'Touch',
-      component: Touch
     },
     {
       path:'/manager/xwfs/goods',
@@ -40,7 +40,7 @@ export default new Router({
       component: Finance
     },
     {
-      path:'/manager/',
+      path:'/manager/xwfs/',
       name:'Tables',
       component:Tables
     },

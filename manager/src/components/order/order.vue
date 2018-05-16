@@ -4,7 +4,6 @@
     <el-tabs
       v-loading="loading"
       v-model="activeName"
-      @tab-click="handleClick"
     >
       <!--<el-tab-pane label="外卖订单" name="first">
         <template>
@@ -57,7 +56,7 @@
       <el-tab-pane label="历史订单" name="first">
         <template>
           <el-table
-            :data="userOrder"
+            :data="userOrderTable"
             style="width: 100%"
             height="600"
           >
@@ -93,6 +92,19 @@
               label="订单编号"
               width="160"
             >
+            </el-table-column>
+            <el-table-column
+              sortable
+              prop="tid"
+              label="餐桌"
+              width="130"
+              :filters="filterTableArr"
+              :filter-method="filterTable"
+              filter-placement="bottom-end"
+            >
+              <template slot-scope="scope">
+                <span v-for="item in filterTableArr" v-if="scope.row.tid === item.value">{{item.text}}</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
@@ -184,31 +196,6 @@
             </el-table-column>
           </el-table>
           <div class="filter">
-            <!--<el-select-->
-            <!--style="margin-right: 5px"-->
-            <!--v-model="filterOrderType"-->
-            <!--@change="filterOrderTypeFun"-->
-            <!--placeholder="请选择订单类型">-->
-            <!--<el-option-->
-            <!--v-for="(item,index) in optionsOrder"-->
-            <!--:key="index"-->
-            <!--:label="item.label"-->
-            <!--:value="item.value">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
-            <!--<el-select-->
-            <!--style="margin-right: 5px"-->
-            <!--v-model="filterPayType"-->
-            <!--@change="filterPayTypeFun"-->
-            <!--placeholder="请选择支付类型">-->
-            <!--<el-option-->
-            <!--v-for="(item,index) in optionsPay"-->
-            <!--:key="index"-->
-            <!--:label="item.label"-->
-            <!--:value="item.value">-->
-            <!--</el-option>-->
-            <!--</el-select>-->
-
             <el-date-picker
               style="margin-left: 45%;margin-top: 10px"
               v-model="filterOrderDate"
@@ -235,32 +222,10 @@
   export default {
     name: 'New',
     data:() => ({
-      start:{
-        feild:'startTime',
-        value: '',
-        joinType:'startTime'
-      },
-      end:{
-        feild:'endTime',
-        value: '',
-        joinType:'endTime'
-      },
-
-      filters:[
-        {
-          feild: 'startTime',
-          value:'',
-          joinType:'startTime',
-        },
-        {
-          feild: 'endTime',
-          value:'',
-          joinType:'endTime',
-        }
-      ],
       currentPage1:5,
       activeName: 'first',
-      userOrder:[],
+      userOrderTable:[],
+      filterTableArr:[],
       loading: true,
       filterOrderDate:'',
       pickerOptions: {
@@ -301,68 +266,81 @@
         }]
       },
     }),
-    watch:{
-      filters:{
-        handler:function(val,oldval){
-          console.log('watch',val);
-          this.$request(this.url.dishes2,'json',val).then((res)=>{
-            console.log(res);
-            this.userOrder = res.data.data
-          }).catch((err)=>{
-          })
-        },
-        deep:true//深度监听
-      }
-    },
     methods: {
       resetFilters(){
-        this.start = {
-          feild:'startTime',
-          value: '',
-          joinType:'startTime'
-        }
-        this.end = {
-          feild:'endTime',
-            value: '',
-            joinType:'endTime'
-        }
+        this.filterOrderDate = ''
+        this._pullUserOrder()
+      },
+      filterTable(value, row) {
+        return row.tid === value;
+      },
+      _pullTable(){
+        let data2 = [
+          {
+            feild:'status',
+            value:'123',
+            joinType:'ne'
+          }
+        ]
+        this.$request(this.url.table2,'json',data2).then((res)=>{
+          // console.log(res.data.data);
+          let response = res.data.data
+          for(let i=0;i<response.length;i++){
+            this.filterTableArr.push({
+              text:response[i].name,
+              value:response[i].id
+            })
+          }
+        }).catch((err)=>{
+          console.log(err);
+        })
       },
       filterDateTypeFun(){
         this.filters =[]
         console.log('filterDateTypeFun',this.filterOrderDate);
-        let startTime =
-          this.filterOrderDate[0].getFullYear()+
-        '-'+(this.filterOrderDate[0].getMonth()+1)+
-        '-'+this.filterOrderDate[0].getDate()
-        let endTime = this.filterOrderDate[1].getFullYear()+
-        '-'+(this.filterOrderDate[1].getMonth()+1)+
-        '-'+this.filterOrderDate[1].getDate()
-        console.log('得到时间段',startTime,endTime);
+        let year0 = this.filterOrderDate[0].getFullYear()
+        let year1 = this.filterOrderDate[1].getFullYear()
 
-        this.start = {
-          feild:'startTime',
-          value: startTime,
-          joinType:'startTime'
+        let month0 = this.filterOrderDate[0].getMonth()+1
+        let month1 = this.filterOrderDate[1].getMonth()+1
+
+        let day0 = this.filterOrderDate[0].getDate()
+        let day1 = this.filterOrderDate[1].getDate()
+
+        if(month0 < 10){ /*月份小于10  就在前面加个0*/
+          month0 = String(String(0) + String(month0));
         }
-        this.end = {
-          feild:'endTime',
-          value: endTime,
-          joinType:'endTime'
+        if(month1 < 10){ /*月份小于10  就在前面加个0*/
+          month1 = String(String(0) + String(month1));
         }
-        this.filters.push(this.start,this.end)
+        if(day0 < 10){ /*日期小于10  就在前面加个0*/
+          day0 = String(String(0) + String(day0));
+        }
+        if(day1 < 10){ /*日期小于10  就在前面加个0*/
+          day1 = String(String(0) + String(day1));
+        }
+        let startTime = year0+ '-'+month0+ '-'+day0
+        let endTime = year1+ '-'+month1+ '-'+day1
+
+        let  data =[
+          {
+            feild:'time',
+            value: startTime,
+            joinType:'time'
+          },
+          // {
+          //   feild:'endTime',
+          //   value: endTime,
+          //   joinType:'endTime'
+          // },
+        ]
+        this.$request(this.url.userOrder,'json',data).then((res)=>{
+          console.log(res,'111111111111111111111111');
+          this.userOrderTable = res.data.data
+        }).catch((err)=>{
+        })
       },
-      formatter(row, column) {
-        return row.address;
-      },
-      filterTag(value, row) {
-        return row.tag === value;
-      },
-      filterHandler(value, row, column) {
-        const property = column['property'];
-        return row[property] === value;
-      },
-      handleClick(tab, event) {
-      },
+
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`);
       },
@@ -376,14 +354,6 @@
         return row.orderType === value;
       },
       _pullUserOrder(){
-        // let data = [
-        //   {
-        //     feild:'status',
-        //     value: 'enable',
-        //     joinType:'eq'
-        //   }
-        // ]
-
         let data = [
           {
             feild:'time',
@@ -394,7 +364,7 @@
         this.$request(this.url.userOrder,'json',data).then((res)=>{
           console.log('orderComplexPageQuery',res);
           let response = res.data.data
-          this.userOrder = response
+          this.userOrderTable = response
 
           this.loading = false
         }).catch((err)=>{
@@ -404,6 +374,7 @@
     },
     created() {
       this._pullUserOrder()
+      this._pullTable()
     },
   }
 </script>

@@ -1,11 +1,11 @@
 <template>
   <div class="cartcontrol" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
     <transition name="move">
-      <div class="cart-decrease icon-add_circle" v-show="food.count>0" @click.stop="decreaseCart">
+      <div class="cart-decrease icon-add_circle" v-show="food.num>0" @click.stop="decreaseCart">
         <i class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
       </div>
     </transition>
-    <div class="cart-count" v-show="food.count>0">{{food.count}}</div>
+    <div class="cart-count" v-show="food.num>0">{{food.count}}</div>
     <i class="el-icon-circle-plus cart-add icon-add_circle" @click="addCart" ref="add"></i>
   </div>
 </template>

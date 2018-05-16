@@ -298,19 +298,13 @@
         this.shopcartRefresh = true
       },
       openFullScreen2() {
-        // const loading = this.$loading({
-        //   lock: true,
-        //   text: 'Loading',
-        //   spinner: 'el-icon-loading',
-        //   background: 'rgba(0, 0, 0, 0.7)'
-        // });
         setTimeout(() => {
           if(this.scrollOnce === 0){
             this._initScroll()
             this._calculateHeight()
             this.scrollOnce= 1
           }
-          // loading.close();
+          loading.close();
         }, 700);
       },
       startOrder(){
