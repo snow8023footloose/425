@@ -5,19 +5,8 @@
       fullscreen
       close-on-press-escape
       append-to-body
-      title="订单确认" :visible.sync="dialogTableVisible">
+      title="订单确认" :visible.sync="showFormConfirmOrder">
       <div class="shopcart-list animated" v-show="listShow">
-        <!--<div class="list-header" @click.stop="toggleList">
-          <h1 class="title">购物车</h1>
-          <span class="empty" @click="empty">清空</span>
-        </div>-->
-        <el-input
-          type="textarea"
-          :rows="2"
-          placeholder="请输入备注"
-          v-model="textarea">
-        </el-input>
-
         <div class="list-content" ref="list-content">
           <ul style="padding: 0px">
             <li style="display: flex;align-items:baseline" class="food" v-for="(food,key) in selectFoods" :key="key">
@@ -31,22 +20,13 @@
             </li>
           </ul>
         </div>
-        <!--<div class="list-header" @click.stop="toggleList" style="display: flex;justify-content: flex-end;padding: 0px 6px;margin-bottom: 20px">-->
-          <!--<span class="empty" @click="empty">清空</span>-->
-        <!--</div>-->
         <div style="display: flex;justify-content: space-between">
           <span class="price" style="font-size: 20px;font-weight: bolder" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">总计 ￥{{needPay}}</span>
           <el-button-group>
             <el-button type="success" round @click="prePay">下单</el-button>
           </el-button-group>
         </div>
-
       </div>
-      <!--<el-table :data="selectFoods">-->
-        <!--<el-table-column property="name" label="菜品" width="150"></el-table-column>-->
-        <!--<el-table-column property="normalPrice" label="价格" width="200"></el-table-column>-->
-        <!--<el-table-column property="address" label="地址"></el-table-column>-->
-      <!--</el-table>-->
     </el-dialog>
     <div class="cart-content">
       <div class="content-left">
@@ -58,31 +38,16 @@
         </div>
         <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay.toFixed(2)}}</div>
         <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
-        <!--<el-select size="small" multiple collapse-tags v-model="value8" filterable placeholder="点击搜索" class="search">-->
-          <!--<el-option-->
-            <!--v-for="(item,index) in listGoods"-->
-            <!--:key="index"-->
-            <!--:label="item.name"-->
-            <!--:value="index">-->
-            <!--<span style="">{{ item.name }}&nbsp;&nbsp;价格：</span>-->
-            <!--<span style=" color: #8492a6; font-size: 13px">{{ item.normalPrice }}元</span>-->
-          <!--</el-option>-->
-        <!--</el-select>-->
-        <!-- <div class="desc" v-show="totalCount>0">另需餐桌费￥{{deliveryPrice}}元</div> -->
       </div>
-      <!--<div class="content-right" @click.stop.prevent="payConfirm">-->
-        <!--<div class="pay" :class="payClass" >
-          {{payDesc}}-->
-        <!--</div>-->
-      <!--</div>-->
     </div>
     <div class="ball-container">
-      <transition name="drop"
-                  v-for="(ball,key) in balls"
-                  @before-enter="beforeDrop"
-                  @enter="dropping"
-                  :key="key"
-                  @after-enter="afterDrop">
+      <transition
+        name="drop"
+        v-for="(ball,key) in balls"
+        @before-enter="beforeDrop"
+        @enter="dropping"
+        :key="key"
+        @after-enter="afterDrop">
         <div v-show="ball.show" class="ball" v-bind:css="false">
           <div class="inner inner-hook"></div>
         </div>
@@ -109,10 +74,6 @@
         </div>
       </div>
     </transition>
-
-    <!--<transition name="fade">
-      <div class="list-mask" @click="hideList" v-show="listShow"></div>
-    </transition>-->
   </div>
 </template>
 
@@ -152,7 +113,6 @@ const ERR_OK = 0
     },
     data() {
       return {
-        textarea:'',
         balls: [
           {
             show: false
@@ -170,25 +130,12 @@ const ERR_OK = 0
             show: false
           }
         ],
-        dialogTableVisible:false,
+        showFormConfirmOrder:false,
         dropBalls: [],
         fold: true,
-        book: false,
-        cartList:[],
-        discountMoney:'',
-        realPay:'',
-        SColor:'SColor',
-        SColor2:'SColor2',
-        SColor4:'SColor4',
-        dishesCategory:[],
-        value8: ''
       };
 
     },
-    watch: {
-
-    },
-
     methods: {
       drop(el) {
         for(let i = 0; i < this.balls.length; i++) {
@@ -200,9 +147,6 @@ const ERR_OK = 0
             return ;
           }
         }
-      },
-      delayPay(){
-
       },
       beforeDrop(el) {
         console.log(this.needPay);
@@ -223,7 +167,6 @@ const ERR_OK = 0
       },
       dropping(el) {
         /* eslint-disable no-unused-vars */
-        let rf = el.offsetHeight;
         this.$nextTick(() => {
           el.style.webkitTransform = 'translate3d(0,0,0)';
           el.style.transform = 'translate3d(0,0,0)';
@@ -245,22 +188,11 @@ const ERR_OK = 0
         }
         this.fold = !this.fold;
       },
-      hideList() {
-        this.fold = true;
-      },
       empty() {
         this.selectFoods.forEach((food) => {
           food.count = 0;
         });
         console.log(this.listGoods);
-      },
-      payConfirm() {
-        if (this.totalPrice < this.minPrice) {
-          return;
-        }
-        this.fold = false;
-        console.log(this.selectFoods);
-        this.dialogTableVisible = !this.dialogTableVisible
       },
       prePay(){
         if (this.totalPrice < this.minPrice) {
@@ -270,7 +202,6 @@ const ERR_OK = 0
       }
     },
     computed: {
-
       totalPrice() {
         let total = 0;
         this.selectFoods.forEach((food) => {
@@ -284,23 +215,6 @@ const ERR_OK = 0
           count += food.count;
         });
         return count;
-      },
-      payDesc() {
-        if (this.totalPrice < this.minPrice) {
-          return `￥还差${this.minPrice-this.totalPrice}元开单`;
-        } else if (this.totalPrice < this.minPrice) {
-          let diff = this.minPrice - this.totalPrice;
-          return `还差￥${diff}元减10元`;
-        } else {
-          return '结算';
-        }
-      },
-      payClass() {
-        if (this.totalPrice < this.minPrice) {
-          return 'not-enough';
-        } else {
-          return 'enough';
-        }
       },
       listShow() {
         if (!this.totalCount) {
@@ -328,7 +242,6 @@ const ERR_OK = 0
             tempArr = tempArr.concat(item.foods);
           })
         }
-
         return tempArr;
       }
     },

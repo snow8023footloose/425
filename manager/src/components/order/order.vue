@@ -18,18 +18,23 @@
             <el-table-column type="expand" fixed="left">
               <template slot-scope="props" style="width: 20%">
                 <div v-for="item in props.row.orderDishes" style="display: flex;margin: 10px 0px">
-                  <span style="width: 7%;padding-left: 30px">{{ item.dishes.name }}：</span>
+                  <span style="width: 7%;padding-left: 30px">
+                    {{ item.dishes.name }}：</span>
                   {{item.skus}}
                   <span style="width: 6%"><i class="el-icon-close"></i>{{ item.num }}</span>
                   <span style="width: 30%">
                     <span v-for="tag in item.tags">
-                      {{ tag.name }} / <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
+                      {{ tag.name }}
+
+                      /
+
+                      <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
                       <span v-else="tag.price">0.00 ￥</span>,&nbsp;&nbsp;&nbsp;
                     </span>
                   </span>
                   <span style="width: 5%">{{ item.totalPrice.toFixed(2) }} ￥</span>
                 </div>
-                <el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>
+                <!--<el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>-->
               </template>
             </el-table-column>
             <!--<el-table-column-->

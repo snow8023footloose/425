@@ -898,6 +898,7 @@ export default {
         tableId: this.tid
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        console.log(res);
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
