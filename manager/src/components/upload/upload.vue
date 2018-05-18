@@ -7,36 +7,6 @@
     </div>
   </div>
 </template>
-<style scoped lang="stylus" rel="stylesheet/stylus">
-  .file
-    position: relative
-    left: .26rem
-    top: .2rem
-    display: inline-block
-    background: rgba(68, 138, 255, 0.11)
-    border: 1px solid #99D3F5
-    border-radius: 4px
-    padding: 4px 12px
-    overflow: hidden
-    text-decoration: none
-    text-indent: 0
-    line-height: 20px
-    color black
-    margin-bottom 5px
-    input
-      position: absolute
-      font-size: 100px
-      right: 0
-      top: 0
-      opacity: 0
-    #el-butt
-      color black
-      text-align center
-      font-size 16px
-      i
-        font-size 16px
-</style>
-
 <script>
   export default{
     props: ['typeArr', 'size', 'name', 'target'],
@@ -111,3 +81,32 @@
     }
   }
 </script>
+<style scoped lang="stylus" rel="stylesheet/stylus">
+  .file
+    position: relative
+    left: .26rem
+    top: .2rem
+    display: inline-block
+    background: rgba(68, 138, 255, 0.11)
+    border: 1px solid #99D3F5
+    border-radius: 4px
+    padding: 4px 12px
+    overflow: hidden
+    text-decoration: none
+    text-indent: 0
+    line-height: 20px
+    color black
+    margin-bottom 5px
+    input
+      position: absolute
+      font-size: 100px
+      right: 0
+      top: 0
+      opacity: 0
+    #el-butt
+      color black
+      text-align center
+      font-size 16px
+      i
+        font-size 16px
+</style>

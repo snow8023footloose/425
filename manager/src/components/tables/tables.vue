@@ -180,7 +180,7 @@
               <ul class="goodsUl">
                 <li ref="food-li" v-for="food in item.foods" :key="item.zindex" class="food-item border-1px">
                   <div class="icon">
-                      <img width="70px" height="70px" class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb" alt="点击查看原图">
+                      <img width="100px" height="100px" class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + food.thumb" alt="点击查看原图">
                   </div>
                   <div class="goods-content">
                     <h3 class="goods-name">{{food.name}}</h3>
@@ -364,12 +364,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="editOrAdd === 2">
-        <el-button size="large" @click="changeTable1" icon="el-icon-time">暂停</el-button>
+        <el-button size="large" @click="changeTable1('confirmTableData','1')" icon="el-icon-time">暂停</el-button>
         <el-button @click="showFormTableChange = false; tableForm = {}">取 消</el-button>
         <el-button type="primary" @click="changeTable('confirmTableData','1')">修改并开启</el-button>
       </div>
       <div slot="footer" class="dialog-footer" v-if="editOrAdd === 1">
-        <el-button size="large" @click="addTable1" icon="el-icon-time">暂不开台</el-button>
+        <el-button size="large" @click="addTable1('confirmTableData','1')" icon="el-icon-time">暂不开台</el-button>
         <el-button @click="showFormTablePlus = false; tableForm = {}">取 消</el-button>
         <el-button type="primary" @click="addTable('confirmTableData','1')">立即开台</el-button>
       </div>
@@ -392,14 +392,14 @@
       :append-to-body="true"
       style="z-index: 9999"
     >
-      <el-form v-for="(item,index) in specs" label-position="left" label-width="51px">
+      <el-form v-for="(item,index) in specs" label-position="left" label-width="70px">
         <el-form-item :label="item.name">
           <el-radio-group v-model="selectedSkuArr[index]">
             <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
           </el-radio-group>
         </el-form-item>
       </el-form>
-      <el-form label-position="left" label-width="50px">
+      <el-form label-position="left" label-width="70px">
         <el-form-item label="标签">
           <!--<input type="radio" name="user.sex" id="male" value="男" >-->
           <el-checkbox-group v-model="selectedTags">
@@ -684,8 +684,8 @@ export default {
             }
             //删掉相关联的规格都会引起id出现问题
             //删掉相关联的分类都会引起forEach出现问题
-            console.log(_this.getFoods);
-            console.log(_this.getFoods.id);
+            // console.log(_this.getFoods);
+            // console.log(_this.getFoods.id);
             let data = {
               num:1,
               sid: selectedSkuObj.id,
@@ -929,18 +929,6 @@ export default {
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
         this.realPay = res.data.data.realPay
-        console.log('confirmOrder',res);
-        // alert(this.needPay)
-        // this.$nextTick(() => {
-        //   if (!this.scroll) {
-        //     this.scroll = new BScroll(this.$refs['s-scroll'], {
-        //       click: true
-        //     });
-        //   } else {
-        //     this.scroll.refresh();
-        //   }
-        // });
-        // window.alert(`支付${this.totalPrice}元`);
       }).catch((err)=>{
         console.log(err);
       })
@@ -1018,10 +1006,9 @@ export default {
     addTablePre(data){
       this.tableForm = {}
       this.showFormTablePlus = !this.showFormTablePlus;
+      this.editOrAdd = 1
     },
     addTable(confirmData,a){
-      this.editOrAdd = 1
-      // this.tableForm.rid = localStorage.getItem("rid");
       this.tableForm.status = 'enable'
       let data = this.tableForm
       console.log(data);
@@ -1032,7 +1019,6 @@ export default {
               type: 'success',
               message: '数据提交成功!'
             });
-
             this.showFormTablePlus =!this.showFormTablePlus
             this._pullTable()
           }).catch((err)=>{
@@ -1050,30 +1036,35 @@ export default {
         }
       });
     },
-    addTable1(){
-      // this.tableForm.rid = localStorage.getItem("rid");
+    addTable1(confirmData,a){
       this.tableForm.status = 'disable'
       let data = this.tableForm
-      console.log(data);
-      this.$request(this.url.table1, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        // this.dishesDataTable.push(data);
-        console.log(res);
 
-        this.showFormTablePlus =!this.showFormTablePlus
-        this._pullTable()
-        // console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
-      })
+      this.$refs[confirmData].validate((valid) => {
+        if (valid) {
+          this.$request(this.url.table1, 'json', data).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            this.showFormTablePlus =!this.showFormTablePlus
+            this._pullTable()
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else{
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
+      });
     },
+
     changeTable(confirmData,a){
       this.tableForm.status = 'enable'
       let data = this.tableForm
@@ -1101,27 +1092,36 @@ export default {
         }
       });
     },
-    changeTable1(){
+    changeTable1(confirmData,a){
       let data = {
         id:this.tableForm.id,
         status: this.tableForm.status
       }
       console.log(data);
-      this.$request(this.url.table4, 'json', data).then((res)=>{
-        this.$message({
-          type: 'success',
-          message: '数据提交成功!'
-        });
-        // this.dishesDataTable.push(data);
+      this.$refs[confirmData].validate((valid) => {
+        if(valid){
+          this.$request(this.url.table4, 'json', data).then((res)=>{
+            this.$message({
+              type: 'success',
+              message: '数据提交成功!'
+            });
+            // this.dishesDataTable.push(data);
 
-        this.showFormTablePlus =!this.showFormTablePlus
-        console.log(res);
-      }).catch((err)=>{
-        this.$message({
-          type: 'info',
-          message: '数据提交失败!'
-        });
-        console.log(err);
+            this.showFormTablePlus =!this.showFormTablePlus
+            console.log(res);
+          }).catch((err)=>{
+            this.$message({
+              type: 'info',
+              message: '数据提交失败!'
+            });
+            console.log(err);
+          })
+        }else {
+          this.$message.error(
+            '信息不完整或者填写错误！!'
+          );
+          return false;
+        }
       })
     },
     _pullTableOrder(){
@@ -1172,9 +1172,10 @@ export default {
           this._initScroll()
           this._calculateHeight()
           this.scrollOnce= 1
+          console.log('scroll');
         }
         loading.close();
-      }, 500);
+      }, 700);
       this.tableShow = 1
 
       this.tableTitle = this.tableForm.num
@@ -1303,339 +1304,5 @@ export default {
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-@import "mixin.styl"
-@import "animate.css";
-.tables
-  margin:0 3% 0
-  .el-row
-    .table-container
-      display: flex
-      height: 555px
-      flex-wrap: wrap
-      .transition-box
-        margin-bottom: 8px
-        width: 10em
-        height: 10em
-        border-radius: 10px
-        background-color: white
-        color: white
-        text-align: center
-        box-sizing: border-box
-        margin-right: 20px
-        overflow hidden
-        position relative
-        z-index 99
-        .box-header
-          width 100%
-          height 15%
-          display block
-          background #409EFF
-          font-size 15px
-          text-overflow:ellipsis
-        .box-content
-          overflow-y scroll
-          height 77%
-          width 95%
-          color: rgba(0, 0, 0, 0.5) !important
-          border-radius 0px 0px 9px 9px/ 0px 0px 9px 9px
-          text-align left
-          padding-left 5%
-          background rgba(0, 0, 0, 0.05)
-          p
-            margin 4px 0px
-            font-size 14px
-
-
-
-  .tableButtonGroup
-    position: absolute
-    right: 50px
-    bottom: 20px
-    width 50px
-    z-index 100
-    button
-      margin 0px 0px 10px 10px
-
-
-  .tableNumber
-    position: absolute
-    font-size: 17px
-    z-index: 1
-    background: #f56c6c
-    color: white
-    width: 111px
-    height: 73px
-    border-radius: 50%
-    text-align: center
-    line-height: 100px
-    right: 27%
-    top: -36px
-
-  .tableButtonGroup1
-    position: fixed
-    left: 12%
-    bottom: 20px
-    width 641px
-    height 65px
-    z-index 100
-    overflow-x scroll
-    .singleContainer
-      height 40px
-      width 4000px
-      display inline-block
-      span
-        .popover
-          .singleButton
-            margin-left 0px
-            padding 10px
-            margin-top 10px
-            &:hover
-              box-shadow 1px 2px 3px rgba(0,0,0,0.3)
-    >button
-      margin-left 2px
-      position fixed
-      right 13%
-      bottom: 45px
-
-
-  .el-badge
-    top -9px
-    left -15px
-
-
-  .time
-    font-size: 13px
-    color: #999
-
-
-  .bottom
-    margin-top: 13px
-    line-height: 12px
-
-
-  .button
-    padding: 0
-    float: right
-
-
-  .image
-    width: 100%
-    display: block
-
-
-  .clearfix:before,.clearfix:after
-    display: table
-    content: ""
-
-
-  .clearfix:after
-    clear: both
-
-
-.mask-black
-  width 150%
-  height 150%
-  left -50%
-  top -50%
-  background rgba(0,0,0,0.5)
-  position fixed
-  z-index 100
-
-
-.closeTable:hover
-  background #f56c6c
-  color white
-  border-color #f56c6c
-
-
-.goodse
-  display: flex
-  position fixed
-  top 50px
-  left 124px
-  background white
-  width: 75%
-  overflow: hidden
-  text-align left
-  border-radius 10px
-  height 80%
-  z-index 103
-  .close-bnt
-    color white
-    position fixed
-    bottom 20px
-    left 50%
-    font-size 40px
-  .menu-button
-    position relative
-    width 20px
-    height 20px
-    background #f3f5f7
-    border-radius 100%
-    display none
-
-  .menu-wrapper
-    flex: 0 0 80px
-    width: auto
-    background: #f3f5f7
-    display block !important
-    .menu-ul
-      width 105px
-      padding-left 15px
-    .menu-item
-      display: table
-      height: 54px
-      width: 75px
-      padding: 0 12px
-      line-height: 14px
-      &.current
-        position: relative
-        z-index: 10
-        margin-top: -1px
-        background: #fff
-        font-weight: 700
-        .text
-          border-none()
-      .icon
-        display: inline-block
-        vertical-align: top
-        width: 12px
-        height: 12px
-        margin-right: 2px
-        background-size: 12px 12px
-        background-repeat: no-repeat
-
-      .text
-        display: table-cell
-        width: 56px
-        vertical-align: middle
-        border-1px(rgba(7, 17, 27, 0.1))
-        font-size: 12px
-
-  .foods-wrapper
-    flex: 1
-    ul
-      padding 0px 0px 30px
-      margin-top 0px
-     .food-list
-      padding-top 20px
-      background white
-      .goods-title
-        padding-left: 14px
-        height: 26px
-        line-height: 26px
-        border-left: 2px solid #d9dde1
-        font-size: 12px
-        color: rgb(147, 153, 159)
-        background: #f3f5f7
-      .food-item
-        display: flex
-        margin: 18px
-        padding-bottom: 18px
-        border-1px(rgba(7, 17, 27, 0.1))
-        &:last-child
-          border-none()
-          margin-bottom: 0
-        .icon
-          flex: 0 0 57px
-          margin-right: 10px
-          .goods-content
-            flex: 1
-            .goods-name
-              margin: 2px 0 8px 0
-              height: 14px
-              line-height: 14px
-              font-size: 14px
-              color: rgb(7, 17, 27)
-
-.desc, .extra
-  line-height: 10px
-  font-size: 10px
-  color: rgb(147, 153, 159)
-.desc
-  line-height: 12px
-  margin: 3px 0px 8px
-.extra
-  .count
-    margin-right: 12px
-.price
-  font-weight: 700
-  line-height: 24px
-  .now
-    margin-right: 8px
-    font-size: 14px
-    color: rgb(240, 20, 20)
-  .old
-    text-decoration: line-through
-    font-size: 10px
-    color: rgb(147, 153, 159)
-
-
-.cartcontrol-wrapper
-  position: absolute
-  right: 0
-  bottom: 12px
-  background white
-  border-radius 20px
-  .cartcontrol
-    padding-top 1px
-    .cart-decrease,.cart-add,.cart-count
-      padding 1px
-
-.desc, .extra
-  line-height: 10px
-  font-size: 10px
-  color: rgb(147, 153, 159)
-.desc
-  line-height: 12px
-  margin: 3px 0px 8px
-.extra
-  .count
-    margin-right: 12px
-  .now
-    margin-right: 8px
-    font-size: 14px
-    color: rgb(240, 20, 20)
-  .old
-    text-decoration: line-through
-    font-size: 10px
-    color: rgb(147, 153, 159)
-
-
-
-  .el-select,.el-input
-    width: 130px
-
-  .input-with-select,.el-input-group__prepend
-    background-color: #fff
-
-
-.orderList
-  display: flex
-  justify-content: space-between
-  span:nth-child(1)
-    font-size 18px
-    font-weight bolder
-    display block
-    width 65%
-  span:nth-child(2)
-    font-size 18px
-    font-weight bolder
-    display block
-    width 20%
-  span:nth-child(3)
-    font-size 18px
-    font-weight bolder
-    display block
-    width 25%
-
-
-.foods-ul
-  li:last-child
-    margin-bottom 50px
-
-
-.dollar
-  font-size 10px !important
-  font-weight lighter !important
+  @import "tables.styl"
 </style>

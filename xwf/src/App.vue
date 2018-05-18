@@ -242,6 +242,8 @@ export default {
 
   },
   created() {
+    this.ruleForm2.username = 17375636967
+    this.ruleForm2.password = 17375636967
   },
   mounted() {
     this.Height();

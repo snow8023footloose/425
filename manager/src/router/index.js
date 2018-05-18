@@ -10,6 +10,7 @@ import Setting from '@/components/setting/setting'
 import upLoad from '@/components/upload/upload'
 import Coupon from '@/components/coupon/coupon'
 import Member from '@/components/member/member'
+import Test from '@/views/test/test'
 
 
 Vue.use(Router)
@@ -21,7 +22,14 @@ export default new Router({
     {
       path:'/manager/xwfs/member',
       name:'Member',
-      component: Member
+      component: Member,
+      children:[
+        {
+          path:'/manager/xwfs/member/test',
+          name:'Test',
+          component:Test
+        }
+      ]
     },
     {
       path:'/manager/xwfs/coupon',

@@ -96,6 +96,12 @@
             </el-menu-item>
           </router-link>
 
+          <router-link :to="{path:'/manager/xwfs/member/test'}" class="vlink">
+            <el-menu-item index="8">
+              <svg class="icon" style="width: 24px; height: 1em;vertical-align: middle;fill: currentColor;overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10668"><path d="M659.2 985.6c-19.2 0-38.4-6.4-44.8-19.2-12.8-19.2-64-64-102.4-64-38.4 0-89.6 44.8-102.4 57.6-12.8 12.8-32 19.2-44.8 19.2-6.4 0-19.2 0-25.6-6.4l-121.6-70.4c-19.2-12.8-32-44.8-19.2-70.4 0 0 12.8-25.6 12.8-51.2 0-70.4-57.6-128-128-128H64c-19.2 0-38.4-19.2-44.8-44.8 0 0-12.8-57.6-12.8-96 0-44.8 12.8-96 12.8-96 6.4-32 25.6-51.2 44.8-51.2h6.4c70.4 0 128-57.6 128-128 0-25.6-6.4-51.2-6.4-51.2-12.8-25.6 0-57.6 19.2-70.4l128-70.4c6.4 0 12.8-6.4 25.6-6.4 19.2 0 38.4 6.4 44.8 19.2 12.8 19.2 64 57.6 102.4 57.6 38.4 0 89.6-38.4 102.4-57.6 12.8-12.8 32-19.2 44.8-19.2 6.4 0 19.2 0 25.6 6.4l128 70.4c19.2 12.8 32 44.8 19.2 70.4 0 0-12.8 25.6-12.8 51.2 0 70.4 57.6 128 128 128h12.8c19.2 0 38.4 19.2 44.8 44.8 0 0 12.8 57.6 12.8 96 0 44.8-12.8 96-12.8 96-6.4 25.6-25.6 44.8-44.8 44.8h-6.4c-70.4 0-128 57.6-128 128 0 25.6 12.8 51.2 12.8 51.2 12.8 25.6 0 57.6-19.2 70.4l-128 70.4c-12.8 19.2-19.2 19.2-32 19.2m0-57.6l121.6-64c0-6.4-12.8-38.4-12.8-70.4 0-102.4 76.8-185.6 179.2-192 0-6.4 6.4-51.2 6.4-83.2s-6.4-76.8-6.4-83.2c-102.4-6.4-179.2-89.6-179.2-192 0-32 12.8-64 12.8-70.4l-115.2-64h-6.4s-19.2 19.2-44.8 38.4c-32 12.8-70.4 25.6-102.4 25.6s-64-12.8-102.4-38.4c-19.2-12.8-38.4-32-38.4-38.4h-6.4l-121.6 64c0 6.4 12.8 38.4 12.8 70.4 0 102.4-76.8 185.6-179.2 192 0 6.4-6.4 51.2-6.4 83.2s6.4 76.8 6.4 83.2c102.4 6.4 179.2 89.6 179.2 192 0 32-12.8 64-12.8 70.4l115.2 64h6.4s19.2-19.2 44.8-38.4c38.4-25.6 70.4-38.4 102.4-38.4s70.4 12.8 102.4 38.4c25.6 25.6 38.4 44.8 44.8 51.2M512 684.8c-96 0-172.8-76.8-172.8-172.8 0-96 76.8-172.8 172.8-172.8 96 0 172.8 76.8 172.8 172.8 0 96-76.8 172.8-172.8 172.8m0-288C448 396.8 396.8 448 396.8 512S448 627.2 512 627.2 627.2 576 627.2 512C620.8 448 569.6 396.8 512 396.8m0 0z" fill="" p-id="10669"></path></svg>              <span slot="title" class="title">系统设置</span>
+            </el-menu-item>
+          </router-link>
+
           <!--<el-menu-item index="5">
             <i class="el-icon-printer"></i>
             <span slot="title"><router-link :to="{path:'/printer'}">打印</router-link></span>
@@ -267,9 +273,6 @@ export default {
         duration: 2000
       });
     },
-
-    //设置cookie
-
     resetForm(formName) {
       this.ruleForm2 = {
         username: '',
@@ -277,7 +280,6 @@ export default {
       }
       this.$refs[formName].resetFields();
     },
-    //清除cookie
   },
   created() {
     this.owner = !this.manager
@@ -285,8 +287,6 @@ export default {
       this.ruleForm2.username = 18670360154
       this.ruleForm2.password = 18670360154
     }
-    //开启
-    //this.$router.push({path:'/XWFer/xwfcustom'})
   },
   mounted() {
     this.Height();
@@ -295,344 +295,5 @@ export default {
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-body
-  overflow hidden
-
-#app
-  font-family: 'Avenir', Helvetica, Arial, sans-serif
-  -webkit-font-smoothing: antialiased
-  -moz-osx-font-smoothing: grayscale
-  color: #2c3e50
-  width: 100%
-  height: 100%
-  overflow hidden
-  background url("bg-scene.png")
-  background-size 100%
-  .main-content
-    position relative
-    height auto
-    .el-col
-      .el-menu
-        .vlink
-          text-decoration: none
-          font-size: 2em
-          color:black
-          .el-menu-item
-            padding-bottom 10px
-            font-size:2em
-            .title
-              font-size 0.3em
-        .router-link-exact-active
-          .el-menu-item
-            .title
-              font-size 0.35em
-      >img
-        width 48%
-        height auto
-        margin 1em
-  .login
-    margin-top: 200px
-
-.el-form-item__label
-  float left !important
-.loginPic
-  display block
-  width 135px
-  margin 40px auto 10px
-.loginIn
-  margin 20px auto 40px
-  width 250px
-
-li
-  list-style none
-
-.person-close
-  position absolute
-  font-size 33px
-  .transition-box
-    margin-bottom: 10px
-    width: 10.5em !important
-    height: 7em !important
-    border-radius: 4px
-    text-align: center
-    color: #fff
-    padding: 10px 5px
-    box-sizing: border-box
-    margin-right: 20px
-    font-size 12px
-    p,span
-      margin 2px 0
-      font-size 10px
-  top 18px
-  right 47px
-  z-index 3
-
-td
-  padding 5px 0px !important
-
-.person-close1
-  right 156px !important
-  top -34px !important
-
-.el-menu-item [class^=el-icon-]
-  margin-right -5px
-
-.cell
-  text-align left
-
-.finance,.goods,.setting,.coupon,.member,.order,.person,.purchase,.setting,.table,.test,.xwffunction,.xwfer,.xwfcustom
-  margin:0 3% 0
-  height:96%
-
-.el-tabs__nav
-  margin-left 10%
-
-.el-tabs__content
-  height 720px !important
-  padding-right 15px
-
-.el-select
-  display block
-
-.el-table--fit
-  height 725px !important
-
-.el-tabs__item
-  font-size 19px
-
-.el-tabs__nav-scroll
-  margin-top 20px
-
-.el-tab-pane[data-v-60204f04]
-  width 50%
-
-@media screen and (max-width: 1200px)
-  .el-table--fit
-    height 570px !important
-
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
-    >.el-tabs
-      .el-tabs__content
-        height 570px !important
-        overflow-y scroll
-
-  .login
-    margin-top: 100px !important
-
-  .table-container
-    height: 20em
-
-
-@media screen and (max-width: 900px)
-  th
-    padding 0px !important
-
-  .filter
-    display none
-
-  .el-table--fit
-    height 500px !important
-
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
-    >.el-tabs
-      .el-tabs__content
-        height 500px !important
-        overflow-y scroll
-
-  .transition-box
-    margin-bottom: 10px
-    width: 12.5em !important
-    height: 7em !important
-    border-radius: 4px
-    text-align: center
-    box-sizing: border-box
-    margin-right: 20px
-    font-size 12px
-    .box-header
-      height 23% !important
-    p,span
-      margin 2px 0
-      font-size 10px !important
-
-
-
-
-
-  .el-tabs__item
-    font-size 14px
-
-  .el-tabs__nav-scroll
-    margin-top 0px
-
-  .el-tab-pane[data-v-60204f04]
-    width 100%
-
-  .person-close
-    position absolute
-    font-size 20px
-    color #f6606f
-    top 11px
-    right 22px
-    z-index 3
-
-  .person-close1
-    right 74px !important
-    top 8px !important
-
-  .login
-    margin-top: 0px !important
-
-  .goodse
-    top: 15px !important
-    left: 34px !important
-
-  .tableButtonGroup1
-    left: 34px !important
-    bottom: 10px !important
-
-
-@media screen and (max-width: 825px)
-  .el-table--fit
-    height 250px !important
-
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
-    >.el-tabs
-      .el-tabs__content
-        height 250px !important
-        overflow-y scroll
-
-
-
-  .el-table td, .el-table th
-    padding 5px !important
-
-  .transition-box
-    margin-bottom: 10px
-    width: 12.5em !important
-    height: 7em !important
-    border-radius: 4px
-    text-align: center
-    box-sizing: border-box
-    margin-right: 20px
-    font-size 12px !important
-    .box-header
-      height 23% !important
-    p,span
-      margin 2px 0
-      font-size 10px !important
-
-  .goodse
-    top: 15px !important
-    left: 34px !important
-
-  .tableButtonGroup1
-    left: 34px !important
-    bottom: 10px !important
-@media screen and (max-width: 737px)
-  .el-table--fit
-    height 280px !important
-
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
-    >.el-tabs
-      .el-tabs__content
-        height 280px !important
-        overflow-y scroll
-
-  .goodse
-    top: 0px !important
-    left: 0px !important
-
-  .tableButtonGroup[data-v-19dca008]
-    top 10px !important
-
-  .tableButtonGroup1
-    button[data-v-19dca008]
-      margin-left: 2px !important
-      position: fixed !important
-      right: 280px !important
-      bottom: 2px !important
-
-  .singleContainer[data-v-19dca008]
-    height auto
-
-  .tables
-    .tableButtonGroup1[data-v-19dca008]
-      height auto !important
-
-  .tableButtonGroup1
-    left: 34px !important
-    bottom: 2px !important
-
-  .transition-box
-    margin-bottom: 10px
-    width: 12.5em !important
-    height: 7em !important
-    border-radius: 4px
-    text-align: center
-    box-sizing: border-box
-    margin-right: 20px
-    font-size 12px !important
-    .box-header
-      height 23% !important
-    p,span
-      margin 2px 0
-      font-size 10px !important
-
-
-  .title
-    font-size 0.256em !important
-
-
-@media screen and (max-width: 668px)
-  .el-table--fit
-    height 250px !important
-
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
-    >.el-tabs
-      .el-tabs__content
-        height 250px !important
-        overflow-y scroll
-
-
-  .transition-box
-    margin-bottom: 10px
-    width: 10.5em !important
-    height: 7em !important
-    border-radius: 4px
-    text-align: center
-    color #f6606f
-    box-sizing: border-box
-    margin-right: 20px
-    font-size 12px
-    .box-header
-      height 23% !important
-    p,span
-      margin 2px 0
-      font-size 10px
-
-
-  .el-menu-item [class^=el-icon-]
-    margin-right -12px
-
-
-  .el-table th>.cell
-    text-align center !important
-
-  .el-button.is-circle
-    padding 7px
-
-  .el-button-group
-    &:first-child
-      margin 0px auto !important
-
-  .bnt-group
-    width 100%
-    position fixed
-    bottom 2%
-    z-index 15
-    .el-button-group
-      margin-bottom 3% !important
-      margin-left 58% !important
-    .block,.small-block
-      width 73%
+  @import "App.styl"
 </style>

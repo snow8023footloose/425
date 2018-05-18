@@ -14,6 +14,8 @@
               :data="dishesDataTable"
               style="width: 100%"
               height="600"
+              :summary-method="getSummaries"
+              show-summary
             >
               <el-table-column
                 sortable
@@ -147,47 +149,47 @@
               </el-table-column>
 
               <!--排序勿删-->
-              <!--<el-table-column-->
-                <!--sortable-->
-                <!--width="150"-->
-                <!--prop="banner"-->
-                <!--label="banner">-->
-                <!--<template slot-scope="scope">-->
-                    <!--<img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="未上传">-->
-                <!--</template>-->
-              <!--</el-table-column>-->
-              <!--<el-table-column-->
-                <!--sortable-->
-                <!--width="150"-->
-                <!--prop="bannerStatus"-->
-                <!--label="banner状态">-->
-              <!--</el-table-column>-->
-              <!--<el-table-column-->
-                <!--v-if="changeSortShow === 0"-->
-                <!--fixed="right"-->
-                <!--label="排序"-->
-                <!--width="110">-->
-                <!--<template slot-scope="scope">-->
-                  <!--&lt;!&ndash;<el-button&ndash;&gt;-->
-                    <!--&lt;!&ndash;type="primary"&ndash;&gt;-->
-                    <!--&lt;!&ndash;size="mini"&ndash;&gt;-->
-                    <!--&lt;!&ndash;icon="el-icon-edit"&ndash;&gt;-->
-                    <!--&lt;!&ndash;circle&ndash;&gt;-->
-                    <!--&lt;!&ndash;@click="editDishes(scope.row,scope.$index); showFormGoodsPlus = true">&ndash;&gt;-->
-                  <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
-                  <!--&lt;!&ndash;<el-button&ndash;&gt;-->
-                    <!--&lt;!&ndash;type="danger"&ndash;&gt;-->
-                    <!--&lt;!&ndash;size="mini"&ndash;&gt;-->
-                    <!--&lt;!&ndash;icon="el-icon-delete"&ndash;&gt;-->
-                    <!--&lt;!&ndash;circle&ndash;&gt;-->
-                    <!--&lt;!&ndash;@click.native.prevent="deleteDishes(scope.row,scope.$index)">&ndash;&gt;-->
-                  <!--&lt;!&ndash;</el-button>&ndash;&gt;-->
-                  <!--<el-button-group>-->
-                    <!--<el-button size="mini" icon="el-icon-sort-up" @click="sortUP"></el-button>-->
-                    <!--<el-button size="mini" icon="el-icon-sort-down"></el-button>-->
-                  <!--</el-button-group>-->
-                <!--</template>-->
-              <!--</el-table-column>-->
+              <el-table-column
+                sortable
+                width="150"
+                prop="banner"
+                label="banner">
+                <template slot-scope="scope">
+                    <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.banner" alt="未上传">
+                </template>
+              </el-table-column>
+              <el-table-column
+                sortable
+                width="150"
+                prop="bannerStatus"
+                label="banner状态">
+              </el-table-column>
+              <el-table-column
+                v-if="changeSortShow === 0"
+                fixed="right"
+                label="排序"
+                width="110">
+                <template slot-scope="scope">
+                  <!--<el-button-->
+                    <!--type="primary"-->
+                    <!--size="mini"-->
+                    <!--icon="el-icon-edit"-->
+                    <!--circle-->
+                    <!--@click="editDishes(scope.row,scope.$index); showFormGoodsPlus = true">-->
+                  <!--</el-button>-->
+                  <!--<el-button-->
+                    <!--type="danger"-->
+                    <!--size="mini"-->
+                    <!--icon="el-icon-delete"-->
+                    <!--circle-->
+                    <!--@click.native.prevent="deleteDishes(scope.row,scope.$index)">-->
+                  <!--</el-button>-->
+                  <el-button-group>
+                    <el-button size="mini" icon="el-icon-sort-up" @click="sortUp"></el-button>
+                    <el-button size="mini" icon="el-icon-sort-down"  @click="sortDown"></el-button>
+                  </el-button-group>
+                </template>
+              </el-table-column>
             </el-table>
             <el-button
               size="large"
@@ -529,7 +531,7 @@
       width="80%"
       title="规格编辑"
       :visible.sync="showFormSKUEdit">
-      <el-form :model="toDynamicTags2" :rules="rules">
+      <el-form :model="toDynamicTags2" :rules="rules" ref="showSpec">
         <div class="SKUGroup">
           <el-form-item label="规格名" prop="name" :label-width="formLabelWidth">
             <el-input
@@ -583,7 +585,7 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="showFormSKUEdit = false">取 消</el-button>
-        <el-button type="primary" @click="updateSpec">确 定</el-button>
+        <el-button type="primary" @click="updateSpec('showSpec',1)">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -1296,6 +1298,27 @@ export default {
 
   },
   methods: {
+    getSummaries(param) {
+      const { columns, data } = param;
+      const sums = [];
+      let num = 0
+      columns.forEach((column, index) => {
+        if (index === 0) {
+          sums[index] = '总计';
+          return;
+        }
+        const values = data.map(item => Number(item[column.property]));
+        if (index === 1) {
+          sums[index] = data.length + '条';
+          return;
+        }
+        if (1 < index) {
+          sums[index] = '';
+          return;
+        }
+      });
+      return sums;
+    },
     openFullScreen2() {
       const loading = this.$loading({
         lock: true,
@@ -1307,11 +1330,30 @@ export default {
         loading.close();
       }, 500);
     },
-    sortUP(){
-      let data = {
-        id1: 12,
-        id2: 13
-      }
+    sortDown(){
+      let data = [
+        {
+          id: 12
+        },
+        {
+          id: 13
+        }
+      ]
+      this.$request(this.url.dishes2,'json',data).then((res)=>{
+        console.log(res);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    sortUp(){
+      let data = [
+        {
+          id: 12
+        },
+        {
+          id: 13
+        }
+      ]
       this.$request(this.url.dishes2,'json',data).then((res)=>{
         console.log(res);
       }).catch((err)=>{
@@ -1356,8 +1398,9 @@ export default {
       this.dynamicTagsPopularize.thumb = data.name
     },
     optsChange(){
-      console.log('1');
-      console.log(this.valueOfSKU);
+      // console.log('1');
+      // console.log(this.valueOfSKU);
+      // console.log(this.generateSkuDate);
     },
     handleEdit:function(row){
       //遍历数组改变editeFlag
@@ -1556,6 +1599,7 @@ export default {
         });
         return false
       }
+
       console.log(this.valueOfTags,'得到标签');
       let tags = []
       tags = Object.assign([],this.valueOfTags);
@@ -1581,6 +1625,13 @@ export default {
       if(this.valueOfSKU){
         for(let i=0;i<this.valueOfSKU.length;i++){
           this.valueOfSKU[i].zindex = i
+        }
+        if(this.generateSkuDate.length === 0){
+          this.$message({
+            type: 'info',
+            message: '没有生成SKU!'
+          });
+          return
         }
         this.dishes.specs = this.valueOfSKU
       }
@@ -1775,7 +1826,6 @@ export default {
       return row.cid === value;
     },
     updateSpec(formName1,formName2){
-      console.log('得到sku内部分',this.toDynamicTags2.attrs);
       let index = this.categoryIndex
       let updateObj = {
         zindex:parseInt(this.toDynamicTags2.zindex),
@@ -1794,12 +1844,16 @@ export default {
                 message: '数据提交成功!'
               });
               this._pullPopularizeTag()
-            }else {
+            }else if(res.data.msg === 'operate failed'){
+              this.$message({
+                type: 'info',
+                message: '无法修改!'
+              });
+            } else {
               this.$message({
                 type: 'info',
                 message: '数据问题!'
               });
-
             }
             this.showFormSKUEdit = !this.showFormSKUEdit
             this._pullSpec()
@@ -2467,8 +2521,6 @@ export default {
 
     },
     editSpec(tag,index){
-      console.log(index);
-      console.log(this.dynamicTags2);
       for (var i = 0; i < this.dynamicTags2.length; i++) {
         if(!this.dynamicTags2[i].attrs){
           this.dynamicTags2[i] = {
@@ -2700,113 +2752,5 @@ export default {
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
-
-
-
-
- .el-upload__tip
-   font-size 10px
-   line-height 15px
-   height auto
-
- .el-input-group__append,.el-input-group__prepend
-   padding 0px 5px
-
-.el-pagination
-  margin 5px
-.demo-table-expand
-  font-size: 0
-  label
-    width: 90px
-    color: #99a9bf
-  .el-form-item
-    margin-right: 0
-    margin-bottom: 0
-    width: 50%
-
-.price-item
-  width 30%
-  margin-right 1%
-
-.tagGroup,.categoryGroup,.SKUGroup
-  margin 5px 5px 15px 5px
-  padding 5px 10px
-  border-radius 10px
-  border 1px solid rgba(124, 168, 205, 0.24)
-
-.el-tag
-  margin 10px 10px 10px 0px
-
-.button-new-tag
-  margin-left: 10px
-  height: 32px
-  line-height: 30px
-  padding-top: 0
-  padding-bottom: 0
-
-.input-new-tag
-  width: 90px
-  margin-left: 10px
-  vertical-align: bottom
-
-h6
-  font-weight lighter
-  opacity 0.5
-  margin 5px 0px 0px 0px
-
-.matter2
-  border-radius: 5px
-  padding: 10px
-  span
-    margin: 5px 0px 10px 20px
-    display: block
-    font-size: 10px
-    font-weight: lighter
-  &:hover
-    background rgba(0, 0, 0, 0.02)
-
-td
-  padding 12px 0px !important
-
- .previewImg
-   height 40px
-   width auto
-   &:hover
-     height 200px
-     position absolute
-     left -45%
-     top -50%
-     border-radius 5px
-     border 2px solid white
-     z-index 200
-
-
-.previewImg:first-child
-  &:hover
-    height 200px
-    position absolute
-    left -45%
-    top -10%
-    border-radius 5px
-    border 2px solid white
-    z-index 200
- /*.el-table--fit*/
-
-
-
-.SKUInput
-  -webkit-appearance none !important
-  background-color #fff !important
-  background-image: none !important
-  border-radius: 4px !important
-  border: 1px solid #dcdfe6 !important
-  -webkit-box-sizing: border-box !important
-  box-sizing: border-box !important
-  color: #606266 !important
-  display: inline-block !important
-  font-size: inherit !important
-  height: 40px !important
-  line-height: 40px !important
-  outline: 0 !important
-  padding: 0 15px !important
+@import "goods.styl"
 </style>

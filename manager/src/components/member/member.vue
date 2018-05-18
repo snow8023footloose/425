@@ -77,22 +77,6 @@
                 <span v-for="item in filterTagArr" v-if="scope.row.cid === item.value">{{item.text}}</span>
               </template>
             </el-table-column>
-
-
-            <el-table-column
-              sortable
-              width="150"
-              prop="description"
-              label="描述">
-              <template slot-scope="scope">
-                <el-popover trigger="hover" placement="top">
-                  <p>{{ scope.row.description }}</p>
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag size="medium">{{ scope.row.description }}</el-tag>
-                  </div>
-                </el-popover>
-              </template>
-            </el-table-column>
           </el-table>
           <el-button
             size="large"
@@ -167,9 +151,6 @@
             <el-option label="可用" value="enable"></el-option>
             <el-option label="不可用" value="disable"></el-option>
           </el-select>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="memberForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
         </el-form-item>
         <el-form-item label="备注">
           <el-input v-model="memberForm.remark" auto-complete="off" placeholder="请输入备注"></el-input>

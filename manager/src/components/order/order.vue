@@ -4,59 +4,14 @@
     <el-tabs
       v-loading="loading"
       v-model="activeName"
+      show-summary
     >
-      <!--<el-tab-pane label="外卖订单" name="first">
-        <template>
-          <el-table
-            :data="listGoods"
-            style="width: 100%"
-            height="600"
-          >
-            <el-table-column
-              fixed="left"
-              type="selection"
-              width="30">
-            </el-table-column>
-            <el-table-column
-              sortable
-              fixed="left"
-              prop="name"
-              label="品名"
-              width="180"
-            >
-            </el-table-column>
-            <el-table-column
-              sortable
-              prop="sellCount"
-              label="售卖情况"
-              width="150">
-            </el-table-column>
-            <el-table-column
-              sortable
-              width="150"
-              prop="price"
-              label="价格">
-            </el-table-column>
-            <el-table-column
-              sortable
-              width="150"
-              prop="oldPrice"
-              label="原价">
-            </el-table-column>
-            <el-table-column
-              sortable
-              width="100"
-              prop="rating"
-              label="评价">
-            </el-table-column>
-          </el-table>
-        </template>
-      </el-tab-pane>-->
-
       <el-tab-pane label="历史订单" name="first">
         <template>
           <el-table
             :data="userOrderTable"
+            :summary-method="getSummaries"
+            show-summary
             style="width: 100%"
             height="600"
           >
@@ -108,7 +63,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="130"
+              width="120"
               prop="payType"
               label="支付方式"
               :filters="[{text:'微信支付',value:'wechat-online'},{text:'支付宝支付',value:'alipay-online'}]"
@@ -122,7 +77,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="130"
+              width="120"
               prop="orderType"
               label="订单类型"
               :filters="[{text:'单人点餐',value:'single'},{text:'多人点餐',value:'multi'}]"
@@ -267,6 +222,44 @@
       },
     }),
     methods: {
+      getSummaries(param) {
+        const { columns, data } = param;
+        const sums = [];
+        let num = 0
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总计';
+            return;
+          }
+          const values = data.map(item => Number(item[column.property]));
+          if (index === 1) {
+            sums[index] = data.length + '条';
+            return;
+          }
+          if (1 < index && index < 4) {
+            sums[index] = '';
+            return;
+          }else if(index > 6){
+            sums[index] = '';
+            return;
+          }
+
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          } else {
+            sums[index] = '';
+          }
+        });
+        return sums;
+      },
       resetFilters(){
         this.filterOrderDate = ''
         this._pullUserOrder()
@@ -326,16 +319,15 @@
           {
             feild:'time',
             value: startTime,
-            joinType:'time'
+            joinType:'gt'
           },
-          // {
-          //   feild:'endTime',
-          //   value: endTime,
-          //   joinType:'endTime'
-          // },
+          {
+            feild:'time',
+            value: endTime,
+            joinType:'lt'
+          },
         ]
         this.$request(this.url.userOrder,'json',data).then((res)=>{
-          console.log(res,'111111111111111111111111');
           this.userOrderTable = res.data.data
         }).catch((err)=>{
         })
@@ -362,7 +354,6 @@
           }
         ]
         this.$request(this.url.userOrder,'json',data).then((res)=>{
-          console.log('orderComplexPageQuery',res);
           let response = res.data.data
           this.userOrderTable = response
 
