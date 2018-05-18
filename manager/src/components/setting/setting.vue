@@ -517,7 +517,7 @@ export default {
   },
   watch:{
     WechatRecode(val){
-      console.log(val);
+      // console.log(val);
       if(val.length === 6){
         this.WeChatFocus()
       }
@@ -611,22 +611,22 @@ export default {
         this.wechatGetName = res.data.data[0].nickname + '已绑定'
         this.alipayGetName = res.data.data[1].name + '已绑定';
         _this.alipaymsg = '切换支付宝绑定'
-        console.log(res.data.data);
+        // console.log(res.data.data);
       }).catch((err)=>{
         console.log(err);
       })
     },
     lastAliBinded(){
-      console.log(this.alipayAccountName);
-      console.log(this.aliRecode);
-      console.log(this.alipayAccount);
+      // console.log(this.alipayAccountName);
+      // console.log(this.aliRecode);
+      // console.log(this.alipayAccount);
       this.$request(this.url.restaurantWithdrawAccount,'json',{
         name:this.alipayAccountName,
         account:this.alipayAccount,
         type:'alipay',
         smsCode:this.aliRecode
       }).then((res)=>{
-        console.log(res);
+        // console.log(res);
       }).catch((err)=>{
         console.log(err);
       })
@@ -687,12 +687,12 @@ export default {
       // this.bindWechatShowVisible = !this.bindWechatShowVisible
     },
     getAliCode(){
-      console.log(localStorage.getItem('rid'));
+      // console.log(localStorage.getItem('rid'));
       // let data = {
       //     phone:17375636967
       // }
       this.$request(this.url.restaurantBindAccount,'form',{}).then((res)=>{
-        console.log(res);
+        // console.log(res);
       }).catch((err)=>{
         console.log(err);
       })
@@ -749,7 +749,7 @@ export default {
         ':'+this.startTimeSetting.getMinutes()+
         '-'+this.endTimeSetting.getHours()+
         ':'+this.endTimeSetting.getMinutes()
-      console.log(this.BusinessTime);
+      // console.log(this.BusinessTime);
     },
     _pullSetting(){
       this.$request(this.url.restaurantSetting,'json',[]).then((res)=>{
@@ -795,10 +795,9 @@ export default {
       this.showFormPrinterPlus = !this.showFormPrinterPlus;
     },
     plusPrinterTemplateConfirm(){
-      // this.printerTemplateForm.rid = localStorage.getItem('rid')
-      console.log('提交打印机数据',this.printerTemplateForm);
+      // console.log('提交打印机数据',this.printerTemplateForm);
       this.$request(this.url.printerTemplateAdd,'json',this.printerTemplateForm).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this.showFormPrinterTemplatePlus = !this.showFormPrinterTemplatePlus;
         this._pullPrinterTemplate()
       }).catch((err)=>{
@@ -813,7 +812,7 @@ export default {
         id: row.id
       }
       this.$request(this.url.printerTemplateDelete,'form',data).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this._pullPrinterTemplate()
       }).catch((err)=>{
         console.log(err);
@@ -823,9 +822,9 @@ export default {
       let data = {
         id: row.id
       }
-      console.log(data);
+      // console.log(data);
       this.$request(this.url.printerDelete,'form',data).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this._pullPrinter()
       }).catch((err)=>{
         console.log(err);
@@ -839,7 +838,7 @@ export default {
       }, 1000);
       let data = this.settingForm
       this.$request(this.url.restaurantUpdate,'json',data).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this.$message({
           type: 'success',
           message: '数据提交成功!'
@@ -848,14 +847,14 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
-      console.log('this.settingForm!',this.settingForm);
+      // console.log('this.settingForm!',this.settingForm);
       this.saveSetting =!this.saveSetting
     },
     handleRemove(file, fileList) {
-      console.log(file, fileList);
+      // console.log(file, fileList);
     },
     handlePreview(file) {
-      console.log(file);
+      // console.log(file);
     }
   }
 }

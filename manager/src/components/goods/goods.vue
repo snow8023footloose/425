@@ -3,12 +3,10 @@
   <div class="goods">
       <el-tabs
         v-model="activeName"
-        @tab-click="handleClick"
       >
         <!--菜品模块-->
         <el-tab-pane label="菜品列表" name="first">
           <template>
-          <!-- <span>{{msg}}</span> -->
             <el-table
               v-loading="loading"
               :data="dishesDataTable"
@@ -25,8 +23,6 @@
                 width="120">
                 <template slot-scope="scope">
                   <el-popover :width="120" trigger="hover" placement="right">
-                    <!--<p>姓名: 1111111111111</p>-->
-                    <!--<p>住址: 222222222222222</p>-->
                     <div slot="reference" class="name-wrapper">
                       <el-tag style="background: rgba(0,0,0,0.11);color: white" v-if="scope.row.status === 'disable'" size="medium">{{ scope.row.name }}</el-tag>
                       <el-tag v-if="scope.row.status === 'enable'" size="medium">{{ scope.row.name }}</el-tag>
@@ -83,7 +79,6 @@
                   <span v-if="scope.row.showType === 'always'">一直展示</span>
                   <span v-if="scope.row.showType === 'sometimes'">按时间段</span>
                   <span v-if="scope.row.showType === 'invisible'">不展示</span>
-
                 </template>
               </el-table-column>
               <el-table-column
@@ -122,7 +117,6 @@
                 prop="promotionPrice"
                 label="活动价">
               </el-table-column>
-
               <el-table-column
                 sortable
                 prop="stock"
@@ -170,20 +164,6 @@
                 label="排序"
                 width="110">
                 <template slot-scope="scope">
-                  <!--<el-button-->
-                    <!--type="primary"-->
-                    <!--size="mini"-->
-                    <!--icon="el-icon-edit"-->
-                    <!--circle-->
-                    <!--@click="editDishes(scope.row,scope.$index); showFormGoodsPlus = true">-->
-                  <!--</el-button>-->
-                  <!--<el-button-->
-                    <!--type="danger"-->
-                    <!--size="mini"-->
-                    <!--icon="el-icon-delete"-->
-                    <!--circle-->
-                    <!--@click.native.prevent="deleteDishes(scope.row,scope.$index)">-->
-                  <!--</el-button>-->
                   <el-button-group>
                     <el-button size="mini" icon="el-icon-sort-up" @click="sortUp"></el-button>
                     <el-button size="mini" icon="el-icon-sort-down"  @click="sortDown"></el-button>
@@ -300,7 +280,6 @@
               ref="saveTagInput"
               @keyup.enter.native="handleInputConfirm"
               @blur="handleInputConfirm"
-
             >
             </el-input>
             <el-button v-else class="button-new-tag" @click="showInput">+ 新标签</el-button>
@@ -340,11 +319,6 @@
             <el-button v-else class="button-new-tag" @click="showInputPopularize">+ 新标签</el-button>
           </div>
         </el-tab-pane>
-        <!--未开发功能-->
-        <!--<el-tab-pane label="菜品统计" name="fourth">-->
-          <!--菜品统计，正在建设中……-->
-        <!--</el-tab-pane>-->
-
       </el-tabs>
 
     <!--标签弹框-->
@@ -411,10 +385,6 @@
         <el-form-item label="标签名" :label-width="formLabelWidth" prop="name">
           <el-input v-model="toDynamicTagsPopularize.name" auto-complete="off" placeholder="请输入标签名"></el-input>
         </el-form-item>
-        <!--推广标签没有排序，可以加排序-->
-        <!--<el-form-item label="排序" :label-width="formLabelWidth" prop="zindex">-->
-          <!--<el-input v-model.number="toDynamicTagsPopularize.zindex" auto-complete="off" placeholder="请输入数字"></el-input>-->
-        <!--</el-form-item>-->
         <el-form-item label="状态" style="text-align: left">
           <el-select clearable v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
             <el-option
@@ -425,31 +395,18 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <!--<el-form-item label="标签类型" style="text-align: left">
-          <el-select v-model="toDynamicTagsPopularize.chargeType" placeholder="请选择标签类型">
-            <el-option
-              v-for="item in tagType"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </el-form-item>-->
         <el-form-item label="标签类型" style="text-align: left">
           <upload
             v-on:ToUrl="listenUrlPopularizeTags"
             :name="UID('/PopularizeTags/')"
             :target="this.dynamicTagsPopularize.thumb"></upload>
         </el-form-item>
-
         <el-form-item style="display: flex;justify-content: flex-end;">
           <el-button @click="showFormPopularizeTagEdit = false">取 消</el-button>
           <el-button type="primary" @click="updatePopularizeTags('DynamicTags','showTags')">确 定</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
-
-
     <!--分类弹框-->
     <el-dialog
       top="5vh"
@@ -508,7 +465,7 @@
             :placeholder="categoryEndTimePre">
           </el-time-picker>
         </el-form-item>
-        <el-form-item label="打印机" prop="pid">
+        <el-form-item label="打印机">
           <el-select clearable v-model="toDynamicTags1.pid" placeholder="请选择">
             <el-option
               v-for="(item,index) in pid"
@@ -557,17 +514,7 @@
             :disable-transitions="false"
             @close="handleClose3(tag,index)"
           >
-
             {{tag.name}}
-            <!--<el-button-->
-              <!--type="primary"-->
-              <!--style="padding: 5px"-->
-              <!--size="mini"-->
-              <!--icon="el-icon-edit"-->
-              <!--circle-->
-              <!--@click.native="editAttr(tag)"-->
-            <!--&gt;</el-button>-->
-
           </el-tag>
           <el-input
             class="input-new-tag"
@@ -582,7 +529,6 @@
           <el-button v-else class="button-new-tag" @click="showInput3">+ 新规格项</el-button>
         </div>
       </el-form>
-
       <div slot="footer" class="dialog-footer">
         <el-button @click="showFormSKUEdit = false">取 消</el-button>
         <el-button type="primary" @click="updateSpec('showSpec',1)">确 定</el-button>
@@ -630,7 +576,7 @@
           <el-form-item label="数量" prop="stock">
             <el-input v-model.number="dishes.stock" auto-complete="off" placeholder="请输入数量"></el-input>
           </el-form-item>
-          <el-form-item label="打印机" prop="pid">
+          <el-form-item label="打印机">
             <el-select clearable v-model="dishes.pid" placeholder="请选择">
               <el-option
                 v-for="(item,index) in pid"
@@ -651,13 +597,11 @@
                 :key="item.zindex"
                 :label="item.name"
                 :value="item.id"
-                @change="getUnit"
               >
               </el-option>
             </el-select>
           </el-form-item>
         </el-form>
-
         <el-form  :rules="rules2" ref="DynamicTags2" status-icon :model="dishes" :label-width="formLabelWidth">
           <el-form-item label="菜品介绍" prop="description">
             <el-input type="textarea" v-model="dishes.description" auto-complete="off" placeholder="请输入菜品介绍,50字以内"></el-input>
@@ -759,16 +703,13 @@
           </div>
         </el-form>
       </div>
-
       <!--菜品特性编辑-->
-
       <div class="matter2">
         <span
           class="matter2-hint">该部分为非必填，数据可在
           <el-button @click="toNature" type="primary" plain style="padding: 4px" size="mini" round>&nbsp;特性管理&nbsp;</el-button>编辑
         </span>
         <el-form :label-width="formLabelWidth" :model="dishes" status-icon :rules="rules2">
-
           <el-form-item label="推广标签">
             <el-select
               clearable
@@ -794,8 +735,6 @@
               v-for="item in valueOfTagsPopularize1">{{item.name}}
             </el-button>
           </p>
-
-
           <el-form-item label="添加标签">
             <el-select
               clearable
@@ -820,15 +759,12 @@
               v-for="item in dynamicTagsOld">{{item.name}}
             </el-button>
           </p>
-
-
           <el-form-item label="添加SKU">
             <el-select
               clearable
               style="display: inline-block; width: 555px"
               v-model="valueOfSKU"
               value-key="zindex"
-              @change="optsChange"
               multiple placeholder="请选择，默认无SKU">
               <el-option
                 v-for="(item,index) in dynamicTags2"
@@ -850,8 +786,6 @@
               v-for="item in valueOfSKU1">{{item.name}}
             </el-button>
           </p>
-
-
           <el-form-item style="text-align: center " label-width="0px" v-if="this.generatTable === true">
 
           <!--sku2-->
@@ -924,14 +858,11 @@
           </el-form-item>
         </el-form>
       </div>
-
       <!--其他-->
       <div slot="footer" class="dialog-footer" v-if="addOrEdit === 2">
         <el-button @click="showFormGoodsPlus = false">取 消</el-button>
         <el-button type="primary" @click="updateDishes('confirmDishesData','showDishesData')">修改</el-button>
       </div>
-
-
       <div slot="footer" class="dialog-footer" v-if="addOrEdit === 1">
         <el-button @click="addDishesDelay('confirmDishesData','showDishesData')" icon="el-icon-time">暂不上架</el-button>
         <el-button @click="showFormGoodsPlus = false">取 消</el-button>
@@ -942,7 +873,6 @@
 </template>
 <script>
 import upload from '@/components/upload/upload'
-
 const ERR_OK = 0
 export default {
   name: 'New',
@@ -1068,18 +998,7 @@ export default {
       toDynamicTags1:[
 
       ],
-      dynamicTags1: [
-        // {
-        //   zindex:'0',
-        //   name:'其他',
-        //   type:'',
-        //   showTime:'',
-        //   showType:'',
-        //   pid: '',
-        //   description: '',
-        //   status: '',
-        // },
-      ],
+      dynamicTags1: [],
       categoryPid:[
         {
           value:'1',
@@ -1160,10 +1079,6 @@ export default {
           {required: true, message:'请输入序号', trigger:'blur'},
           {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
         ],
-        // rid : [
-        //   {required: true, message: '不能为空', trigger: 'blur'},
-        //   {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
-        // ],
       },
       rules2: {
         name: [
@@ -1180,9 +1095,9 @@ export default {
           {required: true, message:'请输入序号', trigger:'blur'},
           {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
         ],
-        pid: [
-          {required: true, message:'请选择打印机', trigger:'change'}
-        ],
+        // pid: [
+        //   {required: true, message:'请选择打印机', trigger:'change'}
+        // ],
         uid: [
           {required: true, message:'请输入序号', trigger:'change'}
         ],
@@ -1192,10 +1107,6 @@ export default {
         showType: [
           {required: true, message:'请选择展示类型', trigger:'change'}
         ],
-        // price: [
-        //   {required: true, message:'请输入价格', trigger:'blur'},
-        //   {type: 'number', required: true, message: '请输入数字', trigger: 'blur'}
-        // ],
         thumb: [
           {required: true, message:'请上传一张图片', trigger:'change'}
         ]
@@ -1203,9 +1114,6 @@ export default {
     }
   },
   computed:{
-    cidToName(){
-
-    },
     normalPrice1: function(){
       return this.dishes.normalPrice
     },
@@ -1225,13 +1133,6 @@ export default {
       }
       return n;
     },
-    // listGoods(){
-    //   let tempArr = [];
-    //   this.goods.forEach((item)=>{
-    //     tempArr = tempArr.concat(item.foods);
-    //   })
-    //   return tempArr;
-    // },
     mPrice: function(){
       var memberPrice = parseInt(this.dishes.normalPrice)*this.memberDiscont
       return memberPrice.toFixed(2)
@@ -1240,7 +1141,6 @@ export default {
       var promotionPrice = parseInt(this.dishes.normalPrice)*this.promotionDiscont
       return promotionPrice.toFixed(2)
     },
-
     repeatNumPopularize: function () {
       let inputValuePopularize = this.inputValuePopularize;
       for(var i=0; i<this.dynamicTagsPopularize.length; i++){
@@ -1285,17 +1185,12 @@ export default {
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
-    // this._pullUnit()
-    // this._pullPreSpec()
-    // this._pullPreTag()
     if(this.screenWidth < 721){
       this.changeSortShow = 1
     }
-    // this._pullPrePopularizeTag()
     this._pullPopularizeTag()
     this._pullPrinter()
     this.openFullScreen2()
-
   },
   methods: {
     getSummaries(param) {
@@ -1397,11 +1292,6 @@ export default {
     listenUrlPopularizeTags(data){
       this.dynamicTagsPopularize.thumb = data.name
     },
-    optsChange(){
-      // console.log('1');
-      // console.log(this.valueOfSKU);
-      // console.log(this.generateSkuDate);
-    },
     handleEdit:function(row){
       //遍历数组改变editeFlag
     },
@@ -1466,7 +1356,7 @@ export default {
       this.$request(this.url.restaurantTag2,'json',Data).then((res)=>{
         let response = res.data.data
         this.dynamicTags = response
-        console.log(response);
+        // console.log(response);
       }).catch((err)=>{
         console.log(err);
       })
@@ -1574,7 +1464,6 @@ export default {
         console.log(err);
       })
     },
-
     // 增加菜品
     addDishes(formName1,formName2){
       if(!this.dishes.normalPrice){
@@ -1584,7 +1473,7 @@ export default {
         });
         return false
       }
-      console.log(this.dishes.normalPrice);
+      // console.log(this.dishes.normalPrice);
       if(this.dishes.normalPrice === ''){
         this.$message({
           type: 'info',
@@ -1599,8 +1488,7 @@ export default {
         });
         return false
       }
-
-      console.log(this.valueOfTags,'得到标签');
+      // console.log(this.valueOfTags,'得到标签');
       let tags = []
       tags = Object.assign([],this.valueOfTags);
       tags = tags.map(function (item) {
@@ -1626,13 +1514,13 @@ export default {
         for(let i=0;i<this.valueOfSKU.length;i++){
           this.valueOfSKU[i].zindex = i
         }
-        if(this.generateSkuDate.length === 0){
-          this.$message({
-            type: 'info',
-            message: '没有生成SKU!'
-          });
-          return
-        }
+        // if(this.generateSkuDate.length === 0){
+        //   this.$message({
+        //     type: 'info',
+        //     message: '没有生成SKU!'
+        //   });
+        //   return
+        // }
         this.dishes.specs = this.valueOfSKU
       }
       this.dishes.zindex = this.dishesIndex
@@ -1641,8 +1529,7 @@ export default {
       data = Object.assign({},this.dishes);
       data.tags = tags
       data.popularizeTags = popularizeTags
-      console.log(data,'提交菜品数据');
-
+      // console.log(data,'提交菜品数据');
       this.$refs[formName1].validate((valid) => {
         if (valid) {
           this.$request(this.url.dishes1,'json',data).then((res)=>{
@@ -1668,7 +1555,6 @@ export default {
       });
     },
     addDishesDelay(formName1,formName2){
-      console.log(this.valueOfTags,'得到标签');
       let tags = []
       tags = Object.assign([],this.valueOfTags);
       tags = tags.map(function (item) {
@@ -1697,12 +1583,11 @@ export default {
       this.dishes.skus = this.generateSkuDate
       this.dishes.specs = this.valueOfSKU
       this.dishes.status = 'disable'
-
       let data = {}
       data = Object.assign({},this.dishes);
       data.tags = tags
       data.popularizeTags = popularizeTags
-      console.log(data,'提交菜品数据');
+      // console.log(data,'提交菜品数据');
       this.$refs[formName1].validate((valid) => {
         if (valid) {
           this.$request(this.url.dishes1,'json',data).then((res)=>{
@@ -1733,19 +1618,16 @@ export default {
         ':'+this.startTime.getMinutes()+
         '-'+this.endTime.getHours()+
         ':'+this.endTime.getMinutes()
-      console.log(this.dishes.showTime);
+      // console.log(this.dishes.showTime);
     },
     categoryEndTimeFun(){
       this.toDynamicTags1.showTime = this.categoryStartTimePre.getHours()+
         ':'+this.categoryStartTimePre.getMinutes()+
         '-'+this.categoryEndTimePre.getHours()+
         ':'+this.categoryEndTimePre.getMinutes()
-      console.log(this.toDynamicTags1.showTime);
     },
     //更新标签
     updateTags(formName1,formName2){
-      console.log('2222222222');
-      console.log(this.toDynamicTags);
       let index = this.categoryIndex
       let updateObj = {
         id:this.toDynamicTags.id,
@@ -1756,8 +1638,6 @@ export default {
         }
         updateObj[key] = this.toDynamicTags[key];
       }
-      console.log(updateObj,'updateTags');
-
       this.$refs[formName1].validate((valid)=>{
         if(valid){
           this.$request(this.url.restaurantTag4,'json',updateObj).then((res)=>{
@@ -1781,7 +1661,6 @@ export default {
           return false;
         }
       })
-
     },
     updatePopularizeTags(formName1,formName2){
       let index = this.categoryIndex
@@ -1818,11 +1697,8 @@ export default {
           return false;
         }
       })
-
     },
     filterTag(value, row) {
-      console.log(value);
-      console.log(row);
       return row.cid === value;
     },
     updateSpec(formName1,formName2){
@@ -1834,7 +1710,6 @@ export default {
         attrs:this.toDynamicTags2.attrs,
         status:'enable'
       }
-
       this.$refs[formName1].validate((valid)=>{
         if(valid){
           this.$request(this.url.spec4,'json',updateObj).then((res)=>{
@@ -1871,11 +1746,8 @@ export default {
           return false;
         }
       })
-
     },
     updateCategory(formName1,formName2){
-      console.log(this.toDynamicTags1,'打印category');
-      console.log('2222222222');
       let index = this.categoryIndex
       let updateObj = {
         id:this.toDynamicTags1.id,
@@ -1886,9 +1758,6 @@ export default {
         }
         updateObj[key] = this.toDynamicTags1[key];
       }
-      console.log(updateObj,'updateCategory之前');
-
-
       this.$refs[formName1].validate((valid)=>{
         if(valid){
           this.$request(this.url.dishesCategory4,'json',updateObj).then((res)=>{
@@ -1912,13 +1781,6 @@ export default {
           return false;
         }
       })
-
-
-
-
-    },
-    getUnit(){
-      console.log(this.dishes.uid);
     },
     updateSKU(formName1,formName2){
       let specs = []
@@ -1930,7 +1792,7 @@ export default {
           zindex:this.valueOfSKU[i].zindex
         })
       }
-      console.log(specs);
+      // console.log(specs);
       let updateObj = {
         id: this.dishesIndex,
         specs: specs,
@@ -1957,16 +1819,12 @@ export default {
           return false;
         }
       })
-
-
     },
     // 删除菜品
     deleteDishes (row,index) {
       let data = {
         id:row.id
       }
-      console.log(data);
-      console.log(index);
       this.$confirm('是否删除该菜品?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2003,8 +1861,6 @@ export default {
       this.addOrEdit = 2;
       this.dishes = Object.assign({},row);
       this.dishesIndex = index;
-      console.log(row,'点击编辑菜品触发');
-      console.log(row.popularizeTags);
       let arrTagsPopularize = []
       if(row.popularizeTags === null){
 
@@ -2017,10 +1873,8 @@ export default {
         }
         this.valueOfTagsPopularize1 = arrTagsPopularize
         this.valueOfTagsPopularizeShow = 1
-        console.log('33333',this.valueOfTagsPopularize);
+        // console.log('33333',this.valueOfTagsPopularize);
       }
-
-
       let dynamicTagsOld = []
       if(row.tags === null){
 
@@ -2034,8 +1888,6 @@ export default {
         this.dynamicTagsOld = dynamicTagsOld
         this.dynamicTagsOldShow = 1
       }
-
-
       let valueOfSKU = []
       if(row.specs === null){
 
@@ -2052,10 +1904,6 @@ export default {
 
       this.generatTable = true
       this.generateSkuDate = row.skus
-      console.log('展示SKU价格',row.skus);
-
-
-      console.log(this.dishesIndex,'第一打印did');
       if(row.showTime){
         let start = row.showTime.split('-')
         this.startTimePre = start[0]
@@ -2088,16 +1936,13 @@ export default {
       let updateObj = {
         id:this.dishes.id
       }
-      console.log(this.dishes, this.dishesDataTable[index],'提交前数据对比');
+      // console.log(this.dishes, this.dishesDataTable[index],'提交前数据对比');
       for(let key in this.dishes){
         if(this.dishes[key] === this.dishesDataTable[index][key]){
           continue;
         }
         updateObj[key] = this.dishes[key];
       }
-
-
-
       let tags = []
       if(this.valueOfTags){
         tags = Object.assign([],this.valueOfTags);
@@ -2131,12 +1976,7 @@ export default {
         }
         updateObj.specs = this.valueOfSKU
       }
-
-
       updateObj.skus = this.generateSkuDate
-      console.log(updateObj,'提交的数据');
-
-
       this.$refs[formName1].validate((valid)=>{
         if(valid){
           this.$request(this.url.dishes4,'json',updateObj).then((res)=>{
@@ -2160,9 +2000,7 @@ export default {
           return false;
         }
       })
-
     },
-
     // 0
     showInput() {
       this.inputVisible = true;
@@ -2186,8 +2024,6 @@ export default {
       }else{
         lastNumber = this.dynamicTagsPopularize.length+1
       }
-
-      console.log(this.dynamicTagsPopularize);
       if (inputValuePopularize){
         if(repeatNum === false){
           alert('提示：同名项，不可建立')
@@ -2197,7 +2033,6 @@ export default {
             name: inputValuePopularize,
             status: 'enable'
           }
-          console.log('推广标签——提交前的数据',data);
           this.$request(this.url.restaurantPopularizeTag1,'json',data).then((res)=>{
             if(res.data.msg === 'success'){
               this.$message({
@@ -2239,8 +2074,6 @@ export default {
       }else{
         lastNumber = this.dynamicTags.length+1
       }
-
-      console.log(this.dynamicTags);
       if (inputValue){
         if(repeatNum === false){
           alert('提示：同名项，不可建立')
@@ -2251,12 +2084,8 @@ export default {
             name: inputValue,
             chargeType: 'free',
             status:'enable',
-
-
           }
           this.$request(this.url.restaurantTag1,'json',data).then((res)=>{
-
-            console.log(res.data.msg);
             if(res.data.msg === 'success'){
               this.$message({
                 type: 'success',
@@ -2283,26 +2112,18 @@ export default {
       this.inputValue = '';
     },
     editTags(tag,index){
-      console.log(tag.id,'id是多少');
-      console.log(index);
       this.toDynamicTags = Object.assign({},tag);
       this.categoryIndex = index;
-      console.log(this.toDynamicTags);
+      // console.log(this.toDynamicTags);
       this.showFormTagEdit = !this.showFormTagEdit
     },
     editTagsPopularize(tag,index){
-      console.log(tag.id,'id是多少');
-
-      console.log(index);
-
       this.toDynamicTagsPopularize = Object.assign({},tag);
       this.categoryIndex = index;
-      console.log(this.toDynamicTagsPopularize);
       this.showFormPopularizeTagEdit = !this.showFormPopularizeTagEdit
     },
-
     handleClosePopularize(tag,index) {
-      console.log(tag);
+      // console.log(tag);
       this.$confirm('是否删除该标签，与其的相关菜品标签将全部取消, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2331,7 +2152,6 @@ export default {
       });
     },
     handleClose(tag,index) {
-      console.log(tag);
       this.$confirm('是否删除该标签，与其的相关菜品标签将全部取消, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2376,7 +2196,7 @@ export default {
       }else{
         lastNumber = this.dynamicTags2.length+1
       }
-      console.log(this.dynamicTags1);
+      // console.log(this.dynamicTags1);
       if (inputValue1){
         if(repeatNum1 === false){
           alert('提示：同名项，不可建立')
@@ -2415,15 +2235,10 @@ export default {
       this.inputVisible1 = false;
       this.inputValue1 = '';
     },
-
     editCategory(tag,index){
       // console.log(tag.zindex);
-
-      console.log(tag);
-
       this.toDynamicTags1 = Object.assign({},tag);
       this.categoryIndex = index;
-      console.log(this.toDynamicTags1);
       this.showFormCategoryEdit = !this.showFormCategoryEdit
       if(tag.showTime){
         let start = tag.showTime.split('-')
@@ -2432,7 +2247,6 @@ export default {
       }
     },
     handleClose1(tag,index) {
-      console.log(tag);
       this.$confirm('是否删除该分类，此类菜品将无分类, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2453,7 +2267,6 @@ export default {
             message: '数据提交失败!'
           });
         })
-
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -2483,8 +2296,6 @@ export default {
       }else{
         lastNumber = this.dynamicTags2.length+1
       }
-
-      console.log(this.dynamicTags2);
       if (inputValue2){
         if(repeatNum2 === false){
           alert('提示：同名项，不可建立')
@@ -2518,7 +2329,6 @@ export default {
       }
       this.inputVisible2 = false;
       this.inputValue2 = '';
-
     },
     editSpec(tag,index){
       for (var i = 0; i < this.dynamicTags2.length; i++) {
@@ -2528,15 +2338,12 @@ export default {
             attrs:[
             ]
           }
-          console.log(this.dynamicTags2[i]);
         }
       }
       this.toDynamicTags2 = Object.assign({},tag);
       this.categoryIndex = index;
-      console.log(this.toDynamicTags2);
       this.showFormSKUEdit = !this.showFormSKUEdit
     },
-
     handleClose2(tag,index) {
       this.$confirm('是否删除该规格，应用此规格的菜品将取消, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -2570,7 +2377,6 @@ export default {
         });
       });
     },
-
     // 3
     showInput3() {
       this.inputVisible3 = true;
@@ -2580,9 +2386,7 @@ export default {
     },
     handleInputConfirm3(index) {
       let inputValue3 = this.inputValue3;
-
-      console.log(this.dynamicTags2[this.categoryIndex].attrs);
-
+      // console.log(this.dynamicTags2[this.categoryIndex].attrs);
       var lastNumber = 0
       if(this.dynamicTags2[this.categoryIndex].attrs === null){
         lastNumber = 0
@@ -2600,7 +2404,6 @@ export default {
 
         );
       }
-      console.log(this.dynamicTags2[this.categoryIndex].attrs);
       this.inputVisible3 = false;
       this.inputValue3 = '';
     },
@@ -2623,14 +2426,13 @@ export default {
       });
     },
     handleRemove(file, fileList) {
-      // console.log(file, fileList);
     },
     toNature(){
       this.showFormGoodsPlus = !this.showFormGoodsPlus
       this.activeName = 'second'
     },
     handlePreview(file) {
-      console.log(file);
+      // console.log(file);
     },
     plusMethodsThis(){
       //初始化表格
@@ -2642,7 +2444,6 @@ export default {
           this.dynamicTags2[i].zindex = i
         }
       }
-
       this.addOrEdit = 1
       this.dynamicTagsOldShow = 0
       this.valueOfTagsPopularizeShow = 0
@@ -2657,16 +2458,10 @@ export default {
       this.generatTable = false
       this.dynamicTagsOld =[]
       this.valueOfTagsPopularize1 = []
-
-
       this.showFormGoodsPlus = !this.showFormGoodsPlus
     },
     plusGoods(){
-      console.log(this.pushShowType)
       this.showFormGoodsPlus = !this.showFormGoodsPlus
-    },
-    formatter(row, column) {
-      return row.address;
     },
     filterTag(value, row) {
       return row.cid === value;
@@ -2675,15 +2470,6 @@ export default {
       const property = column['property'];
       return row[property] === value;
     },
-    handleClick(tab, event) {
-    },
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`);
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`);
-    },
-
     generateSku(skuArr,specArr) {
       if(specArr.length === 0){
         return skuArr;
@@ -2709,7 +2495,6 @@ export default {
       }
       return this.generateSku(newSkuArr,specArr);
     },
-
     outputSku(){
       if(!this.dishes.normalPrice){
         this.$message({
@@ -2730,12 +2515,8 @@ export default {
         this.generating = false;
       }, 2000);
       this.generatTable = true
-
       var valueOfSku = Object.assign([],this.valueOfSKU);
-
-      console.log(this.valueOfSKU,'this.valueOfSKU');
       this.generating = !this.generating;
-      console.log('===================',Object.assign({},valueOfSku));
       this.generateSkuDate =  this.generateSku([],valueOfSku);
       for(var j=0; j<this.generateSkuDate.length; j++){
         this.generateSkuDate[j].did = this.dishesIndex
@@ -2743,7 +2524,6 @@ export default {
         this.generateSkuDate[j].memberPrice = this.dishes.memberPrice
         this.generateSkuDate[j].promotionPrice = this.dishes.promotionPrice
       }
-      console.log(this.generateSkuDate,'最后得到的SKU');
     },
   },
   components: {
@@ -2752,5 +2532,5 @@ export default {
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
-@import "goods.styl"
+  @import "goods.styl"
 </style>

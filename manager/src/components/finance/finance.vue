@@ -154,10 +154,7 @@ export default {
         let that = this
         setTimeout(function () {
           // that.screenWidth = that.$store.state.canvasWidth
-          console.log(that.screenWidth)
           if(that.screenWidth<721){
-            console.log('1');
-
           }
           // that.init()
           that.timer = false
@@ -205,27 +202,19 @@ export default {
     },
     submitConfirmPassWord(){
 
-      console.log(this.getAccountPhoneCode);
-      console.log(this.moneyNumber);
-      console.log(this.withdrawType);
+      // console.log(this.getAccountPhoneCode);
+      // console.log(this.moneyNumber);
+      // console.log(this.withdrawType);
       this.$request(this.url.restaurantAccountWithdraw,'form',{
         type: this.withdrawType,
         smsCode:this.getAccountPhoneCode,
         money:this.moneyNumber
         // account:
       }).then((res)=>{
-        console.log(res);
       }).catch((err)=>{
         console.log(err);
       })
       this.showForm = !this.showForm
-      // this.$confirm('确认关闭？')
-      //   .then(_ => {
-      //
-      //   })
-      //   .catch(_ => {
-      //     return
-      //   });
     },
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -237,7 +226,7 @@ export default {
     },
     getAccountCode(){
       this.$request(this.url.restaurantBindAccount,'form',{}).then((res)=>{
-        console.log(res);
+        // console.log(res);
       }).catch((err)=>{
         console.log(err);
       })

@@ -23,7 +23,6 @@
     methods: {
       upload(event){
         var _this = this
-        console.log(this.name,'得出的name');
         var name = this.name
         var file = event.target.files[0];                                         //得到文件
         var type = file.name.split('.')[1];
@@ -34,10 +33,6 @@
         let data = {
           name: 'zhangsan'                                                        //传送id，请求密钥
         }
-        console.log(this.target,'12312345646');
-        console.log('1');
-
-
         this.$request(this.url.ali,'form',data).then((res)=>{
           console.log(res,'0000000000');
           var res = res.data

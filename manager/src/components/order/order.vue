@@ -290,7 +290,7 @@
       },
       filterDateTypeFun(){
         this.filters =[]
-        console.log('filterDateTypeFun',this.filterOrderDate);
+        // console.log('filterDateTypeFun',this.filterOrderDate);
         let year0 = this.filterOrderDate[0].getFullYear()
         let year1 = this.filterOrderDate[1].getFullYear()
 
@@ -333,12 +333,6 @@
         })
       },
 
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
-      },
       filterPayArr(value,row){
         return row.payType === value;
       },
