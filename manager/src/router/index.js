@@ -12,7 +12,6 @@ import Coupon from '@/components/coupon/coupon'
 import Member from '@/components/member/member'
 import Test from '@/views/test/test'
 
-
 Vue.use(Router)
 Vue.use(Resource)
 
@@ -23,18 +22,16 @@ export default new Router({
       path:'/manager/xwfs/member',
       name:'Member',
       component: Member,
-      children:[
-        {
-          path:'/manager/xwfs/member/test',
-          name:'Test',
-          component:Test
-        }
-      ]
     },
     {
       path:'/manager/xwfs/coupon',
       name:'Coupon',
       component: Coupon
+    },
+    {
+      path:'/manager/xwfs/test',
+      name:'Test',
+      component: Test
     },
     {
       path:'/manager/xwfs/goods',

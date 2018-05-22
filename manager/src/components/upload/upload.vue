@@ -14,7 +14,7 @@
       return {
         client: '',
         fileSize: 5000000,
-        imgUrl: window.url
+        imgUrl: window.url,
       }
     },
     created() {
@@ -59,6 +59,7 @@
             var oDiv = document.getElementById(name)
             oDiv.style.background = 'url('+ finalUrl +') no-repeat center center'
             oDiv.style.backgroundSize = '100% auto'
+            console.log(finalUrl);
             // oDiv.style.verticalAlign = 'middle'
 
           }).catch(function (err) {

@@ -5,6 +5,7 @@ import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 import App from './App'
 import router from './router'
+import store from './store/store'
 import axios from 'axios'
 import {request} from 'api/api'
 import {urlColletion} from 'api/api'
@@ -23,6 +24,7 @@ Vue.prototype.goodsArr = goodsArr
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
   render: h => h(App)
