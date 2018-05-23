@@ -2,7 +2,7 @@
   <div class="order">
 
     <el-tabs
-      v-loading="loading"
+      v-loading.fullscreen.lock="loading"
       v-model="activeName"
       show-summary
     >
@@ -24,27 +24,16 @@
                   <span style="width: 6%"><i class="el-icon-close"></i>{{ item.num }}</span>
                   <span style="width: 30%">
                     <span v-for="tag in item.tags">
-                      {{ tag.name }}
-
-                      /
-
+                      {{ tag.name }}/
                       <span v-if="tag.price">{{ tag.price.toFixed(2) }} ￥</span>
                       <span v-else="tag.price">0.00 ￥</span>,&nbsp;&nbsp;&nbsp;
                     </span>
                   </span>
                   <span style="width: 5%">{{ item.totalPrice.toFixed(2) }} ￥</span>
                 </div>
-                <!--<el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>-->
+                <el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>
               </template>
             </el-table-column>
-            <!--<el-table-column-->
-              <!--sortable-->
-              <!--fixed="left"-->
-              <!--prop="index"-->
-              <!--label="序号"-->
-              <!--width="100"-->
-            <!--&gt;-->
-            <!--</el-table-column>-->
             <el-table-column
               sortable
               fixed="left"
@@ -68,7 +57,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="120"
+              width="130"
               prop="payType"
               label="支付方式"
               :filters="[{text:'微信支付',value:'wechat-online'},{text:'支付宝支付',value:'alipay-online'}]"
@@ -82,7 +71,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="120"
+              width="130"
               prop="orderType"
               label="订单类型"
               :filters="[{text:'单人点餐',value:'single'},{text:'多人点餐',value:'multi'}]"
@@ -114,7 +103,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="100"
+              width="120"
               prop="discountMoney"
               label="优惠金额">
               <template slot-scope="props">
@@ -130,14 +119,14 @@
 
             <el-table-column
               sortable
-              width="100"
+              width="120"
               prop="rating"
               label="退款金额">
 
             </el-table-column>
             <el-table-column
               sortable
-              width="100"
+              width="120"
               prop="discountType"
               label="打折类型">
             </el-table-column>
@@ -232,12 +221,12 @@
         const sums = [];
         let num = 0
         columns.forEach((column, index) => {
-          if (index === 0) {
+          if (index === 1) {
             sums[index] = '总计';
             return;
           }
           const values = data.map(item => Number(item[column.property]));
-          if (index === 1) {
+          if (index === 2) {
             sums[index] = data.length + '条';
             return;
           }

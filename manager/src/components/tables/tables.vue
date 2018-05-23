@@ -269,7 +269,7 @@
       append-to-body
       title="订单确认" :visible.sync="dialogConfirmOrder">
       <div class="shopcart-list animated" v-show="dialogConfirmOrder">
-        <div class="list-content" ref="list-content" style="width: 50%;margin: 0px auto">
+        <div class="list-content" ref="list-content" style="width: 70%;margin: 0px auto">
           <ul>
             <li class="orderList info-item" v-for="item in cartList">
               <span> {{item.dishes.name}} </span>
@@ -419,16 +419,10 @@
         :label="item.typeName"
         :value="item.typeIndex">
       </el-option>
-    </el-select><span style="font-size: 12px;color: #7e8c8d">选择餐桌类型</span>
+    </el-select>
 
     <!--添加餐桌按钮-->
-    <el-button
-      size="large"
-      type="primary"
-      icon="el-icon-plus"
-      @click="addTablePre"
-      style="position: fixed;right: 50px;bottom: 66px;"
-    >添加餐桌</el-button>
+    <el-button size="large" type="primary" icon="el-icon-plus" @click="addTablePre" class="control-button">添加餐桌</el-button>
 
     <!--选择规格对话框SKU-->
     <el-dialog
@@ -1110,6 +1104,9 @@ export default {
       })
     },
     selectTable(item,index){
+      if(this.$store.state.screenWidth < 1000){
+        return
+      }
       this.tableForm = item
       this.tid = item.id
       this._pullTableOrder()
@@ -1244,6 +1241,7 @@ export default {
       console.log(err);
     })
     this._pullTable()
+    console.log(this.$store.state.screenWidth);
   },
   components:{
     shopcart,

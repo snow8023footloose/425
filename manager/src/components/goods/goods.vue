@@ -8,7 +8,7 @@
         <el-tab-pane label="菜品列表" name="first">
           <template>
             <el-table
-              v-loading="loading"
+              v-loading.fullscreen.lock="loading"
               :data="dishesDataTable"
               style="width: 100%"
               height="600"
@@ -171,13 +171,7 @@
                 </template>
               </el-table-column>
             </el-table>
-            <el-button
-              size="large"
-              type="primary"
-              icon="el-icon-plus"
-              @click="plusMethodsThis"
-              style="position: fixed;right: 50px;bottom: 60px;"
-            >添加菜品</el-button>
+            <el-button size="large" type="primary" icon="el-icon-plus" @click="plusMethodsThis" class="control-button">添加菜品</el-button>
           </template>
         </el-tab-pane>
         <!--特性模块-->
@@ -357,7 +351,6 @@
           <el-input
             size="small"
             v-model.number="toDynamicTags.price"
-            auto-complete="off"
             placeholder="请输入价格"
             class="price-item"
           >
@@ -644,8 +637,6 @@
             <el-input
               size="small"
               v-model.number="dishes.normalPrice"
-              auto-complete="off"
-              :value.number="dishes.normalPrice"
               placeholder="请输入价格"
               class="price-item"
             >
@@ -654,22 +645,18 @@
             <el-input
               size="small"
               v-model.number="dishes.memberPrice"
-              auto-complete="off"
-              :value.number="mPrice"
               placeholder="会员价"
               class="price-item"
             >
-              <template slot="prepend"><el-checkbox v-model="checked2"></el-checkbox>&nbsp;会员价{{memberDiscont}}</template>
+              <template slot="prepend">会员价{{memberDiscont}}</template>
             </el-input>
             <el-input
               size="small"
               v-model.number="dishes.promotionPrice"
-              auto-complete="off"
-              :value.number="pPrice"
               placeholder="活动价"
               class="price-item"
             >
-              <template slot="prepend"><el-checkbox v-model="checked3"></el-checkbox>&nbsp;活动价{{promotionDiscont}}</template>
+              <template slot="prepend">活动价{{promotionDiscont}}</template>
             </el-input>
           </el-form-item>
           <div style="display: flex;">
@@ -713,7 +700,7 @@
           <el-form-item label="推广标签">
             <el-select
               clearable
-              style="display: inline-block; width: 555px"
+              style="display: inline-block;"
               v-model="valueOfTagsPopularize"
               multiple placeholder="请选择，默认无标签">
               <el-option
@@ -738,7 +725,7 @@
           <el-form-item label="添加标签">
             <el-select
               clearable
-              style="display: inline-block; width: 555px"
+              style="display: inline-block;"
               v-model="valueOfTags"
               multiple placeholder="请选择，默认无标签">
               <el-option
@@ -762,7 +749,7 @@
           <el-form-item label="添加SKU">
             <el-select
               clearable
-              style="display: inline-block; width: 555px"
+              style="display: inline-block;"
               v-model="valueOfSKU"
               value-key="zindex"
               multiple placeholder="请选择，默认无SKU">
@@ -995,9 +982,7 @@ export default {
       dynamicTagsPopularize: [],
       inputVisiblePopularize: false,
       inputValuePopularize: '',
-      toDynamicTags1:[
-
-      ],
+      toDynamicTags1:[],
       dynamicTags1: [],
       categoryPid:[
         {
@@ -1372,41 +1357,7 @@ export default {
       this.$request(this.url.spec2,'json',Data).then((res)=>{
         let response = res.data.data
         this.dynamicTags2 = response
-        // console.log(response);
       }).catch((err)=>{
-        console.log(err);
-      })
-    },
-    _pullPreTag(){
-      let Data = [
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        }
-      ]
-      this.$request(this.url.preTag2,'json',Data).then((res)=>{
-        let response = res.data.data
-        this.PreTag = response
-        // console.log(response,'拉取得到单位');
-      }).catch((err)=>{
-        console.log(err);
-      })
-    },
-    _pullPreSpec(){
-      let Data = [
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        }
-      ]
-      this.$request(this.url.preSpec2,'json',Data).then((res)=>{
-        let response = res.data.data
-        this.preSpec = response
-        // console.log(response,'拉取得到单位');
-      }).catch((err)=>{
-        console.log(err);
       })
     },
     _pullPopularizeTag(){
@@ -1423,22 +1374,6 @@ export default {
         // console.log(response,'拉取得到单位');
       }).catch((err)=>{
         console.log(err);
-      })
-    },
-    _pullUnit(){
-      var Data = [
-        {
-          feild:'status',
-          value:'123',
-          joinType:'ne'
-        }
-      ]
-      this.$request(this.url.preUnit2,'json',Data).then((res)=>{
-        let response = res.data.data
-        this.unit = response
-        // console.log(response,'拉取得到单位');
-      }).catch((err)=>{
-        console.log('预设单位没有拉取到',err);
       })
     },
     _pullCategory(){
@@ -1514,13 +1449,6 @@ export default {
         for(let i=0;i<this.valueOfSKU.length;i++){
           this.valueOfSKU[i].zindex = i
         }
-        // if(this.generateSkuDate.length === 0){
-        //   this.$message({
-        //     type: 'info',
-        //     message: '没有生成SKU!'
-        //   });
-        //   return
-        // }
         this.dishes.specs = this.valueOfSKU
       }
       this.dishes.zindex = this.dishesIndex
@@ -1606,7 +1534,7 @@ export default {
           })
         }else{
           this.$message.error(
-            '信息不完整或者填写错误！!'
+            '信息不完整或者填写错误！'
           );
           return false;
         }

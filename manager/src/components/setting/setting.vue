@@ -20,10 +20,7 @@
                 inactive-value="close"
               >
               </el-switch>
-              <el-button style="position: fixed;right: 79px;bottom: 53px;" type="primary"
-                         @click="onSubmitSetting"
-                         :loading="saveSetting">
-                保存</el-button>
+              <el-button class="control-button" type="primary" @click="onSubmitSetting" :loading="saveSetting">保存</el-button>
             </el-form-item>
             <!--<div style="display: flex;flex-wrap: nowrap">
               <el-form-item label="App配色方案" label-width="100px" style="margin-bottom: 0px;margin-right: 5px">
@@ -113,7 +110,7 @@
                 </el-select>
               </el-form-item>
             </div>
-            <div class="matter2">
+            <div class="matter2" style="z-index: -1">
 
               <el-form-item label="打印类型" label-width="120px">
                 <el-select v-model="settingForm.printType" placeholder="请选择打印类型">
@@ -270,7 +267,7 @@
             </el-table>
 
           </template>
-          <el-button type="primary" icon="el-icon-plus" @click="plusPrinter" style="position: fixed;right: 50px">添加打印机</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="plusPrinter" class="control-button">添加打印机</el-button>
         </el-tab-pane>
 
         <!--打印模板-->
@@ -327,7 +324,7 @@
               </el-table-column>
             </el-table>
           </template>
-          <el-button type="primary" icon="el-icon-plus" @click="plusPrinterTemplate" style="position: fixed;right: 50px">添加打印模板</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="plusPrinterTemplate" class="control-button">添加打印模板</el-button>
         </el-tab-pane>
 
         <!--账户-->

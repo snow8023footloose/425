@@ -1,6 +1,30 @@
 body
   overflow hidden
 
+.control-button
+  position: fixed
+  right: 50px
+  bottom: 45px
+  z-index: 10
+
+.menu-control-button
+  position absolute
+  left -14px
+  top 190px
+  z-index 101
+.menu-class
+  background white
+  position absolute
+  z-index 100
+  border-right 1px solid rgba(0, 0, 0, 0.09)
+  .menu-control-button
+    position absolute
+    left 130px
+    top 180px
+    z-index 101
+  img
+    display none
+
 #app
   font-family: 'Avenir', Helvetica, Arial, sans-serif
   -webkit-font-smoothing: antialiased
@@ -21,8 +45,9 @@ body
           font-size: 2em
           color:black
           .el-menu-item
-            padding-bottom 10px
+            padding-bottom 0px
             font-size:2em
+            height 50px
             .title
               font-size 0.3em
         .router-link-exact-active
@@ -115,16 +140,16 @@ td
 @media screen and (max-width: 1200px)
   .el-table--fit
     height 570px !important
-  
+
   .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs
       .el-tabs__content
         height 570px !important
         overflow-y scroll
-  
+
   .login
     margin-top: 100px !important
-  
+
   .table-container
     height: 20em
 
@@ -132,19 +157,19 @@ td
 @media screen and (max-width: 900px)
   th
     padding 0px !important
-  
+
   .filter
     display none
-  
+
   .el-table--fit
     height 500px !important
-  
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
+
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs
       .el-tabs__content
         height 500px !important
         overflow-y scroll
-  
+
   .transition-box
     margin-bottom: 10px
     width: 12.5em !important
@@ -159,20 +184,17 @@ td
     p,span
       margin 2px 0
       font-size 10px !important
-  
-  
-  
-  
-  
+
+
   .el-tabs__item
     font-size 14px
-  
+
   .el-tabs__nav-scroll
     margin-top 0px
-  
+
   .el-tab-pane[data-v-60204f04]
     width 100%
-  
+
   .person-close
     position absolute
     font-size 20px
@@ -180,38 +202,39 @@ td
     top 11px
     right 22px
     z-index 3
-  
+
   .person-close1
     right 74px !important
     top 8px !important
-  
+
   .login
     margin-top: 0px !important
-  
+
   .goodse
     top: 15px !important
     left: 34px !important
-  
+
   .tableButtonGroup1
-    left: 34px !important
     bottom: 10px !important
 
 
 @media screen and (max-width: 825px)
   .el-table--fit
     height 250px !important
-  
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
+
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs
       .el-tabs__content
         height 250px !important
         overflow-y scroll
-  
-  
-  
+
+
+  .control-button
+    bottom: 10px
+
   .el-table td, .el-table th
     padding 5px !important
-  
+
   .transition-box
     margin-bottom: 10px
     width: 12.5em !important
@@ -226,49 +249,41 @@ td
     p,span
       margin 2px 0
       font-size 10px !important
-  
+
   .goodse
     top: 15px !important
     left: 34px !important
-  
+
   .tableButtonGroup1
-    left: 34px !important
     bottom: 10px !important
 @media screen and (max-width: 737px)
   .el-table--fit
-    height 280px !important
-  
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
+    height 342px !important
+
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs
       .el-tabs__content
         height 280px !important
         overflow-y scroll
-  
+
   .goodse
     top: 0px !important
     left: 0px !important
-  
+
   .tableButtonGroup[data-v-19dca008]
-    top 10px !important
-  
-  .tableButtonGroup1
-    button[data-v-19dca008]
-      margin-left: 2px !important
-      position: fixed !important
-      right: 280px !important
-      bottom: 2px !important
-  
+    top 10px
+
+
   .singleContainer[data-v-19dca008]
     height auto
-  
+
   .tables
     .tableButtonGroup1[data-v-19dca008]
       height auto !important
-  
+
   .tableButtonGroup1
-    left: 34px !important
     bottom: 2px !important
-  
+
   .transition-box
     margin-bottom: 10px
     width: 12.5em !important
@@ -283,23 +298,23 @@ td
     p,span
       margin 2px 0
       font-size 10px !important
-  
-  
+
+
   .title
     font-size 0.256em !important
 
 
 @media screen and (max-width: 668px)
   .el-table--fit
-    height 250px !important
-  
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction
+    height 300px !important
+
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs
       .el-tabs__content
         height 250px !important
         overflow-y scroll
-  
-  
+
+
   .transition-box
     margin-bottom: 10px
     width: 10.5em !important
@@ -315,22 +330,22 @@ td
     p,span
       margin 2px 0
       font-size 10px
-  
-  
+
+
   .el-menu-item [class^=el-icon-]
     margin-right -12px
-  
-  
+
+
   .el-table th>.cell
     text-align center !important
-  
+
   .el-button.is-circle
     padding 7px
-  
+
   .el-button-group
     &:first-child
       margin 0px auto !important
-  
+
   .bnt-group
     width 100%
     position fixed
@@ -341,8 +356,8 @@ td
       margin-left 58% !important
     .block,.small-block
       width 73%
-  
-  
+
+
 .el-table-filter__content
   .el-table-filter__checkbox-group
     display flex
@@ -350,4 +365,8 @@ td
     max-width 400px
 .el-table-filter__bottom
   text-align right
-  
+
+.notify
+  width 140px
+
+

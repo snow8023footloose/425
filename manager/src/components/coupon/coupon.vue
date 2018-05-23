@@ -181,10 +181,7 @@
 
           </el-collapse-item>
         </el-collapse>
-        <el-button style="position: fixed;right: 79px;bottom: 53px;" type="primary"
-                   @click="onSubmitCoupon"
-                   :loading="saveCoupon">
-          保存</el-button>
+        <el-button class="control-button" type="primary" @click="onSubmitCoupon" :loading="saveCoupon">保存</el-button>
       </el-tab-pane>
       <el-tab-pane label="卡券管理" name="second">
         <template>
@@ -269,7 +266,7 @@
           </el-table>
 
         </template>
-        <el-button type="primary" @click="plusCoupon" style="position: fixed;right: 50px;bottom: 60px;">添加卡券</el-button>
+        <el-button type="primary" @click="plusCoupon" class="control-button">添加卡券</el-button>
       </el-tab-pane>
     </el-tabs>
 

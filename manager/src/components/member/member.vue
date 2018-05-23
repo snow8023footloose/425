@@ -78,13 +78,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-button
-            size="large"
-            type="primary"
-            icon="el-icon-plus"
-            @click="plusMember"
-            style="position: fixed;right: 50px;bottom: 60px;"
-          >添加会员</el-button>
+          <el-button size="large" type="primary" icon="el-icon-plus" @click="plusMember" class="control-button">添加会员</el-button>
         </template>
       </el-tab-pane>
       <!--<el-tab-pane label="会员管理" name="second">-->

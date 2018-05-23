@@ -154,7 +154,7 @@ export default {
         let that = this
         setTimeout(function () {
           // that.screenWidth = that.$store.state.canvasWidth
-          if(that.screenWidth<721){
+          if(that.screenWidth<813){
           }
           // that.init()
           that.timer = false
@@ -177,8 +177,8 @@ export default {
   },
 
   created(){
-    if(this.screenWidth < 721){
-      this.height = 220
+    if(this.screenWidth < 813){
+      this.height = 230
       this.width = 450
       this.type = 'line'
       this.buttonShow = 1
