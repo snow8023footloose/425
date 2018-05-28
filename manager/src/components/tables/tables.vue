@@ -4,41 +4,132 @@
     <el-tabs v-model="activeName" @tab-click="handleShowTable">
 
       <!--餐桌方格-->
-      <el-tab-pane label="餐桌信息" name="first">
+      <el-tab-pane :label="'餐桌信息'+countTable" name="first">
         <el-row :guter="0">
-          <div class="table-container">
-
+          <div class="table-container" id="table-container" ref="container">
             <!--餐桌按分类展示-->
-            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid">
+            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid && item.status === tableStatus">
               <div v-show="showTable" class="transition-box">
-              <el-tooltip :content="item.description" placement="top">
-                <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
-                  桌号：{{item.num}}
-                  人数：{{item.seatNum}}
-                </div>
-                <div class="box-header" v-else-if="item.status === 'preClear'">
-                  桌号：{{item.num}}
-                  人数：{{item.seatNum}}
-                </div>
-                <div class="box-header" v-else-if="item.status === 'preOrder'">
-                  桌号：{{item.num}}
-                  人数：{{item.seatNum}}
-                </div>
-                <div class="box-header" v-else-if="item.status === 'enable'">
-                  桌号：{{item.num}}
-                  人数：{{item.seatNum}}
-                </div>
-                <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'prePay'">
-                  桌号：{{item.num}}
-                  人数：{{item.seatNum}}
-                </div>
-              </el-tooltip>
-                  <!--总：{{item.recommend.length}}项-->
+                <el-tooltip :content="item.description" placement="top">
+                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-clear'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-order'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'enable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                </el-tooltip>
+                <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preClear'">未清台</p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preOrder'">未下单</p>
+                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-clear'">未清台
+
+                  </p>
+                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-order'">未下单</p>
+                  <p style="
+                font-size: 30px;
+                color: rgba(0,0,0,0.15);
+                font-weight: bolder;
+                left: 13%;
+                position: absolute;
+                bottom: 17px;
+                z-index: 100;
+                text-align: center"
+                  >{{item.name}}</p>
+                </div>
+              </div>
+            </transition>
+            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid && tableStatus === ''">
+              <div v-show="showTable" class="transition-box">
+                <el-tooltip :content="item.description" placement="top">
+                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-clear'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-order'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'enable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                </el-tooltip>
+                <!--总：{{item.recommend.length}}项-->
+                <div class="box-content"  @click="selectTable(item,index)">
+                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-clear'">未清台
+
+                  </p>
+                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-order'">未下单</p>
+                  <p style="
+                font-size: 30px;
+                color: rgba(0,0,0,0.15);
+                font-weight: bolder;
+                left: 13%;
+                position: absolute;
+                bottom: 17px;
+                z-index: 100;
+                text-align: center"
+                  >{{item.name}}</p>
+                </div>
+              </div>
+            </transition>
+
+            <!--餐桌全部展示-->
+            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === 0 && item.status === tableStatus">
+              <div v-show="showTable" class="transition-box">
+                <el-tooltip :content="item.description" placement="top">
+                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-clear'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'pre-order'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" v-else-if="item.status === 'enable'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                    桌号：{{item.num}}
+                    人数：{{item.seatNum}}
+                  </div>
+                </el-tooltip>
+                <!--总：{{item.recommend.length}}项-->
+                <div class="box-content"  @click="selectTable(item,index)">
+                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-clear'">未清台</p>
+                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-order'">未下单</p>
                   <p style="
                   font-size: 30px;
                   color: rgba(0,0,0,0.15);
@@ -48,24 +139,22 @@
                   bottom: 17px;
                   z-index: 100;
                   text-align: center"
-                     >{{item.name}}</p>
+                  >{{item.name}}</p>
                 </div>
               </div>
             </transition>
-
-            <!--餐桌全部展示-->
-            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === 0">
+            <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === 0 && tableStatus === ''">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: rgba(111,113,128,0.47)" v-if="item.status === 'disable'">
+                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" v-else-if="item.status === 'preClear'">
+                  <div class="box-header" v-else-if="item.status === 'pre-clear'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" v-else-if="item.status === 'preOrder'">
+                  <div class="box-header" v-else-if="item.status === 'pre-order'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -73,17 +162,17 @@
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'prePay'">
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preClear'">未清台</p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center"
-                     v-if="item.status === 'preOrder'">未下单</p>
+                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-clear'">未清台</p>
+                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
+                     v-if="item.status === 'pre-order'">未下单</p>
                   <p style="
                   font-size: 30px;
                   color: rgba(0,0,0,0.15);
@@ -101,10 +190,26 @@
           </div>
         </el-row>
       </el-tab-pane>
-
     </el-tabs>
     <!--table遮罩-->
     <div class="mask-black" v-if="tableShow === 1"></div>
+
+    <!--选择餐桌类型-->
+    <el-select v-model="selectedTable" placeholder="请选择餐桌类型" style="width: 230px;padding-top: 10px">
+      <el-option
+        v-for="(item,index) in tableTypeSelect"
+        :key="index"
+        :label="item.typeName"
+        :value="item.typeIndex">
+      </el-option>
+    </el-select>
+    <div class="table-status-type" style="display: inline-block;margin-left: 20px">
+      <el-button size="mini" type="primary" plain round @click="tableStatus = 'pre-order'">未下单</el-button>
+      <el-button size="mini" type="danger" plain round @click="tableStatus = 'pre-pay'">未支付</el-button>
+      <el-button size="mini" type="warning" plain round @click="tableStatus = 'pre-clear'">未清台</el-button>
+      <el-button size="mini" type="info" plain round @click="tableStatus = 'disable'">未开启</el-button>
+      <el-button size="mini" type="success" plain round @click="tableStatus = ''">全部</el-button>
+    </div>
 
     <!--table操作按钮-->
     <div class="tableButtonGroup" v-if="tableShow === 1" v-show="true">
@@ -119,7 +224,7 @@
     <div class="tableButtonGroup1" v-if="tableShow === 1" v-show="true">
       <span class="singleContainer">
         <el-radio-group v-model="selectSingleOrder">
-          <span v-for="(item,index,key) in tableOrderList" :key="key">
+          <span v-for="(item,index,key) in tableOrderList" :key="index">
             <el-popover
               placement="bottom"
               title="个人账单详情"
@@ -271,7 +376,7 @@
       <div class="shopcart-list animated" v-show="dialogConfirmOrder">
         <div class="list-content" ref="list-content" style="width: 70%;margin: 0px auto">
           <ul>
-            <li class="orderList info-item" v-for="item in cartList">
+            <li class="orderList info-item" v-for="(item,index) in cartList" :key="index">
               <span> {{item.dishes.name}} </span>
               <span><i class="el-icon-close"></i>{{item.num}} </span>
               <span>
@@ -321,7 +426,7 @@
     </el-dialog>
 
     <!--添加/修改餐桌弹框-->
-    <el-dialog title="增加餐桌" :visible.sync="showFormTableAdd">
+    <el-dialog title="添加餐桌" :visible.sync="showFormTableAdd" top="7vh">
       <el-form :model="tableForm" :label-width="formLabelWidth" ref="confirmTableData">
         <el-form-item
           label="名称"
@@ -365,19 +470,20 @@
             placeholder="请选择餐桌类型">
             <el-option
               v-for="(item,index) in tableType"
-              :key="item.index"
+              :key="index"
               :label="item.typeName"
               :value="item.typeIndex"
             >
             </el-option>
           </el-select>
+
         </el-form-item>
 
         <el-form-item
           label="收费类型"
           style="text-align: left"
           prop="chargeType"
-          :rules="[{ required: true, message: '请输入收费类型', trigger: 'change' },]"
+          :rules="[{ required: true, message: '请选择收费类型', trigger: 'change' },]"
         >
           <el-select
             style="display: inline-block"
@@ -392,6 +498,18 @@
             </el-option>
           </el-select>
         </el-form-item>
+        <el-form-item
+          label="订单类型"
+          style="text-align: left"
+          prop="orderType"
+          :rules="[{ required: true, message: '请选择订单类型', trigger: 'change' },]"
+        >
+          <el-select style="display: inline-block" v-model="tableForm.orderType" placeholder="请选择收费类型">
+            <el-option label="单人" value="single"></el-option>
+            <el-option label="多人" value="multi"></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item v-if="tableForm.chargeType === 'charge'" label="价格">
           <el-input v-model.number="tableForm.money" auto-complete="off" placeholder="请输入价格"></el-input>
         </el-form-item>
@@ -411,16 +529,6 @@
       </div>
     </el-dialog>
 
-    <!--选择餐桌类型-->
-    <el-select v-model="selectedTable" placeholder="请选择餐桌类型" style="width: 230px;padding-top: 10px">
-      <el-option
-        v-for="(item,index) in tableTypeSelect"
-        :key="index"
-        :label="item.typeName"
-        :value="item.typeIndex">
-      </el-option>
-    </el-select>
-
     <!--添加餐桌按钮-->
     <el-button size="large" type="primary" icon="el-icon-plus" @click="addTablePre" class="control-button">添加餐桌</el-button>
 
@@ -432,10 +540,10 @@
       :append-to-body="true"
       style="z-index: 9999"
     >
-      <el-form v-for="(item,index) in specs" label-position="left" label-width="70px">
+      <el-form v-for="(item,index) in specs" label-position="left" label-width="70px" :key="index">
         <el-form-item :label="item.name">
           <el-radio-group v-model="selectedSkuArr[index]">
-            <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name"></el-radio-button>
+            <el-radio-button v-for="(attrs,index) in item.attrs" :label="attrs.name" :key="index"></el-radio-button>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -443,7 +551,7 @@
         <el-form-item label="标签">
           <!--<input type="radio" name="user.sex" id="male" value="男" >-->
           <el-checkbox-group v-model="selectedTags">
-            <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.name" border></el-checkbox>
+            <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.name" border :key="index"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
       </el-form>
@@ -465,6 +573,7 @@ export default {
   name: 'tables',
   data: () => ({
     tid:0,
+    tableStatus:'',
     tableList:[],
     cartList:[],
     discountMoney:0,
@@ -545,6 +654,9 @@ export default {
     ],
   }),
   computed: {
+    countTable(){
+      return document.getElementsByClassName("transition-box").length
+    },
     totalPrice() {
       let total = 0;
       this.selectFoods.forEach((food) => {
@@ -974,7 +1086,7 @@ export default {
       this.editOrAdd = 1
     },
     addTable(confirmData,a){
-      this.tableForm.status = 'enable'
+      this.tableForm.status = 'pre-order'
       let data = this.tableForm
       console.log(data);
       this.$refs[confirmData].validate((valid) => {
@@ -1215,7 +1327,7 @@ export default {
             type: 'success'
           });
           this._pullTable()
-        }, 2000);
+        }, 700);
       }).catch((err)=>{
         this.$message({
           type: 'info',
@@ -1241,7 +1353,7 @@ export default {
       console.log(err);
     })
     this._pullTable()
-    console.log(this.$store.state.screenWidth);
+    // console.log(this.$store.state.screenWidth);
   },
   components:{
     shopcart,

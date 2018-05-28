@@ -31,7 +31,7 @@
                   </span>
                   <span style="width: 5%">{{ item.totalPrice.toFixed(2) }} ￥</span>
                 </div>
-                <el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>
+                <!--<el-button style="margin: 5px 0px 5px 30px" size="mini" type="primary" plain round>{{props.row.table.name}}&nbsp;/&nbsp;{{props.row.table.num}}</el-button>-->
               </template>
             </el-table-column>
             <el-table-column
@@ -112,7 +112,7 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="150"
+              width="170"
               prop="createTime"
               label="下单时间">
             </el-table-column>
@@ -247,9 +247,9 @@
                 return prev;
               }
             }, 0);
-            sums[index] += ' 元';
+            sums[index] = sums[index].toFixed(2) + '元';
           } else {
-            sums[index] = '';
+            sums[index] = '1';
           }
         });
         return sums;

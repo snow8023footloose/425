@@ -20,7 +20,7 @@
                 inactive-value="close"
               >
               </el-switch>
-              <el-button class="control-button" type="primary" @click="onSubmitSetting" :loading="saveSetting">保存</el-button>
+              <el-button class="control-button" type="primary" @click="onSubmitSetting">保存</el-button>
             </el-form-item>
             <!--<div style="display: flex;flex-wrap: nowrap">
               <el-form-item label="App配色方案" label-width="100px" style="margin-bottom: 0px;margin-right: 5px">
@@ -580,7 +580,6 @@ export default {
       bindWechatShowVisible:false,
       bindWechatShowLoading:false,
       WechatRecode:'',
-      saveSetting: false,
       showIndexBg:false,
       confirmMsg:'免费获取验证码',
       form: {
@@ -830,9 +829,7 @@ export default {
     handleClick(tab, event) {
     },
     onSubmitSetting() {
-      setTimeout(() => {
-        this.saveSetting = false
-      }, 1000);
+
       let data = this.settingForm
       this.$request(this.url.restaurantUpdate,'json',data).then((res)=>{
         // console.log(res);
@@ -844,8 +841,7 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
-      // console.log('this.settingForm!',this.settingForm);
-      this.saveSetting =!this.saveSetting
+
     },
     handleRemove(file, fileList) {
       // console.log(file, fileList);

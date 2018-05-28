@@ -96,7 +96,7 @@
                 filter-placement="bottom-end"
                 label="类">
                 <template slot-scope="scope">
-                  <span v-for="item in filterTagArr" v-if="scope.row.cid === item.value">{{item.text}}</span>
+                  <span v-for="(item,index) in filterTagArr" v-if="scope.row.cid === item.value" :key="index">{{item.text}}</span>
                 </template>
               </el-table-column>
               <el-table-column
@@ -330,8 +330,8 @@
         <el-form-item label="状态" style="text-align: left">
           <el-select clearable v-model="toDynamicTags.status" placeholder="请选择状态">
             <el-option
-              v-for="item in categoryStatus"
-              :key="item.value"
+              v-for="(item,index) in categoryStatus"
+              :key="index"
               :label="item.name"
               :value="item.value">
             </el-option>
@@ -340,8 +340,8 @@
         <el-form-item label="标签类型" style="text-align: left">
           <el-select clearable v-model="toDynamicTags.chargeType" placeholder="请选择标签类型">
             <el-option
-              v-for="item in tagType"
-              :key="item.value"
+              v-for="(item,index) in tagType"
+              :key="index"
               :label="item.label"
               :value="item.value">
             </el-option>
@@ -381,8 +381,8 @@
         <el-form-item label="状态" style="text-align: left">
           <el-select clearable v-model="toDynamicTagsPopularize.status" placeholder="请选择状态">
             <el-option
-              v-for="item in categoryStatus"
-              :key="item.value"
+              v-for="(item,index) in categoryStatus"
+              :key="index"
               :label="item.name"
               :value="item.value">
             </el-option>
@@ -417,8 +417,8 @@
         <el-form-item label="状态" style="text-align: left">
           <el-select clearable v-model="toDynamicTags1.status" placeholder="请选择状态">
             <el-option
-              v-for="item in categoryStatus"
-              :key="item.value"
+              v-for="(item,index) in categoryStatus"
+              :key="index"
               :label="item.name"
               :value="item.value">
             </el-option>
@@ -430,8 +430,8 @@
         <el-form-item label="展示类型" prop="showType">
           <el-select clearable v-model="toDynamicTags1.showType" placeholder="请选择展示类型">
             <el-option
-              v-for="item in categoryShowType"
-              :key="item.value"
+              v-for="(item,index) in categoryShowType"
+              :key="index"
               :label="item.name"
               :value="item.value">
             </el-option>
@@ -493,7 +493,7 @@
           <el-form-item label="排序" prop="zindex" :label-width="formLabelWidth">
             <el-input
             style="display: inline"
-            v-model="toDynamicTags2.zindex"
+            v-model.number="toDynamicTags2.zindex"
             placeholder="请输入SKU排序"
           ></el-input>
           </el-form-item>
@@ -501,7 +501,7 @@
 
           <!--SKU内部标签-->
           <el-tag
-            :key="tag.zindex"
+            :key="index"
             v-for="(tag,index) in toDynamicTags2.attrs"
             closable
             :disable-transitions="false"
@@ -559,8 +559,8 @@
           <el-form-item label="类型" prop="cid">
             <el-select clearable v-model="dishes.cid" clearable placeholder="请选择，默认其他">
               <el-option
-                v-for="item in dynamicTags1"
-                :key="item.zindex"
+                v-for="(item,index) in dynamicTags1"
+                :key="index"
                 :label="item.name"
                 :value="item.id">
               </el-option>
@@ -586,8 +586,8 @@
           <el-form-item label="单位" prop="uid">
             <el-select clearable v-model="dishes.uid" placeholder="请选择单位">
               <el-option
-                v-for="item in unit"
-                :key="item.zindex"
+                v-for="(item,index) in unit"
+                :key="index"
                 :label="item.name"
                 :value="item.id"
               >
@@ -602,8 +602,8 @@
           <el-form-item label="展示类型" prop="showType">
             <el-select clearable v-model="dishes.showType" placeholder="请选择时间段">
               <el-option
-                v-for="item in showType"
-                :key="item.value"
+                v-for="(item,index) in showType"
+                :key="index"
                 :label="item.label"
                 :value="item.value">
               </el-option>
@@ -719,7 +719,8 @@
               style="padding: 4px"
               round
               type="primary"
-              v-for="item in valueOfTagsPopularize1">{{item.name}}
+              :key="index"
+              v-for="(item,index) in valueOfTagsPopularize1">{{item.name}}
             </el-button>
           </p>
           <el-form-item label="添加标签">
@@ -743,7 +744,8 @@
               style="padding: 4px"
               round
               type="primary"
-              v-for="item in dynamicTagsOld">{{item.name}}
+              :key="index"
+              v-for="(item,index) in dynamicTagsOld">{{item.name}}
             </el-button>
           </p>
           <el-form-item label="添加SKU">
@@ -769,8 +771,9 @@
               size="mini"
               style="padding: 4px"
               round
+              :key="index"
               type="primary"
-              v-for="item in valueOfSKU1">{{item.name}}
+              v-for="(item,index) in valueOfSKU1">{{item.name}}
             </el-button>
           </p>
           <el-form-item style="text-align: center " label-width="0px" v-if="this.generatTable === true">
@@ -793,7 +796,7 @@
               <el-table-column
                 prop="normalPrice"
                 label="价格">
-                <template scope="scope">
+                <template slot-scope="scope">
                   <input style="
                   border-radius: 8px;
                   border: 1px solid rgba(0,0,0,0.25);
@@ -810,7 +813,7 @@
                 prop="memberPrice"
                 label="会员价"
               >
-                <template scope="scope">
+                <template slot-scope="scope">
                   <input style="
                   border-radius: 8px;
                   border: 1px solid rgba(0,0,0,0.25);
@@ -827,7 +830,7 @@
                 prop="promotionPrice"
                 label="活动价"
               >
-                <template scope="scope">
+                <template slot-scope="scope">
                   <input style="
                   border-radius: 8px;
                   border: 1px solid rgba(0,0,0,0.25);
@@ -845,7 +848,6 @@
           </el-form-item>
         </el-form>
       </div>
-      <!--其他-->
       <div slot="footer" class="dialog-footer" v-if="addOrEdit === 2">
         <el-button @click="showFormGoodsPlus = false">取 消</el-button>
         <el-button type="primary" @click="updateDishes('confirmDishesData','showDishesData')">修改</el-button>
@@ -1996,19 +1998,20 @@ export default {
       let inputValue = this.inputValue;
       let repeatNum  = this.repeatNum
 
-      var lastNumber = 0
-      if(this.dynamicTags === null){
-        lastNumber = 1
-      }else{
-        lastNumber = this.dynamicTags.length+1
+      let maxNumber = 0
+      let numbers = []
+      for(let i = 0;i<this.dynamicTags.length;i++){
+        numbers.push(this.dynamicTags[i].zindex)
       }
+      maxNumber = Math.max(...numbers)+1
+
       if (inputValue){
         if(repeatNum === false){
           alert('提示：同名项，不可建立')
         }else {
 
           let data = {
-            zindex: lastNumber,
+            zindex: maxNumber,
             name: inputValue,
             chargeType: 'free',
             status:'enable',
@@ -2118,19 +2121,19 @@ export default {
       let inputValue1 = this.inputValue1;
       let repeatNum1  = this.repeatNum1
 
-      var lastNumber = 0
-      if(this.dynamicTags2 === null){
-        lastNumber = 1
-      }else{
-        lastNumber = this.dynamicTags2.length+1
+      let maxNumber = 0
+      let numbers = []
+      for(let i = 0;i<this.dynamicTags1.length;i++){
+        numbers.push(this.dynamicTags1[i].zindex)
       }
-      // console.log(this.dynamicTags1);
+      maxNumber = Math.max(...numbers)+1
+
       if (inputValue1){
         if(repeatNum1 === false){
           alert('提示：同名项，不可建立')
         }else {
           let data = {
-            zindex: lastNumber,
+            zindex: maxNumber,
             name: inputValue1,
             description:inputValue1,
             pid:7,
@@ -2218,6 +2221,13 @@ export default {
       let inputValue2 = this.inputValue2;
       let repeatNum2  = this.repeatNum2
 
+      let maxNumber = 0
+      let numbers = []
+      for(let i = 0;i<this.dynamicTags2.length;i++){
+        numbers.push(this.dynamicTags2[i].zindex)
+      }
+      maxNumber = Math.max(...numbers)+1
+
       var lastNumber = 0
       if(this.dynamicTags2 === null){
         lastNumber = 1
@@ -2230,7 +2240,7 @@ export default {
         }else {
 
           let data = {
-            zindex: lastNumber,
+            zindex: maxNumber,
             name: inputValue2,
           }
           this.$request(this.url.spec1,'json',data).then((res)=>{
@@ -2315,19 +2325,20 @@ export default {
     handleInputConfirm3(index) {
       let inputValue3 = this.inputValue3;
       // console.log(this.dynamicTags2[this.categoryIndex].attrs);
-      var lastNumber = 0
-      if(this.dynamicTags2[this.categoryIndex].attrs === null){
-        lastNumber = 0
-      }else{
-        lastNumber = this.dynamicTags2[this.categoryIndex].attrs.length
+
+      let maxNumber = 0
+      let numbers = []
+      for(let i = 0;i<this.dynamicTags2[this.categoryIndex].attrs.length;i++){
+        numbers.push(this.dynamicTags2[this.categoryIndex].attrs[i].zindex)
       }
+      maxNumber = Math.max(...numbers)+1
 
       if (inputValue3){
         this.dynamicTags2[this.categoryIndex].attrs.push(
           {
             sid: this.toDynamicTags2.id,
             name: inputValue3,
-            zindex: lastNumber,
+            zindex: maxNumber,
           }
 
         );
