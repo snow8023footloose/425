@@ -2,7 +2,6 @@
   <div class="member">
     <el-tabs
       v-model="activeName"
-      @tab-click="handleClick"
     >
       <el-tab-pane label='会员列表' name="first">
         <template>
@@ -18,29 +17,6 @@
               prop="name"
               label="会员名"
               width="120">
-              <template slot-scope="scope">
-                <el-popover :width="120" trigger="hover" placement="right">
-                  <!--<p>姓名: 1111111111111</p>-->
-                  <!--<p>住址: 222222222222222</p>-->
-                  <div slot="reference" class="name-wrapper">
-                    <el-tag style="background: rgba(0,0,0,0.11);color: white" v-if="scope.row.status === 'disable'" size="medium">{{ scope.row.name }}</el-tag>
-                    <el-tag v-if="scope.row.status === 'enable'" size="medium">{{ scope.row.name }}</el-tag>
-                  </div>
-                  <div style="margin: 0;">
-                    <el-button
-                      type="primary"
-                      size="mini"
-                      round
-                      @click="editDishes(scope.row,scope.$index); visible2 = false ;showFormGoodsPlus = true"
-                      icon="el-icon-edit">编辑</el-button>
-                    <el-button
-                      size="mini"
-                      type="text"
-                      @click.native.prevent="deleteDishes(scope.row,scope.$index); visible2 = false"
-                      icon="el-icon-delete">删除</el-button>
-                  </div>
-                </el-popover>
-              </template>
             </el-table-column>
             <el-table-column
               sortable
@@ -60,12 +36,14 @@
               width="120">
             </el-table-column>
             <el-table-column
-              sortable
-              width="130"
-              prop="cid"
-              label="类">
+              fixed="right"
+              label="操作"
+              width="100">
               <template slot-scope="scope">
-                <span v-for="item in filterTagArr" v-if="scope.row.cid === item.value">{{item.text}}</span>
+                <el-button @click.native.prevent="deleteMemberCoupon(scope.row)" type="text" size="small">
+                  删除
+                </el-button>
+                <el-button @click.native.prevent="editMemberCoupon(scope.row)" type="text" size="small">编辑</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -73,9 +51,21 @@
         </template>
       </el-tab-pane>
       <el-tab-pane label="会员设置" name="second">
-        会员管理
+        <el-form>
+          <el-form-item label="会员收藏类型" prop="region">
+            <el-select v-model="memberSetting.newMemberCollectType" placeholder="请选择会员收藏类型">
+              <el-option label="类型一" value="shanghai"></el-option>
+              <el-option label="类型二" value="beijing"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="会员价格状态" prop="delivery">
+            <el-switch v-model="memberSetting.memberPriceStatus"></el-switch>
+          </el-form-item>
+          <el-form-item label="会员积分状态" prop="delivery">
+            <el-switch v-model="memberSetting.memberScoreStatus"></el-switch>
+          </el-form-item>
+        </el-form>
         <el-button class="control-button" type="primary" @click="saveMemberSetting">保存</el-button>
-
       </el-tab-pane>
     </el-tabs>
 
@@ -87,42 +77,13 @@
             v-model="memberForm.name"
             auto-complete="off"
             @keyup="onkeyup(e)"
-            placeholder="请输入卡券名"></el-input>
+            placeholder="请输入会员名"></el-input>
         </el-form-item>
         <el-form-item label="金额">
           <el-input
             v-model.number="memberForm.money"
             auto-complete="off"
             placeholder="请输入金额"></el-input>
-        </el-form-item>
-        <el-form-item label="获得条件" inline>
-          <div style="display: flex;justify-content: space-between" >
-            <el-select
-              style="display: inline-block;margin: 0px 2px"
-              v-model="memberForm.condition1"
-              placeholder="顾客类型">
-              <el-option label="新顾客" value="new"></el-option>
-              <el-option label="老顾客" value="old"></el-option>
-            </el-select>
-            <el-select
-              style="display: inline-block;margin: 0px 2px"
-              v-model="memberForm.condition3"
-              placeholder="模式">
-              <el-option label="单人" value="multi"></el-option>
-              <el-option label="多人" value="single"></el-option>
-            </el-select>
-            <el-select
-              style="display: inline-block;margin: 0px 2px"
-              v-model="memberForm.condition2"
-              placeholder="行为">
-              <el-option label="扫码" value="code"></el-option>
-              <el-option label="支付" value="pay"></el-option>
-              <el-option label="充值" value="recharge"></el-option>
-              <el-option label="满" value="old"></el-option>
-              <el-option label="分享" value="share"></el-option>
-              <el-option label="推荐" value="commend"></el-option>
-            </el-select>
-          </div>
         </el-form-item>
         <el-form-item label="消费次数">
           <el-input
@@ -147,6 +108,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="showFormMember = false;">取 消</el-button>
         <el-button type="primary" @click="addMemberConfirm">确定</el-button>
+        <el-button v-if="discountMemberEdit === 1" type="primary" @click="updateMemberConfirm">修改</el-button>
       </div>
     </el-dialog>
   </div>
@@ -156,22 +118,75 @@ export default {
   name: 'printer',
   data:() => ({
     activeName: 'first',
-    dishesDataTable:[],
     showFormMember:false,
     loading:false,
     memberTable:[],
     memberForm:{},
     formLabelWidth:'80px',
-    memberSetting:{}
+    memberSetting:{},
+    discountMemberEdit: 0 ,
   }),
   methods: {
-    handleClick(tab, event) {
+    deleteMemberCoupon(row){
+      this.$request(this.url.memberDelete,'json',{id:row.id}).then((res)=>{
+        this.memberTable = res.data.data
+        console.log(this.memberTable);
+        this.$message({
+          type: 'success',
+          message: '删除成功'
+        });
+      })
+    },
+    editMemberCoupon(row){
+      this.memberForm = row
+      this.discountMemberEdit = 1
+      this.showFormMember = !this.showFormMember
     },
     addMember(){
+      this.memberForm = {}
+      this.discountMemberEdit = 0
       this.showFormMember = !this.showFormMember
     },
     addMemberConfirm(){
-
+      this.couponForm.tid = 1000000000
+      let data =  this.memberForm
+      this.$request(this.url.memberAdd,'json',data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '添加成功!'
+        });
+        this._pullMember()
+      }).catch((err)=>{
+        console.log(err);
+      })
+      this.showFormMember = !this.showFormMember
+    },
+    updateMemberConfirm(){
+      let data =  this.memberForm
+      this.$request(this.url.memberUpdate,'json',data).then((res)=>{
+        console.log(res);
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        });
+        this._pullMember()
+      }).catch((err)=>{
+        console.log(err);
+      })
+      this.showFormMember = !this.showFormMember
+    },
+    _pullMember(){
+      let data = [
+        {
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        }
+      ]
+      this.$request(this.url.memberComplexPageQuery,'json',data).then((res)=>{
+        this.memberTable = res.data.data
+        console.log(this.memberTable);
+      })
     },
     _pullMemberSetting(){
       this.$request(this.url.memberSettingComplexPageQuery,'json',[]).then((res)=>{
@@ -199,6 +214,7 @@ export default {
   },
   created(){
     this._pullMemberSetting()
+    this._pullMember()
   }
 
 }

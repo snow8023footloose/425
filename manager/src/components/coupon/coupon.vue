@@ -364,7 +364,7 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="showFormCoupon = false">取 消</el-button>
         <el-button v-if="discountCouponEdit === 0" type="primary" @click="addConponConfirm">确定</el-button>
-        <el-button v-if="discountCouponEdit === 1" type="primary" @click="editConponConfirm">修改</el-button>
+        <el-button v-if="discountCouponEdit === 1" type="primary" @click="updateConponConfirm">修改</el-button>
       </div>
     </el-dialog>
 
@@ -393,15 +393,14 @@
       _pullDiscountCoupon(){
         let data = [
           {
-            feild:'rid',
-            value:1000000000,
-            joinType:'eq'
+            feild:'status',
+            value:'123',
+            joinType:'ne'
           }
         ]
         this.$request(this.url.discountCouponComplexPageQuery,'json',data).then((res)=>{
           this.discountCoupon = res.data.data
           console.log(this.discountCoupon);
-
         })
       },
       _pullCouponSetting(){
@@ -425,7 +424,7 @@
         this.discountCouponEdit = 1
         this.showFormCoupon = !this.showFormCoupon
       },
-      editConponConfirm(){
+      updateConponConfirm(){
         let data =  this.couponForm
         this.$request(this.url.discountCouponUpdate,'json',data).then((res)=>{
           this.$message({

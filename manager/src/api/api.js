@@ -55,6 +55,10 @@ export  function urlColletion() {
     couponSettingComplexPageQuery: BURL + '/restaurantCouponSetting/complexPageQuery',
     couponSettingUpdate: BURL + '/restaurantCouponSetting/update',
 
+    memberAdd: BURL + '/discountCoupon/add',
+    memberComplexPageQuery: BURL + '/discountCoupon/complexPageQuery',
+    memberDelete: BURL + '/discountCoupon/delete',
+    memberUpdate: BURL + '/discountCoupon/update',
 
     //会员设置
     memberSettingComplexPageQuery: BURL + '/restaurantMemberSetting/complexPageQuery',
