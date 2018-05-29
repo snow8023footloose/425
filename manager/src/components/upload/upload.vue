@@ -1,9 +1,8 @@
 <template>
   <div class="upLoad">
-    <div class="file" :id="name">
+    <div class="file" :id="name" v-if="uploadRefresh">
       <el-button  plain style="opacity: 0.5" size="small" icon="el-icon-upload" circle></el-button>
       <input type="file" :accept="typeArr" @change="upload($event)">
-      {{target}}
     </div>
   </div>
 </template>
@@ -15,26 +14,25 @@
         client: '',
         fileSize: 5000000,
         imgUrl: window.url,
+        uploadRefresh:true,
       }
-    },
-    created() {
-
     },
     methods: {
       upload(event){
+        var name = this.name + this.getUID()
         var _this = this
-        var name = this.name
-        var file = event.target.files[0];                                         //得到文件
-        var type = file.name.split('.')[1];
-        var storeAs = this.name;
+        var file = event.target.files[0];
+        var storeAs = name;
         if (this.size) {
           this.fileSize = this.size;
         }     //命名
         let data = {
           name: 'zhangsan'                                                        //传送id，请求密钥
         }
+        this.uploadRefresh = false
+        this.uploadRefresh = true
+
         this.$request(this.url.ali,'form',data).then((res)=>{
-          console.log(res,'0000000000');
           var res = res.data
           this.$message({
             type: 'success',
@@ -56,11 +54,11 @@
             // 处理闭包，通过window得到finalUrl
             //更新到dom
             _this.$emit('ToUrl',{finalUrl,name})
-            var oDiv = document.getElementById(name)
+
+            var oDiv = document.getElementById(_this.name)
+            console.log(finalUrl);
             oDiv.style.background = 'url('+ finalUrl +') no-repeat center center'
             oDiv.style.backgroundSize = '100% auto'
-            console.log(finalUrl);
-            // oDiv.style.verticalAlign = 'middle'
 
           }).catch(function (err) {
             console.log(err);                                                     //没有上传到ali

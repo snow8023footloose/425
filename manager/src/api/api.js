@@ -45,11 +45,20 @@ export  function urlColletion() {
     restaurantServiceTypeDelete: BURL + '/restaurantServiceType/delete',
     restaurantServiceTypeUpdate: BURL + '/restaurantServiceType/update',
 
-    //卡券管理
+    //折扣卡券
     discountCouponAdd: BURL + '/discountCoupon/add',
     discountCouponComplexPageQuery: BURL + '/discountCoupon/complexPageQuery',
     discountCouponDelete: BURL + '/discountCoupon/delete',
     discountCouponUpdate: BURL + '/discountCoupon/update',
+
+    //卡券设置
+    couponSettingComplexPageQuery: BURL + '/restaurantCouponSetting/complexPageQuery',
+    couponSettingUpdate: BURL + '/restaurantCouponSetting/update',
+
+
+    //会员设置
+    memberSettingComplexPageQuery: BURL + '/restaurantMemberSetting/complexPageQuery',
+    memberSettingUpdate: BURL + '/restaurantMemberSetting/update',
 
     //登录
     login1: BURL + '/xwfUser/login',

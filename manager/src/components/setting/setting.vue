@@ -88,13 +88,13 @@
 
 
             <div class="matter2">
-              <el-form-item label="促销状态" label-width="120px">
-                <el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">
-                  <el-option label="未促销" value="close"></el-option>
-                  <el-option label="会员促销" value="member"></el-option>
-                  <el-option label="活动促销" value="promotion"></el-option>
-                </el-select>
-              </el-form-item>
+              <!--<el-form-item label="促销状态" label-width="120px">-->
+                <!--<el-select v-model="settingForm.promotiomStatus" placeholder="请选择推广状态">-->
+                  <!--<el-option label="未促销" value="close"></el-option>-->
+                  <!--<el-option label="会员促销" value="member"></el-option>-->
+                  <!--<el-option label="活动促销" value="promotion"></el-option>-->
+                <!--</el-select>-->
+              <!--</el-form-item>-->
 
               <el-form-item label="提现类型" label-width="120px">
                 <el-select v-model="settingForm.withdrawType" placeholder="请选择提现类型">

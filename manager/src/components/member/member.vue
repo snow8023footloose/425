@@ -69,12 +69,14 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-button size="large" type="primary" icon="el-icon-plus" @click="plusMember" class="control-button">添加会员</el-button>
+          <el-button size="large" type="primary" icon="el-icon-plus" @click="addMember" class="control-button">添加会员</el-button>
         </template>
       </el-tab-pane>
-      <!--<el-tab-pane label="会员管理" name="second">-->
-        <!--会员管理-->
-      <!--</el-tab-pane>-->
+      <el-tab-pane label="会员设置" name="second">
+        会员管理
+        <el-button class="control-button" type="primary" @click="saveMemberSetting">保存</el-button>
+
+      </el-tab-pane>
     </el-tabs>
 
     <el-dialog title="增加会员" :visible.sync="showFormMember" top="10vh">
@@ -144,7 +146,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="showFormMember = false;">取 消</el-button>
-        <el-button type="primary" @click="plusMemberConfirm">确定</el-button>
+        <el-button type="primary" @click="addMemberConfirm">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -160,16 +162,43 @@ export default {
     memberTable:[],
     memberForm:{},
     formLabelWidth:'80px',
+    memberSetting:{}
   }),
   methods: {
     handleClick(tab, event) {
     },
-    plusMember(){
+    addMember(){
       this.showFormMember = !this.showFormMember
     },
-    plusMemberConfirm(){
+    addMemberConfirm(){
 
     },
+    _pullMemberSetting(){
+      this.$request(this.url.memberSettingComplexPageQuery,'json',[]).then((res)=>{
+        this.memberSettingUpdate = res.data.data[0]
+        console.log(this.memberSettingUpdate);
+      })
+    },
+    saveMemberSetting(){
+      let data = this.memberSetting
+      this.$request(this.url.memberSettingUpdate,'json',data).then((res)=>{
+        this.$message({
+          type: 'success',
+          message: '保存成功!'
+        });
+        this._pullMemberSetting()
+
+      }).catch((err)=>{
+        console.log(err);
+        this.$message({
+          type: 'info',
+          message: '保存失败'
+        });
+      })
+    }
+  },
+  created(){
+    this._pullMemberSetting()
   }
 
 }

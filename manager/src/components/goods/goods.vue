@@ -391,7 +391,7 @@
         <el-form-item label="标签类型" style="text-align: left">
           <upload
             v-on:ToUrl="listenUrlPopularizeTags"
-            :name="UID('/PopularizeTags/')"
+            :name="'/PopularizeTags/'"
             :target="this.dynamicTagsPopularize.thumb"></upload>
         </el-form-item>
         <el-form-item style="display: flex;justify-content: flex-end;">
@@ -630,8 +630,6 @@
               :placeholder="endTimePre">
             </el-time-picker>
           </el-form-item>
-
-
         <!--菜品价格类型：标准价格、会员价格、活动价格-->
           <el-form-item class="price-form" label="价格" prop="price">
             <el-input
@@ -660,24 +658,24 @@
             </el-input>
           </el-form-item>
           <div style="display: flex;">
-            <el-form-item style="width: 20%;float: left" label="缩略图" prop="thumb">
+            <el-form-item style="width: 20%;float: left" label="菜品图" prop="thumb">
               <upload
                 v-on:ToUrl="listenUrl"
-                :name="UID('/dishes/')"
+                :name="'/dishes/'"
                 :target="this.dishes.thumb"></upload>
             </el-form-item>
-            <el-form-item style="width: 20%;float: left" label="高清图" prop="highDefinitionImg">
-              <upload
-                v-on:ToUrl="listenUrl1"
-                :name="UID('/dishes/')"
-                :target="this.dishes.highDefinitionImg"></upload>
-            </el-form-item>
-            <el-form-item style="width: 20%;float: left" label="菜单图" prop="bannerImg">
-              <upload
-                v-on:ToUrl="listenUrl2"
-                :name="UID('/dishes/')"
-                :target="this.dishes.bannerImg"></upload>
-            </el-form-item>
+            <!--<el-form-item style="width: 20%;float: left" label="高清图" prop="highDefinitionImg">-->
+              <!--<upload-->
+                <!--v-on:ToUrl="listenUrl1"-->
+                <!--:name="UID('/dishes/')"-->
+                <!--:target="this.dishes.highDefinitionImg"></upload>-->
+            <!--</el-form-item>-->
+            <!--<el-form-item style="width: 20%;float: left" label="菜单图" prop="bannerImg">-->
+              <!--<upload-->
+                <!--v-on:ToUrl="listenUrl2"-->
+                <!--:name="UID('/dishes/')"-->
+                <!--:target="this.dishes.bannerImg"></upload>-->
+            <!--</el-form-item>-->
             <!--<el-form-item style="width: 20%;float: left" label="banner" prop="banner">-->
               <!--<upload-->
                 <!--v-on:ToUrl="listenUrl3"-->
@@ -1243,14 +1241,14 @@ export default {
       })
     },
     changeStyle(event){
-      console.log(event);
+      // console.log(event);
       event.target.style.background= 'rgba(64,158,255,.1)'
       event.target.style.border = '1px solid rgba(64,158,255,.6)'
     },
     priceBlurtest(row,index,event,type){
       event.target.style.background= 'rgba(146, 199, 253, 0.1)'
       event.target.style.border = '1px solid rgba(0, 0, 0, 0.25)'
-      console.log(this.generateSkuDate,'打印出来的normalPriceBlurtest》generateSkuDate');
+      // console.log(this.generateSkuDate,'打印出来的normalPriceBlurtest》generateSkuDate');
       if(type === 'normalPrice'){
         this.generateSkuDate[index].normalPrice = Number(event.target.value)
       }else if(type === 'memberPrice'){
@@ -1258,7 +1256,7 @@ export default {
       }else if(type === 'promotionPrice'){
         this.generateSkuDate[index].promotionPrice = Number(event.target.value)
       }
-      console.log(this.generateSkuDate,'实时修改的generateSkuDate');
+      // console.log(this.generateSkuDate,'实时修改的generateSkuDate');
     },
     UID(n){
       var name = n + this.getUID()
@@ -1279,12 +1277,6 @@ export default {
     listenUrlPopularizeTags(data){
       this.dynamicTagsPopularize.thumb = data.name
     },
-    handleEdit:function(row){
-      //遍历数组改变editeFlag
-    },
-    handleSave:function(row){
-      //保存数据，向后台取数据
-    },
     handleMouseEnter:function(row, column, cell, event){
       // console.log(row, column, cell, event);
       // cell.style.background = 'black'
@@ -1292,12 +1284,8 @@ export default {
       //column: 一列数据
       // cell.children[0].children[1].style.color="black";
     },
-    confirmPrice(row,index){
-      console.log(row, 'row',index,'index');
-      console.log(this.normalPrice1);
-    },
     handleMouseOut:function(row, column, cell, event){
-      console.log(row,'这是row', column,'这是column', cell,'这是cell', event,'handleMouseOut');
+      // console.log(row,'这是row', column,'这是column', cell,'这是cell', event,'handleMouseOut');
       // console.log(row, column, cell, event);
       // cell.children[0].children[1].style.color="#ffffff";
     },
@@ -1785,6 +1773,7 @@ export default {
     },
     // 修改菜品
     editDishes (row,index) {
+      console.log(row);
       this.valueOfSKU = []
       this.valueOfTags = []
       this.valueOfTagsPopularize = []

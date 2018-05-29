@@ -11,7 +11,7 @@
             <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid && item.status === tableStatus">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                  <div class="box-header disable-table" v-if="item.status === 'disable'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -34,28 +34,16 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-clear'">未清台
-                  </p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-order'">未下单</p>
-                  <p style="
-                font-size: 30px;
-                color: rgba(0,0,0,0.15);
-                font-weight: bolder;
-                left: 13%;
-                position: absolute;
-                bottom: 17px;
-                z-index: 100;
-                text-align: center"
-                  >{{item.name}}</p>
+                  <p class="pre-clear" v-if="item.status === 'pre-clear'">未清台</p>
+                  <p class="pre-order" v-if="item.status === 'pre-order'">未下单</p>
+                  <p class="name" >{{item.name}}</p>
                 </div>
               </div>
             </transition>
             <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid && tableStatus === ''">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                  <div class="box-header disable-table" style="background: #909399" v-if="item.status === 'disable'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -78,22 +66,9 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-clear'">未清台
-
-                  </p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-order'">未下单</p>
-                  <p style="
-                font-size: 30px;
-                color: rgba(0,0,0,0.15);
-                font-weight: bolder;
-                left: 13%;
-                position: absolute;
-                bottom: 17px;
-                z-index: 100;
-                text-align: center"
-                  >{{item.name}}</p>
+                  <p class="pre-clear" v-if="item.status === 'pre-clear'">未清台</p>
+                  <p class="pre-order" v-if="item.status === 'pre-order'">未下单</p>
+                  <p class="name" >{{item.name}}</p>
                 </div>
               </div>
             </transition>
@@ -102,7 +77,7 @@
             <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === 0 && item.status === tableStatus">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                  <div class="box-header disable-table" v-if="item.status === 'disable'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -125,27 +100,16 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-clear'">未清台</p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-order'">未下单</p>
-                  <p style="
-                  font-size: 30px;
-                  color: rgba(0,0,0,0.15);
-                  font-weight: bolder;
-                  left: 13%;
-                  position: absolute;
-                  bottom: 17px;
-                  z-index: 100;
-                  text-align: center"
-                  >{{item.name}}</p>
+                  <p class="pre-clear" v-if="item.status === 'pre-clear'">未清台</p>
+                  <p class="pre-order" v-if="item.status === 'pre-order'">未下单</p>
+                  <p class="name" >{{item.name}}</p>
                 </div>
               </div>
             </transition>
             <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === 0 && tableStatus === ''">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
-                  <div class="box-header" style="background: #909399" v-if="item.status === 'disable'">
+                  <div class="box-header disable-table" v-if="item.status === 'disable'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -168,20 +132,9 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-clear'">未清台</p>
-                  <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
-                     v-if="item.status === 'pre-order'">未下单</p>
-                  <p style="
-                  font-size: 30px;
-                  color: rgba(0,0,0,0.15);
-                  font-weight: bolder;
-                  left: 13%;
-                  position: absolute;
-                  bottom: 17px;
-                  z-index: 100;
-                  text-align: center"
-                  >{{item.name}}</p>
+                  <p class="pre-clear" v-if="item.status === 'pre-clear'">未清台</p>
+                  <p class="pre-order" v-if="item.status === 'pre-order'">未下单</p>
+                  <p class="name" >{{item.name}}</p>
                 </div>
               </div>
             </transition>
@@ -202,14 +155,6 @@
         :value="item.typeIndex">
       </el-option>
     </el-select>
-    <!--<div class="table-status-type" style="display: inline-block;margin-left: 20px" @click="toCountTable">-->
-      <!--<el-radio-group v-model="tableStatus" size="small">-->
-        <!--<el-radio-button label="全部"></el-radio-button>-->
-        <!--<el-radio-button label="北京"></el-radio-button>-->
-        <!--<el-radio-button label="广州"></el-radio-button>-->
-        <!--<el-radio-button label="深圳"></el-radio-button>-->
-      <!--</el-radio-group>-->
-    <!--</div>-->
     <div class="table-status-type" style="display: inline-block;margin-left: 20px" @click="toCountTable">
       <el-button size="mini" type="success" plain round @click="tableStatus = ''">全部</el-button>
       <el-button size="mini" type="primary" plain round @click="tableStatus = 'pre-order'">未下单</el-button>
@@ -825,19 +770,20 @@ export default {
       })
     },
     refreshNeedPay(){
-      // let data= {
-      //   restaurantId: localStorage.getItem('rid'),
-      //   orderType:'multi',
-      //   tableId: this.tid
-      // }
-      // this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-      //   this.cartList = res.data.data.cartList
-      //   this.discountMoney = res.data.data.discountMoney
-      //   this.needPay = res.data.data.needPay
-      //   this.realPay = res.data.data.realPay
-      // }).catch((err)=>{
-      //
-      // })
+      let data= {
+        restaurantId: localStorage.getItem('rid'),
+        orderType:'multi',
+        tableId: this.tid
+      }
+      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        console.log(res);
+        this.cartList = res.data.data.cartList
+        this.discountMoney = res.data.data.discountMoney
+        this.needPay = res.data.data.needPay
+        this.realPay = res.data.data.realPay
+      }).catch((err)=>{
+
+      })
     },
     incrementTotalAdd(g) {
       this.getDataFromSelectFoods.event = g.event
@@ -893,30 +839,11 @@ export default {
       }
     },
     findSkuByAttrJoin(selectedJoinAttr){
-      // console.log('findSkuByAttrJoin', selectedJoinAttr);
-      // console.log('this.getFoods.skus', this.getFoods.skus);
       for(let item of this.getFoods.skus){
         if(item.attrJion === selectedJoinAttr){
           return item;
         }
       }
-    },
-    pay(){
-      if (this.totalPrice < this.minPrice) {
-        return;
-      }
-      let data= {
-        // restaurantId: localStorage.getItem('rid'),
-        orderType:'multi',
-        tableId: this.tid
-      }
-
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-      }).catch((err)=>{
-        console.log(err);
-      })
-
-      window.alert(`支付${this.totalPrice}元`);
     },
     empty() {
       this.selectFoods.forEach((food) => {
@@ -1003,7 +930,6 @@ export default {
         tableId: this.tid
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log(res);
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
@@ -1233,6 +1159,7 @@ export default {
       }).then((res)=>{
         _this.$request(_this.url.dishesCategory2, 'json', Data).then((res)=>{
           _this.dishesCategory = res.data.data;
+          _this.refreshNeedPay()
         }).catch((err)=>{
           console.log(err)
         }).then(function () {

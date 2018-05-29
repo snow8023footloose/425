@@ -2,182 +2,119 @@
   <div class="coupon">
     <el-tabs
       v-model="activeName"
-      @tab-click="handleClick"
     >
       <el-tab-pane label="卡券设置" name="first">
-
         <el-collapse v-model="activeName1" accordion>
-          <el-collapse-item :title="'新人优惠券：' + bestStatus + '状态'" name="1">
+          <el-collapse-item :title="'新会员券：' + couponSetting.newMemberCouponStatus + '状态'" name="1">
             <el-col class="card" :span="23">
               <el-card shadow="hover">
                 <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">新人优惠券</span>状态
-                  <el-tooltip :content="'状态: ' + bestStatus" placement="top">
+                  <span style="font-size: 18px;margin-right: 22px">新会员券</span>状态
+                  <el-tooltip :content="'状态: ' + couponSetting.newMemberCouponStatus" placement="top">
                     <el-switch
-                      v-model="bestStatus"
+                      v-model="couponSetting.newMemberCouponStatus"
                       active-color="#13ce66"
                       inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
+                      active-value="open"
+                      inactive-value="on">
                     </el-switch>
                   </el-tooltip>
                 </div>
                 <el-form label-position="left" inline >
                   <el-form-item label="面值">
-                    <el-input v-model.number="bestData.money" placeholder="请输入面值"></el-input>
+                    <el-input v-model.number="couponSetting.newMemberCouponPrice" placeholder="请输入面值"></el-input>
                   </el-form-item>
-                  <el-form-item label="消费">
-                    <el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>
-                  </el-form-item>
-                  <el-form-item label="描述">
-                    <el-input v-model.number="rechargeData.money" placeholder="请输入描述"></el-input>
-                  </el-form-item>
+                  <!--<el-form-item label="消费">-->
+                    <!--<el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>-->
+                  <!--</el-form-item>-->
                 </el-form>
               </el-card>
             </el-col>
-
           </el-collapse-item>
-          <el-collapse-item :title="'优惠券：' + bestStatus + '状态'" name="1">
-            <el-col class="card" :span="23">
-              <el-card shadow="hover">
-                <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">优惠券</span>状态
-                  <el-tooltip :content="'状态: ' + bestStatus" placement="top">
-                    <el-switch
-                      v-model="bestStatus"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
-                    </el-switch>
-                  </el-tooltip>
-                </div>
-                <el-form label-position="left" inline >
-                  <el-form-item label="面值">
-                    <el-input v-model.number="bestData.money" placeholder="请输入面值"></el-input>
-                  </el-form-item>
-                  <el-form-item label="消费">
-                    <el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>
-                  </el-form-item>
-                  <el-form-item label="描述">
-                    <el-input v-model.number="rechargeData.money" placeholder="请输入描述"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-card>
-            </el-col>
-
-          </el-collapse-item>
-          <el-collapse-item :title="'人头券：' + headerStatus + '状态'" name="2">
+          <el-collapse-item :title="'人头券：' + couponSetting.headCouponStatus + '状态'" name="1">
             <el-col class="card" :span="23">
               <el-card shadow="hover">
                 <div class="clearfix">
                   <span style="font-size: 18px;margin-right: 22px">人头券</span>状态
-                  <el-tooltip :content="'状态: ' + headerStatus" placement="top">
+                  <el-tooltip :content="'状态: ' + couponSetting.headCouponStatus" placement="top">
                     <el-switch
-                      v-model="headerStatus"
+                      v-model="couponSetting.headCouponStatus"
                       active-color="#13ce66"
                       inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
+                      active-value="open"
+                      inactive-value="on">
+                    </el-switch>
+                  </el-tooltip>
+                </div>
+                <el-form label-position="left" inline >
+                  <el-form-item label="面值">
+                    <el-input v-model.number="couponSetting.headCouponPrice" placeholder="请输入面值"></el-input>
+                  </el-form-item>
+                  <!--<el-form-item label="消费">-->
+                    <!--<el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>-->
+                  <!--</el-form-item>-->
+                </el-form>
+              </el-card>
+            </el-col>
+          </el-collapse-item>
+          <el-collapse-item :title="'回头券：' + couponSetting.headBackCouponStatus + '状态'" name="1">
+            <el-col class="card" :span="23">
+              <el-card shadow="hover">
+                <div class="clearfix">
+                  <span style="font-size: 18px;margin-right: 22px">回头券</span>状态
+                  <el-tooltip :content="'状态: ' + couponSetting.headBackCouponStatus" placement="top">
+                    <el-switch
+                      v-model="couponSetting.headBackCouponStatus"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-value="open"
+                      inactive-value="on">
                     </el-switch>
                   </el-tooltip>
                 </div>
                 <el-form label-position="left" inline>
                   <el-form-item label="面值">
-                    <el-input v-model.number="headerData.money" placeholder="请输入金额"></el-input>
+                    <el-input v-model.number="couponSetting.headBackCouponPrice" placeholder="请输入金额"></el-input>
                   </el-form-item>
-                  <el-form-item label="描述" style="width: 380px">
-                    <el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" placeholder="请输入描述" v-model.number="rechargeData.money"></el-input>
-                  </el-form-item>
+                  <!--<el-form-item label="描述" style="width: 380px">-->
+                    <!--<el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" placeholder="请输入描述" v-model.number="rechargeData.money"></el-input>-->
+                  <!--</el-form-item>-->
                 </el-form>
               </el-card>
             </el-col>
+          </el-collapse-item>
 
-          </el-collapse-item>
-          <el-collapse-item :title="'代金券:'+ moneyStatus +'状态'" name="3">
-            <el-col class="card deduce" :span="23">
+          <el-collapse-item :title="'默认信息：' + couponSetting.indexMessageStatus + '状态'" name="1">
+            <el-col class="card" :span="23">
               <el-card shadow="hover">
                 <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">代金券</span>状态
-                  <el-tooltip :content="'状态: ' + moneyStatus" placement="top">
+                  <span style="font-size: 18px;margin-right: 22px">默认信息</span>状态
+                  <el-tooltip :content="'状态: ' + couponSetting.indexMessageStatus" placement="top">
                     <el-switch
-                      v-model="moneyStatus"
+                      v-model="couponSetting.indexMessageStatus"
                       active-color="#13ce66"
                       inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
+                      active-value="open"
+                      inactive-value="on">
                     </el-switch>
                   </el-tooltip>
                 </div>
-                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
-                  <el-form-item
-                    class="deduce"
-                    v-for="(domain, index) in dynamicValidateForm.domains"
-                    :label="'金额' + index"
-                    :key="domain.key"
-                    :prop="'domains.' + index + '.value'"
-                  >
-                    <span>价格</span>
-                    <el-input v-model="domain.value" placeholder="请输入价格"></el-input>
-                    <span>抵</span>
-                    <el-input v-model="dynamicValidateForm.email" placeholder="请输入抵扣金额"></el-input>
-                    <el-input v-model="domain.description" placeholder="请输入描述" style="width: 30%"></el-input>
-                    <el-button style="position: absolute; left: -80px;top:9px;padding: 5px" size="mini" type="danger" icon="el-icon-delete" circle @click.prevent="removeDomain(domain)"></el-button>
-                  </el-form-item>
-                  <el-form-item label-width="65%">
-                    <el-button @click="addDomain">新增代金券</el-button>
-                    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-card>
-            </el-col>
-          </el-collapse-item>
-          <el-collapse-item :title="'充值券：' + rechargeStatus + '状态'" name="4">
-            <el-col  class="card deduce" :span="23">
-              <el-card shadow="hover">
-                <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">充值券</span>状态
-                  <el-tooltip :content="'状态: ' + rechargeStatus" placement="top">
-                    <el-switch
-                      v-model="rechargeStatus"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
-                    </el-switch>
-                  </el-tooltip>
-                </div>
-                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
-                  <el-form-item
-                    class="deduce"
-                    v-for="(domain, index) in dynamicValidateForm.domains"
-                    :label="'金额' + index"
-                    :key="domain.key"
-                    :prop="'domains.' + index + '.value'"
-                  >
-                    <span>价格</span>
-                    <el-input v-model="domain.value" placeholder="请输入价格"></el-input>
-                    <span>面值</span>
-                    <el-input v-model="domain.value" placeholder="请输入面值"></el-input>
-                    <el-input v-model="domain.description" placeholder="请输入描述" style="width: 30%"></el-input>
-                    <el-button style="position: absolute; left: -80px;top:9px;padding: 5px" size="mini" type="danger" icon="el-icon-delete" circle @click.prevent="removeDomain(domain)"></el-button>
-                  </el-form-item>
-                  <el-form-item label-width="65%">
-                    <el-button @click="addDomain">新增充值券</el-button>
-                    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
-                  </el-form-item>
+                <el-form label-position="left" inline>
+
+                  <!--<el-form-item label="描述" style="width: 380px">-->
+                  <!--<el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" placeholder="请输入描述" v-model.number="rechargeData.money"></el-input>-->
+                  <!--</el-form-item>-->
                 </el-form>
               </el-card>
             </el-col>
           </el-collapse-item>
         </el-collapse>
-        <el-button class="control-button" type="primary" @click="onSubmitCoupon" :loading="saveCoupon">保存</el-button>
+        <el-button class="control-button" type="primary" @click="saveCouponSetting" :loading="saveCoupon">保存</el-button>
       </el-tab-pane>
-      <!--
-      <el-tab-pane label="卡券管理" name="second">
+      <el-tab-pane label="优惠券" name="second">
         <template>
           <el-table
-            :data="couponTable"
+            :data="discountCoupon"
             style="width: 100%"
             height="600"
           >
@@ -200,41 +137,44 @@
             </el-table-column>
             <el-table-column
               sortable
-              prop="driverName"
+              prop="stock"
               label="数量"
               width="100">
             </el-table-column>
             <el-table-column
               sortable
               width="100"
-              prop="description"
-              label="金额">
+              prop="discountAmount"
+              label="优惠金额">
             </el-table-column>
             <el-table-column
               sortable
-              prop="remark"
+              prop="type"
               label="类型"
               width="100">
+              <template slot-scope="scope">
+                <span v-if="scope.row.type === 'coupon'">优惠券</span>
+                <span v-if="scope.row.type === 'platform-voucher'">平台发放</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
-              width="150"
-              prop="description"
-              label="获得条件">
+              width="100"
+              prop="minimumCharge"
+              label="使用下限">
             </el-table-column>
             <el-table-column
               sortable
-              width="150"
-              prop="description"
-              label="使用方式">
+              width="100"
+              prop="minimumGiveCharge"
+              label="获得下限">
             </el-table-column>
             <el-table-column
               sortable
-              width="150"
-              prop="description"
-              label="期限">
+              width="100"
+              prop="canGetNum"
+              label="获得数量">
             </el-table-column>
-
             <el-table-column
               sortable
               width="150"
@@ -242,23 +182,38 @@
               label="描述/介绍">
             </el-table-column>
             <el-table-column
+              sortable
+              width="100"
+              prop="validTime"
+              label="有效类型">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="validDay"
+              label="有效日期">
+            </el-table-column>
+            <el-table-column
+              sortable
+              width="100"
+              prop="validTime"
+              label="有效时长">
+            </el-table-column>
+            <el-table-column
               fixed="right"
               label="操作"
-              width="60">
+              width="100">
               <template slot-scope="scope">
-                <el-button
-                  @click.native.prevent="deleteCoupon(scope.row)"
-                  type="text"
-                  size="small">
+                <el-button @click.native.prevent="deleteDiscountCoupon(scope.row)" type="text" size="small">
                   删除
                 </el-button>
+                <el-button @click.native.prevent="editDiscountCoupon(scope.row)" type="text" size="small">编辑</el-button>
               </template>
             </el-table-column>
           </el-table>
-
         </template>
         <el-button type="primary" @click="plusCoupon" class="control-button">添加卡券</el-button>
-      </el-tab-pane>-->
+      </el-tab-pane>
     </el-tabs>
 
       <!--卡券弹框-->
@@ -272,32 +227,37 @@
             @keyup="onkeyup(e)"
             placeholder="请输入卡券名"></el-input>
         </el-form-item>
+        <el-form-item label="价格">
+          <el-input
+            v-model.number="couponForm.price"
+            auto-complete="off"
+            placeholder="请输入价格"></el-input>
+        </el-form-item>
         <el-form-item label="数量">
           <el-input
-            v-model.number="couponForm.num"
+            v-model.number="couponForm.stock"
             auto-complete="off"
             placeholder="请输入数量"></el-input>
-        </el-form-item>
-        <el-form-item label="金额">
-          <el-input
-            v-model.number="couponForm.money"
-            auto-complete="off"
-            placeholder="请输入金额"></el-input>
         </el-form-item>
         <el-form-item label="卡券类型">
           <el-select
             style="display: inline-block;margin: 0px 2px"
-            v-model="couponForm.customerType"
-            placeholder="卡券类型">
-            <el-option label="折扣券" value="discont"></el-option>
-            <el-option label="代金券" value="money"></el-option>
-            <el-option label="礼品券" value="present"></el-option>
-            <el-option label="团购券" value="group-buy"></el-option>
-            <el-option label="人头券" value="header"></el-option>
-            <el-option label="充值券" value="recharge"></el-option>
+            v-model="couponForm.type"
+            placeholder="请选择卡券类型">
+            <el-option label="平台发放 platform-voucher" value="platform-voucher"></el-option>
+            <el-option label="优惠券 coupon" value="coupon"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="获得条件" inline>
+        <el-form-item label="限制类型">
+          <el-select
+            style="display: inline-block;margin: 0px 2px"
+            v-model="couponForm.getLimitType"
+            placeholder="请选择限制类型">
+            <el-option label="启用" value="enable"></el-option>
+            <el-option label="不启用" value="disable"></el-option>
+          </el-select>
+        </el-form-item>
+        <!--<el-form-item label="获得条件" inline>
           <div style="display: flex;justify-content: space-between" >
             <el-select
               style="display: inline-block;margin: 0px 2px"
@@ -325,26 +285,41 @@
               <el-option label="推荐" value="commend"></el-option>
             </el-select>
           </div>
+        </el-form-item>-->
+        <el-form-item label="使用下限">
+          <el-input
+            v-model.number="couponForm.minimumCharge"
+            auto-complete="off"
+            placeholder="请输入使用下限"></el-input>
+        </el-form-item>
+        <el-form-item label="获得下限">
+          <el-input
+            v-model.number="couponForm.minimumGiveCharge"
+            auto-complete="off"
+            placeholder="请输入获得下限"></el-input>
+        </el-form-item>
+        <el-form-item label="优惠金额">
+          <el-input
+            v-model.number="couponForm.discountAmount"
+            auto-complete="off"
+            placeholder="请输入优惠金额"></el-input>
+        </el-form-item>
+        <el-form-item label="打印数量">
+          <el-input
+            v-model.number="couponForm.publishNum"
+            auto-complete="off"
+            placeholder="请输入打印数量"></el-input>
         </el-form-item>
         <el-form-item label="获得次数">
           <el-input
-            v-model.number="couponForm.times"
+            v-model.number="couponForm.canGetNum"
             auto-complete="off"
             placeholder="请输入次数"></el-input>
-        </el-form-item>
-        <el-form-item label="派发方式">
-          <el-select
-            style="display: inline-block"
-            v-model="couponForm.way"
-            placeholder="请选择派发方式">
-            <el-option label="随机人群" value="random"></el-option>
-            <el-option label="全部" value="all"></el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="使用期限">
           <el-select
             style="display: inline-block;margin: 0px 2px"
-            v-model="couponForm.timeType"
+            v-model="couponForm.validType"
             placeholder="选择使用期限类型">
             <el-option label="到期时间" value="dot"></el-option>
             <el-option label="时间段" value="part"></el-option>
@@ -352,58 +327,44 @@
           </el-select>
           <el-input
             style="width: 220px;margin: 5px 0px"
-            v-model="couponUseDateLong"
+            v-model="couponForm.validTime"
             placeholder="输入时间/小时"
-            v-if="couponForm.timeType === 'long'">
+            v-if="couponForm.validType === 'long'">
           </el-input>
           <el-date-picker
             style="width: 220px;margin: 5px 0px"
-            v-model="couponUseDateDot"
+            v-model="couponForm.validTime"
             type="date"
-            v-if="couponForm.timeType === 'dot'"
+            v-if="couponForm.validType === 'dot'"
             placeholder="选择日期">
           </el-date-picker>
           <el-date-picker
-            v-model="couponUseDatePart"
+            v-model="couponForm.validDay"
             style="width: 220px;margin: 5px 0px"
             type="daterange"
-            v-if="couponForm.timeType === 'part'"
+            v-if="couponForm.validType === 'part'"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期">
           </el-date-picker>
-
-
         </el-form-item>
-        <el-form-item label="叠加使用" style="text-align: left">
-          <el-select
-            style="display: inline-block"
-            v-model="couponForm.superType"
-            placeholder="请选择状态">
-            <el-option label="可叠加" value="super"></el-option>
-            <el-option label="不可叠加使用" value="no-super"></el-option>
-          </el-select>
+        <el-form-item label="描述">
+          <el-input v-model="couponForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
         </el-form-item>
-        <el-form-item label="状态" style="text-align: left">
+        <el-form-item label="状态">
           <el-select
-            style="display: inline-block"
+            style="display: inline-block;margin: 0px 2px"
             v-model="couponForm.status"
             placeholder="请选择状态">
             <el-option label="可用" value="enable"></el-option>
             <el-option label="不可用" value="disable"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="couponForm.description" auto-complete="off" placeholder="请输入描述"></el-input>
-        </el-form-item>
-        <el-form-item label="备注">
-          <el-input v-model="couponForm.remark" auto-complete="off" placeholder="请输入备注"></el-input>
-        </el-form-item>
-
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="showFormCoupon = false;">取 消</el-button>
-        <el-button type="primary" @click="plusConponConfirm">确定</el-button>
+        <el-button @click="showFormCoupon = false">取 消</el-button>
+        <el-button v-if="discountCouponEdit === 0" type="primary" @click="addConponConfirm">确定</el-button>
+        <el-button v-if="discountCouponEdit === 1" type="primary" @click="editConponConfirm">修改</el-button>
       </div>
     </el-dialog>
 
@@ -411,37 +372,22 @@
 </template>
 <script>
   export default {
-    name: 'printer',
+    name: 'coupon',
     data:() => ({
       activeName: 'first',
       activeName1:'1',
       formLabelWidth: '80px',
-      rechargeStatus:'',
-      moneyStatus:'',
-      headerStatus:'',
-      bestStatus:'',
       rechargeData:{},
-      headerData:{},
-      bestData:{},
-      deduceData:{},
-      couponTable:[],
-      couponUseDatePart:'',
-      couponUseDateDot:'',
-      couponUseDateLong:'',
+      discountCoupon:[],
       showFormCoupon:false,
       saveCoupon: false,
       couponForm:{},
-      couponStatus:[],
-      dynamicValidateForm: {
-        domains: [{
-          value: ''
-        }],
-        email: ''
-      }
-
+      couponSetting: {},
+      discountCouponEdit: 0
     }),
     created(){
       this._pullDiscountCoupon()
+      this._pullCouponSetting()
     },
     methods: {
       _pullDiscountCoupon(){
@@ -452,50 +398,82 @@
             joinType:'eq'
           }
         ]
-        // this.$request(this.url.discountCouponComplexPageQuery,'json',data).then((res)=>{
-        //   console.log(res);
-        // })
+        this.$request(this.url.discountCouponComplexPageQuery,'json',data).then((res)=>{
+          this.discountCoupon = res.data.data
+          console.log(this.discountCoupon);
+
+        })
       },
-      handleClick(tab, event) {
+      _pullCouponSetting(){
+        this.$request(this.url.couponSettingComplexPageQuery,'json',[]).then((res)=>{
+          this.couponSetting = res.data.data[0]
+          console.log(this.couponSetting);
+        })
+      },
+      deleteDiscountCoupon(row){
+        this.$request(this.url.discountCouponDelete,'form',{id:row.id}).then((res)=>{
+          console.log(res.data.msg);
+          this.$message({
+            type: 'success',
+            message: '删除成功!'
+          });
+          this._pullDiscountCoupon()
+        })
+      },
+      editDiscountCoupon(row){
+        this.couponForm = row
+        this.discountCouponEdit = 1
+        this.showFormCoupon = !this.showFormCoupon
+      },
+      editConponConfirm(){
+        let data =  this.couponForm
+        this.$request(this.url.discountCouponUpdate,'json',data).then((res)=>{
+          this.$message({
+            type: 'success',
+            message: '修改成功!'
+          });
+          this._pullDiscountCoupon()
+        }).catch((err)=>{
+          console.log(err);
+        })
+        this.showFormCoupon = !this.showFormCoupon
       },
       plusCoupon(){
         this.couponForm = {}
+        this.discountCouponEdit = 0
         this.showFormCoupon = !this.showFormCoupon
       },
-      plusConponConfirm(){
+      addConponConfirm(){
+        this.couponForm.tid = 1000000000
+        let data =  this.couponForm
+        this.$request(this.url.discountCouponAdd,'json',data).then((res)=>{
+          this.$message({
+            type: 'success',
+            message: '添加成功!'
+          });
+          this._pullDiscountCoupon()
+        }).catch((err)=>{
+          console.log(err);
+        })
         this.showFormCoupon = !this.showFormCoupon
       },
-      submitForm(formName) {
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            alert('submit!');
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
-      },
-      resetForm(formName) {
-        this.$refs[formName].resetFields();
-      },
-      removeDomain(item) {
-        var index = this.dynamicValidateForm.domains.indexOf(item)
-        if (index !== -1) {
-          this.dynamicValidateForm.domains.splice(index, 1)
-        }
-      },
-      addDomain() {
-        this.dynamicValidateForm.domains.push({
-          value: '',
-          key: Date.now()
-        });
-      },
-      onSubmitCoupon() {
-        setTimeout(() => {
-          this.saveCoupon = false
-          alert('已保存')
-        }, 1000);
-        this.saveCoupon =!this.saveCoupon
+      saveCouponSetting() {
+        let data = this.couponSetting
+        this.$request(this.url.couponSettingUpdate,'json',data).then((res)=>{
+          this.$message({
+            type: 'success',
+            message: '保存成功!'
+          });
+          this._pullCouponSetting()
+
+        }).catch((err)=>{
+          console.log(err);
+          this.$message({
+            type: 'info',
+            message: '保存失败'
+          });
+        })
+
       }
     }
   }
