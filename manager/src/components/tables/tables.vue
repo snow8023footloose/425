@@ -4,7 +4,7 @@
     <el-tabs v-model="activeName" @tab-click="handleShowTable">
 
       <!--餐桌方格-->
-      <el-tab-pane :label="'餐桌信息'+countTable" name="first">
+      <el-tab-pane :label="'餐桌信息-'+countTable+'个'" name="first" @click.native="toCountTable">
         <el-row :guter="0">
           <div class="table-container" id="table-container" ref="container">
             <!--餐桌按分类展示-->
@@ -34,9 +34,8 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-clear'">未清台
-
                   </p>
                   <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-order'">未下单</p>
@@ -79,7 +78,7 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-clear'">未清台
 
                   </p>
@@ -126,7 +125,7 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-clear'">未清台</p>
                   <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-order'">未下单</p>
@@ -169,7 +168,7 @@
                 </el-tooltip>
                 <!--总：{{item.recommend.length}}项-->
                 <div class="box-content"  @click="selectTable(item,index)">
-                  <p style="font-size: 20px;color: rgba(255,82,91,0.51);font-weight: bolder;text-align: center;padding-right: 8px"
+                  <p style="font-size: 20px;color: rgba(230,162,60,0.59);font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-clear'">未清台</p>
                   <p style="font-size: 20px;color: #409eff;font-weight: bolder;text-align: center;padding-right: 8px"
                      v-if="item.status === 'pre-order'">未下单</p>
@@ -195,7 +194,7 @@
     <div class="mask-black" v-if="tableShow === 1"></div>
 
     <!--选择餐桌类型-->
-    <el-select v-model="selectedTable" placeholder="请选择餐桌类型" style="width: 230px;padding-top: 10px">
+    <el-select v-model="selectedTable" @change="toCountTable" placeholder="请选择餐桌类型" style="width: 230px;padding-top: 10px">
       <el-option
         v-for="(item,index) in tableTypeSelect"
         :key="index"
@@ -203,12 +202,20 @@
         :value="item.typeIndex">
       </el-option>
     </el-select>
-    <div class="table-status-type" style="display: inline-block;margin-left: 20px">
+    <!--<div class="table-status-type" style="display: inline-block;margin-left: 20px" @click="toCountTable">-->
+      <!--<el-radio-group v-model="tableStatus" size="small">-->
+        <!--<el-radio-button label="全部"></el-radio-button>-->
+        <!--<el-radio-button label="北京"></el-radio-button>-->
+        <!--<el-radio-button label="广州"></el-radio-button>-->
+        <!--<el-radio-button label="深圳"></el-radio-button>-->
+      <!--</el-radio-group>-->
+    <!--</div>-->
+    <div class="table-status-type" style="display: inline-block;margin-left: 20px" @click="toCountTable">
+      <el-button size="mini" type="success" plain round @click="tableStatus = ''">全部</el-button>
       <el-button size="mini" type="primary" plain round @click="tableStatus = 'pre-order'">未下单</el-button>
       <el-button size="mini" type="danger" plain round @click="tableStatus = 'pre-pay'">未支付</el-button>
       <el-button size="mini" type="warning" plain round @click="tableStatus = 'pre-clear'">未清台</el-button>
       <el-button size="mini" type="info" plain round @click="tableStatus = 'disable'">未开启</el-button>
-      <el-button size="mini" type="success" plain round @click="tableStatus = ''">全部</el-button>
     </div>
 
     <!--table操作按钮-->
@@ -262,14 +269,6 @@
                 <el-button type="success" @click="singleAccounts">结账</el-button>
               </div>
               <el-button
-                v-if="item.status === 'has-pay'"
-                style="border-radius: 10px"
-                slot="reference"
-                type="success" plain
-                icon="el-icon-document"
-                @click="selectOrder(item,$event)"
-                :label="index">订单{{index+1}}</el-button>
-              <el-button
                 v-if="item.status === 'not-payed'"
                 style="border-radius: 10px"
                 slot="reference"
@@ -279,7 +278,7 @@
                 :label="index">订单{{index+1}}</el-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
-            <el-badge :value="item.orderDishes.length" class="item">
+            <el-badge v-if="item.status === 'not-payed'" :value="item.orderDishes.length" class="item">
             </el-badge>
           </span>
         </el-radio-group>
@@ -289,8 +288,7 @@
         @click="plusOrder"
         type="success"
         icon="el-icon-plus"
-        round
-      >下单</el-button>
+      >立即下单</el-button>
     </div>
 
     <!--table弹框：整个餐桌详细信息，餐桌点餐，餐桌订单详情-->
@@ -413,7 +411,7 @@
             </span>
           </div>
           <el-button-group style="position: fixed;bottom: 30px;left: 50%;width: 246;margin-left: -123px" >
-            <el-button type="success" round @click="confirmOrder" plain icon="el-icon-download">确认下单</el-button>
+            <el-button type="success" round @click="confirmOrder" plain icon="el-icon-download">稍后支付</el-button>
             <el-button type="success" round @click="confirmOrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
           </el-button-group>
         </div>
@@ -480,6 +478,18 @@
         </el-form-item>
 
         <el-form-item
+          label="订单类型"
+          style="text-align: left"
+          prop="orderType"
+          :rules="[{ required: true, message: '请选择订单类型', trigger: 'change' },]"
+        >
+          <el-select style="display: inline-block" v-model="tableForm.orderType" placeholder="请选择收费类型">
+            <el-option label="单人" value="single"></el-option>
+            <el-option label="多人" value="multi"></el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
           label="收费类型"
           style="text-align: left"
           prop="chargeType"
@@ -498,17 +508,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item
-          label="订单类型"
-          style="text-align: left"
-          prop="orderType"
-          :rules="[{ required: true, message: '请选择订单类型', trigger: 'change' },]"
-        >
-          <el-select style="display: inline-block" v-model="tableForm.orderType" placeholder="请选择收费类型">
-            <el-option label="单人" value="single"></el-option>
-            <el-option label="多人" value="multi"></el-option>
-          </el-select>
-        </el-form-item>
 
         <el-form-item v-if="tableForm.chargeType === 'charge'" label="价格">
           <el-input v-model.number="tableForm.money" auto-complete="off" placeholder="请输入价格"></el-input>
@@ -518,9 +517,9 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer" v-if="editOrAdd === 2">
-        <el-button size="large" @click="changeTableDelay('confirmTableData','1')" icon="el-icon-time">暂停</el-button>
+        <el-button size="large" @click="updateTableDelay('confirmTableData','1')" icon="el-icon-time">暂停</el-button>
         <el-button @click="showFormTableChange = false; tableForm = {}">取 消</el-button>
-        <el-button type="primary" @click="changeTable('confirmTableData','1')">修改并开启</el-button>
+        <el-button type="primary" @click="updateTable('confirmTableData','1')">修改并开启</el-button>
       </div>
       <div slot="footer" class="dialog-footer" v-if="editOrAdd === 1">
         <el-button size="large" @click="addTableDelay('confirmTableData','1')" icon="el-icon-time">暂不开台</el-button>
@@ -610,6 +609,7 @@ export default {
     tagsTotalPrice:0,
     basePrice:0,
     selectedTable:0,
+    countTable:0,
     tableType:[
       {
         typeName: '大厅',
@@ -654,9 +654,6 @@ export default {
     ],
   }),
   computed: {
-    countTable(){
-      return document.getElementsByClassName("transition-box").length
-    },
     totalPrice() {
       let total = 0;
       this.selectFoods.forEach((food) => {
@@ -705,7 +702,7 @@ export default {
         if(this.getFoods.skus){
           for(let i=0;i<this.getFoods.skus.length;i++) {
             if (selectedSkuObj.id === this.getFoods.skus[i].id) {
-              console.log(this.getFoods.skus[i].normalPrice);
+              // console.log(this.getFoods.skus[i].normalPrice);
               skusTotalPrice += this.getFoods.skus[i].normalPrice
             }
           }
@@ -735,6 +732,13 @@ export default {
     }
   },
   methods: {
+    toCountTable(){
+      let _this = this
+      setTimeout(function () {
+        var num = document.getElementsByClassName("transition-box").length
+        _this.countTable = num
+      },100)
+    },
     transformArrySku(){
       let selectedSkuArr = []
       for(var i=0;0<this.selectedSkuArr.length;i++){
@@ -821,23 +825,23 @@ export default {
       })
     },
     refreshNeedPay(){
-      let data= {
-        restaurantId: localStorage.getItem('rid'),
-        orderType:'multi',
-        tableId: this.tid
-      }
-      this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        this.cartList = res.data.data.cartList
-        this.discountMoney = res.data.data.discountMoney
-        this.needPay = res.data.data.needPay
-        this.realPay = res.data.data.realPay
-      }).catch((err)=>{
-
-      })
+      // let data= {
+      //   restaurantId: localStorage.getItem('rid'),
+      //   orderType:'multi',
+      //   tableId: this.tid
+      // }
+      // this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+      //   this.cartList = res.data.data.cartList
+      //   this.discountMoney = res.data.data.discountMoney
+      //   this.needPay = res.data.data.needPay
+      //   this.realPay = res.data.data.realPay
+      // }).catch((err)=>{
+      //
+      // })
     },
     incrementTotalAdd(g) {
       this.getDataFromSelectFoods.event = g.event
-      // console.log('餐桌',this.tableForm);
+      console.log('餐桌',this.tableForm);
       this.tagsTotalPrice = 0
       this.selectedSkuArr = []
       this.selectedTags = []
@@ -926,6 +930,7 @@ export default {
         orderType:'multi',
         tableId: this.tid,
         payType:'underline',
+        payStatus:'not-payed',
         serverType:'real-time',
       }
       this.$request(this.url.payOrder,'form',data).then((res)=>{
@@ -944,7 +949,7 @@ export default {
         orderType:'multi',
         serverType:'real-time',
         tableId: this.tid,
-        payStatus:'payed',
+        payStatus:'has-pay',
         payType:'underline'
       }
       this.$request(this.url.payOrder,'form',data).then((res)=>{
@@ -989,12 +994,6 @@ export default {
           console.log('加入购物车失败',err);
         })
       }
-    },
-    payConfirm() {
-      if (this.totalPrice < this.minPrice) {
-        return;
-      }
-      this.dialogTableVisible = !this.dialogTableVisible
     },
     plusOrder(){
       this.dialogConfirmOrder = !this.dialogConfirmOrder
@@ -1141,9 +1140,8 @@ export default {
         }
       });
     },
-
-    changeTable(confirmData,a){
-      this.tableForm.status = 'enable'
+    updateTable(confirmData,a){
+      this.tableForm.status = 'pre-order'
       let data = this.tableForm
       this.$refs[confirmData].validate((valid) => {
         if (valid) {
@@ -1169,7 +1167,7 @@ export default {
         }
       });
     },
-    changeTableDelay(confirmData,a){
+    updateTableDelay(confirmData,a){
       let data = {
         id:this.tableForm.id,
         status: this.tableForm.status
@@ -1246,7 +1244,6 @@ export default {
           this._initScroll()
           this._calculateHeight()
           this.scrollOnce= 1
-          console.log('scroll');
         }
         loading.close();
       }, 700);
@@ -1341,6 +1338,7 @@ export default {
     }
   },
   created() {
+    this.toCountTable()
     let data1 = [{
       feild: 'status',
       value: 'enable',

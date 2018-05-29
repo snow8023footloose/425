@@ -7,6 +7,11 @@ body
   bottom: 45px
   z-index: 10
 
+.el-popover
+  .el-tabs__content
+    overflow-y scroll
+    max-height 350px
+
 .menu-control-button
   position absolute
   left -16px
@@ -122,6 +127,16 @@ td
 .cell
   text-align left
 
+.el-notification
+  width 300px
+
+.service-log
+  position: fixed;
+  font-size: 33px;
+  top: 9px;
+  right: 87px;
+  z-index: 3;
+
 .finance,.goods,.setting,.coupon,.member,.order,.person,.purchase,.setting,.table,.test,.xwffunction,.xwfer,.xwfcustom
   margin:0 3% 0
   height:96%
@@ -129,9 +144,15 @@ td
 .el-tabs__nav
   margin-left 10%
 
-.el-tabs__content
-  height 777px
-  padding-right 15px
+.serviceList
+  display flex
+  justify-content space-between
+  margin 5px 0px
+
+.el-col
+  .el-tabs__content
+    height 777px
+    padding-right 15px
 
 .el-select
   display inline-block
@@ -175,6 +196,13 @@ td
 
   .el-table--fit
     height 500px
+
+  .service-log
+    top -6px
+
+  .el-popover
+    .el-tabs__content
+      max-height 200px
 
   .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
     >.el-tabs

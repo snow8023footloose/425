@@ -44,15 +44,6 @@
             </el-table-column>
             <el-table-column
               sortable
-              width="130"
-              prop="thumb"
-              label="头像">
-              <template slot-scope="scope">
-                <img class="previewImg" :src="'https://order-online.oss-cn-shenzhen.aliyuncs.com' + scope.row.thumb" alt="未上传">
-              </template>
-            </el-table-column>
-            <el-table-column
-              sortable
               width="150"
               prop="memberType"
               label="会员类型">

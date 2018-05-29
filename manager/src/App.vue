@@ -34,6 +34,27 @@
     </div>
     <el-button @click="changeMenuShow" class="menu-control-button" icon="el-icon-d-arrow-right" circle v-if="menuClass === 'menu-class'" v-show="!menuShow"></el-button>
     <el-row v-show="loginstate" class="main-content" id="main-content" ref="main-content" v-loading.fullscreen.lock="fullscreenLoading">
+      <el-popover
+        placement="bottom"
+        width="350"
+        v-model="showServiceMsg">
+        <el-tabs v-model="activeService">
+          <el-tab-pane label="未处理" name="first">
+            <div v-for="item in 20" class="serviceList">
+              <span>餐桌：{{item}}</span>
+              <span>酒水</span>
+              <span>
+                <el-button size="mini" type="text" @click="showServiceMsg = false">删除</el-button>
+                <el-button type="primary" size="mini" @click="showServiceMsg = false">已处理</el-button>
+              </span>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="已处理" name="second">已处理</el-tab-pane>
+        </el-tabs>
+        <div class="service-log" slot="reference">
+          <el-button size="mini" type="primary" icon="el-icon-bell" round @click="pullService">服务推送</el-button>
+        </div>
+      </el-popover>
       <i style="color: #ff525b" class="el-icon-circle-close person-close" @click="loginOut"></i>
       <el-col :class="menuClass" :span="menuStyle.menuWidth" v-show="menuShow">
         <img v-if="menuStyle.logoShow === 1" @click="changeSize" src="./logo.png" alt="">
@@ -94,13 +115,13 @@
               <span slot="title" class="title">系统设置</span>
             </el-menu-item>
           </router-link>
-          <router-link :to="{path:'/manager/xwfs/test'}" class="vlink">
-            <el-menu-item index="8">
-              <svg class="icon" style="width: 24px; height: 24px;vertical-align: middle;fill: currentColor;overflow: hidden;"
-                   viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10668"><path d="M659.2 985.6c-19.2 0-38.4-6.4-44.8-19.2-12.8-19.2-64-64-102.4-64-38.4 0-89.6 44.8-102.4 57.6-12.8 12.8-32 19.2-44.8 19.2-6.4 0-19.2 0-25.6-6.4l-121.6-70.4c-19.2-12.8-32-44.8-19.2-70.4 0 0 12.8-25.6 12.8-51.2 0-70.4-57.6-128-128-128H64c-19.2 0-38.4-19.2-44.8-44.8 0 0-12.8-57.6-12.8-96 0-44.8 12.8-96 12.8-96 6.4-32 25.6-51.2 44.8-51.2h6.4c70.4 0 128-57.6 128-128 0-25.6-6.4-51.2-6.4-51.2-12.8-25.6 0-57.6 19.2-70.4l128-70.4c6.4 0 12.8-6.4 25.6-6.4 19.2 0 38.4 6.4 44.8 19.2 12.8 19.2 64 57.6 102.4 57.6 38.4 0 89.6-38.4 102.4-57.6 12.8-12.8 32-19.2 44.8-19.2 6.4 0 19.2 0 25.6 6.4l128 70.4c19.2 12.8 32 44.8 19.2 70.4 0 0-12.8 25.6-12.8 51.2 0 70.4 57.6 128 128 128h12.8c19.2 0 38.4 19.2 44.8 44.8 0 0 12.8 57.6 12.8 96 0 44.8-12.8 96-12.8 96-6.4 25.6-25.6 44.8-44.8 44.8h-6.4c-70.4 0-128 57.6-128 128 0 25.6 12.8 51.2 12.8 51.2 12.8 25.6 0 57.6-19.2 70.4l-128 70.4c-12.8 19.2-19.2 19.2-32 19.2m0-57.6l121.6-64c0-6.4-12.8-38.4-12.8-70.4 0-102.4 76.8-185.6 179.2-192 0-6.4 6.4-51.2 6.4-83.2s-6.4-76.8-6.4-83.2c-102.4-6.4-179.2-89.6-179.2-192 0-32 12.8-64 12.8-70.4l-115.2-64h-6.4s-19.2 19.2-44.8 38.4c-32 12.8-70.4 25.6-102.4 25.6s-64-12.8-102.4-38.4c-19.2-12.8-38.4-32-38.4-38.4h-6.4l-121.6 64c0 6.4 12.8 38.4 12.8 70.4 0 102.4-76.8 185.6-179.2 192 0 6.4-6.4 51.2-6.4 83.2s6.4 76.8 6.4 83.2c102.4 6.4 179.2 89.6 179.2 192 0 32-12.8 64-12.8 70.4l115.2 64h6.4s19.2-19.2 44.8-38.4c38.4-25.6 70.4-38.4 102.4-38.4s70.4 12.8 102.4 38.4c25.6 25.6 38.4 44.8 44.8 51.2M512 684.8c-96 0-172.8-76.8-172.8-172.8 0-96 76.8-172.8 172.8-172.8 96 0 172.8 76.8 172.8 172.8 0 96-76.8 172.8-172.8 172.8m0-288C448 396.8 396.8 448 396.8 512S448 627.2 512 627.2 627.2 576 627.2 512C620.8 448 569.6 396.8 512 396.8m0 0z" fill="" p-id="10669"></path></svg>
-              <span slot="title" class="title">系统设置</span>
-            </el-menu-item>
-          </router-link>
+          <!--<router-link :to="{path:'/manager/xwfs/test'}" class="vlink">-->
+            <!--<el-menu-item index="8">-->
+              <!--<svg class="icon" style="width: 24px; height: 24px;vertical-align: middle;fill: currentColor;overflow: hidden;"-->
+                   <!--viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="10668"><path d="M659.2 985.6c-19.2 0-38.4-6.4-44.8-19.2-12.8-19.2-64-64-102.4-64-38.4 0-89.6 44.8-102.4 57.6-12.8 12.8-32 19.2-44.8 19.2-6.4 0-19.2 0-25.6-6.4l-121.6-70.4c-19.2-12.8-32-44.8-19.2-70.4 0 0 12.8-25.6 12.8-51.2 0-70.4-57.6-128-128-128H64c-19.2 0-38.4-19.2-44.8-44.8 0 0-12.8-57.6-12.8-96 0-44.8 12.8-96 12.8-96 6.4-32 25.6-51.2 44.8-51.2h6.4c70.4 0 128-57.6 128-128 0-25.6-6.4-51.2-6.4-51.2-12.8-25.6 0-57.6 19.2-70.4l128-70.4c6.4 0 12.8-6.4 25.6-6.4 19.2 0 38.4 6.4 44.8 19.2 12.8 19.2 64 57.6 102.4 57.6 38.4 0 89.6-38.4 102.4-57.6 12.8-12.8 32-19.2 44.8-19.2 6.4 0 19.2 0 25.6 6.4l128 70.4c19.2 12.8 32 44.8 19.2 70.4 0 0-12.8 25.6-12.8 51.2 0 70.4 57.6 128 128 128h12.8c19.2 0 38.4 19.2 44.8 44.8 0 0 12.8 57.6 12.8 96 0 44.8-12.8 96-12.8 96-6.4 25.6-25.6 44.8-44.8 44.8h-6.4c-70.4 0-128 57.6-128 128 0 25.6 12.8 51.2 12.8 51.2 12.8 25.6 0 57.6-19.2 70.4l-128 70.4c-12.8 19.2-19.2 19.2-32 19.2m0-57.6l121.6-64c0-6.4-12.8-38.4-12.8-70.4 0-102.4 76.8-185.6 179.2-192 0-6.4 6.4-51.2 6.4-83.2s-6.4-76.8-6.4-83.2c-102.4-6.4-179.2-89.6-179.2-192 0-32 12.8-64 12.8-70.4l-115.2-64h-6.4s-19.2 19.2-44.8 38.4c-32 12.8-70.4 25.6-102.4 25.6s-64-12.8-102.4-38.4c-19.2-12.8-38.4-32-38.4-38.4h-6.4l-121.6 64c0 6.4 12.8 38.4 12.8 70.4 0 102.4-76.8 185.6-179.2 192 0 6.4-6.4 51.2-6.4 83.2s6.4 76.8 6.4 83.2c102.4 6.4 179.2 89.6 179.2 192 0 32-12.8 64-12.8 70.4l115.2 64h6.4s19.2-19.2 44.8-38.4c38.4-25.6 70.4-38.4 102.4-38.4s70.4 12.8 102.4 38.4c25.6 25.6 38.4 44.8 44.8 51.2M512 684.8c-96 0-172.8-76.8-172.8-172.8 0-96 76.8-172.8 172.8-172.8 96 0 172.8 76.8 172.8 172.8 0 96-76.8 172.8-172.8 172.8m0-288C448 396.8 396.8 448 396.8 512S448 627.2 512 627.2 627.2 576 627.2 512C620.8 448 569.6 396.8 512 396.8m0 0z" fill="" p-id="10669"></path></svg>-->
+              <!--<span slot="title" class="title">系统设置</span>-->
+            <!--</el-menu-item>-->
+          <!--</router-link>-->
         </el-menu>
       </el-col>
       <el-col :span="menuStyle.mainWidth" @click.native.once="changeSize(true)">
@@ -110,6 +131,7 @@
   </div>
 </template>
 <script>
+
 export default {
   name: 'App',
   data () {
@@ -142,7 +164,9 @@ export default {
         menuCollapse: false,
         switchTab: true
       },
+      showServiceMsg:false,
       fullscreenLoading: false,
+      activeService:'first',
       loginstate: false,
       loginShow: true,
       menuShow: true,
@@ -162,6 +186,35 @@ export default {
     };
   },
   methods: {
+    _pullService(){
+
+      let data = [
+        {
+          feild:'status',
+          value:'123',
+          joinType:'ne'
+        }
+      ]
+      // this.$request(this.url.restaurantServiceComplexPageQuery,'json',data).then((res)=>{
+      //   // this.dishesCategory = res.data.data
+      //   console.log(res);
+      // }).catch((err)=>{
+      //   console.log(err);
+      // })
+    },
+    pullService() {
+      this._pullService()
+      this.$notify({
+        title: '茶水',
+        offset: 100,
+        onClick:function () {
+          alert('处理中')
+        },
+        message:'点击处理',
+        duration: 3500,
+        iconClass:'el-icon-bell'
+      });
+    },
     submitFormManager(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -288,6 +341,7 @@ export default {
     }
   },
   created() {
+    this._pullService()
     if (localStorage.rid){
       this.ruleForm2.username = 17375636967
       this.ruleForm2.password = 17375636967
@@ -296,6 +350,7 @@ export default {
     this.fitSize()
   }
 }
+
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">

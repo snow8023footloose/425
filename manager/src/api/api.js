@@ -33,6 +33,23 @@ export  function urlColletion() {
     //提现
     restaurantAccountWithdraw: BURL + '/restaurantAccount/withdraw',
 
+    //餐厅服务
+    restaurantServiceAdd: BURL + '/restaurantServiceLog/add',
+    restaurantServiceComplexPageQuery: BURL + '/restaurantServiceLog/complexPageQuery',
+    restaurantServiceDelete: BURL + '/restaurantServiceLog/delete',
+    restaurantServiceUpdate: BURL + '/restaurantServiceLog/update',
+
+    //餐厅服务类型
+    restaurantServiceTypeAdd: BURL + '/restaurantServiceType/add',
+    restaurantServiceTypeComplexPageQuery: BURL + '/restaurantServiceType/complexPageQuery',
+    restaurantServiceTypeDelete: BURL + '/restaurantServiceType/delete',
+    restaurantServiceTypeUpdate: BURL + '/restaurantServiceType/update',
+
+    //卡券管理
+    discountCouponAdd: BURL + '/discountCoupon/add',
+    discountCouponComplexPageQuery: BURL + '/discountCoupon/complexPageQuery',
+    discountCouponDelete: BURL + '/discountCoupon/delete',
+    discountCouponUpdate: BURL + '/discountCoupon/update',
 
     //登录
     login1: BURL + '/xwfUser/login',

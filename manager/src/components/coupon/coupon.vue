@@ -4,13 +4,14 @@
       v-model="activeName"
       @tab-click="handleClick"
     >
-      <el-tab-pane label="便捷卡券" name="first">
+      <el-tab-pane label="卡券设置" name="first">
+
         <el-collapse v-model="activeName1" accordion>
-          <el-collapse-item title="优惠券 Best coupon" name="1">
+          <el-collapse-item :title="'新人优惠券：' + bestStatus + '状态'" name="1">
             <el-col class="card" :span="23">
               <el-card shadow="hover">
                 <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">优惠券</span>
+                  <span style="font-size: 18px;margin-right: 22px">新人优惠券</span>状态
                   <el-tooltip :content="'状态: ' + bestStatus" placement="top">
                     <el-switch
                       v-model="bestStatus"
@@ -23,21 +24,119 @@
                 </div>
                 <el-form label-position="left" inline >
                   <el-form-item label="面值">
-                    <el-input v-model.number="bestData.money"></el-input>
+                    <el-input v-model.number="bestData.money" placeholder="请输入面值"></el-input>
                   </el-form-item>
-                  <el-form-item label="描述" style="width: 380px">
-                    <el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" v-model.number="rechargeData.money"></el-input>
+                  <el-form-item label="消费">
+                    <el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>
+                  </el-form-item>
+                  <el-form-item label="描述">
+                    <el-input v-model.number="rechargeData.money" placeholder="请输入描述"></el-input>
                   </el-form-item>
                 </el-form>
               </el-card>
             </el-col>
 
           </el-collapse-item>
-          <el-collapse-item title="充值券 Recharge coupon" name="2">
+          <el-collapse-item :title="'优惠券：' + bestStatus + '状态'" name="1">
+            <el-col class="card" :span="23">
+              <el-card shadow="hover">
+                <div class="clearfix">
+                  <span style="font-size: 18px;margin-right: 22px">优惠券</span>状态
+                  <el-tooltip :content="'状态: ' + bestStatus" placement="top">
+                    <el-switch
+                      v-model="bestStatus"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-value="开启"
+                      inactive-value="关闭">
+                    </el-switch>
+                  </el-tooltip>
+                </div>
+                <el-form label-position="left" inline >
+                  <el-form-item label="面值">
+                    <el-input v-model.number="bestData.money" placeholder="请输入面值"></el-input>
+                  </el-form-item>
+                  <el-form-item label="消费">
+                    <el-input v-model.number="bestData.money" placeholder="使用条件：消费金额"></el-input>
+                  </el-form-item>
+                  <el-form-item label="描述">
+                    <el-input v-model.number="rechargeData.money" placeholder="请输入描述"></el-input>
+                  </el-form-item>
+                </el-form>
+              </el-card>
+            </el-col>
+
+          </el-collapse-item>
+          <el-collapse-item :title="'人头券：' + headerStatus + '状态'" name="2">
+            <el-col class="card" :span="23">
+              <el-card shadow="hover">
+                <div class="clearfix">
+                  <span style="font-size: 18px;margin-right: 22px">人头券</span>状态
+                  <el-tooltip :content="'状态: ' + headerStatus" placement="top">
+                    <el-switch
+                      v-model="headerStatus"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-value="开启"
+                      inactive-value="关闭">
+                    </el-switch>
+                  </el-tooltip>
+                </div>
+                <el-form label-position="left" inline>
+                  <el-form-item label="面值">
+                    <el-input v-model.number="headerData.money" placeholder="请输入金额"></el-input>
+                  </el-form-item>
+                  <el-form-item label="描述" style="width: 380px">
+                    <el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" placeholder="请输入描述" v-model.number="rechargeData.money"></el-input>
+                  </el-form-item>
+                </el-form>
+              </el-card>
+            </el-col>
+
+          </el-collapse-item>
+          <el-collapse-item :title="'代金券:'+ moneyStatus +'状态'" name="3">
+            <el-col class="card deduce" :span="23">
+              <el-card shadow="hover">
+                <div class="clearfix">
+                  <span style="font-size: 18px;margin-right: 22px">代金券</span>状态
+                  <el-tooltip :content="'状态: ' + moneyStatus" placement="top">
+                    <el-switch
+                      v-model="moneyStatus"
+                      active-color="#13ce66"
+                      inactive-color="#ff4949"
+                      active-value="开启"
+                      inactive-value="关闭">
+                    </el-switch>
+                  </el-tooltip>
+                </div>
+                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
+                  <el-form-item
+                    class="deduce"
+                    v-for="(domain, index) in dynamicValidateForm.domains"
+                    :label="'金额' + index"
+                    :key="domain.key"
+                    :prop="'domains.' + index + '.value'"
+                  >
+                    <span>价格</span>
+                    <el-input v-model="domain.value" placeholder="请输入价格"></el-input>
+                    <span>抵</span>
+                    <el-input v-model="dynamicValidateForm.email" placeholder="请输入抵扣金额"></el-input>
+                    <el-input v-model="domain.description" placeholder="请输入描述" style="width: 30%"></el-input>
+                    <el-button style="position: absolute; left: -80px;top:9px;padding: 5px" size="mini" type="danger" icon="el-icon-delete" circle @click.prevent="removeDomain(domain)"></el-button>
+                  </el-form-item>
+                  <el-form-item label-width="65%">
+                    <el-button @click="addDomain">新增代金券</el-button>
+                    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
+                  </el-form-item>
+                </el-form>
+              </el-card>
+            </el-col>
+          </el-collapse-item>
+          <el-collapse-item :title="'充值券：' + rechargeStatus + '状态'" name="4">
             <el-col  class="card deduce" :span="23">
               <el-card shadow="hover">
                 <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">充值券</span>
+                  <span style="font-size: 18px;margin-right: 22px">充值券</span>状态
                   <el-tooltip :content="'状态: ' + rechargeStatus" placement="top">
                     <el-switch
                       v-model="rechargeStatus"
@@ -50,139 +149,31 @@
                 </div>
                 <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
                   <el-form-item
-                    prop="email"
-                    label="金额"
-                  >
-                    <span>充</span>
-                    <el-input v-model="dynamicValidateForm.email"></el-input>
-                    <span>送</span>
-                    <el-input v-model="dynamicValidateForm.email"></el-input>
-                  </el-form-item>
-                  <el-form-item
+                    class="deduce"
                     v-for="(domain, index) in dynamicValidateForm.domains"
                     :label="'金额' + index"
                     :key="domain.key"
                     :prop="'domains.' + index + '.value'"
                   >
-                    <span>充</span>
-                    <el-input v-model="domain.value"></el-input>
-                    <span>送</span>
-                    <el-input v-model="domain.value"></el-input>
+                    <span>价格</span>
+                    <el-input v-model="domain.value" placeholder="请输入价格"></el-input>
+                    <span>面值</span>
+                    <el-input v-model="domain.value" placeholder="请输入面值"></el-input>
+                    <el-input v-model="domain.description" placeholder="请输入描述" style="width: 30%"></el-input>
                     <el-button style="position: absolute; left: -80px;top:9px;padding: 5px" size="mini" type="danger" icon="el-icon-delete" circle @click.prevent="removeDomain(domain)"></el-button>
                   </el-form-item>
                   <el-form-item label-width="65%">
-                    <el-button @click="addDomain">新增充值券类型</el-button>
+                    <el-button @click="addDomain">新增充值券</el-button>
                     <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
                   </el-form-item>
                 </el-form>
               </el-card>
             </el-col>
-
-          </el-collapse-item>
-          <el-collapse-item title="代金券 Money coupon" name="3">
-            <el-col class="card" :span="23">
-              <el-card shadow="hover">
-                <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">代金券</span>
-                  <el-tooltip :content="'状态: ' + headerStatus" placement="top">
-                    <el-switch
-                      v-model="headerStatus"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
-                    </el-switch>
-                  </el-tooltip>
-                </div>
-                <el-form label-position="left" inline>
-                  <el-form-item label="面值">
-                    <el-input v-model.number="headerData.money"></el-input>
-                  </el-form-item>
-                  <el-form-item label="描述" style="width: 380px">
-                    <el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" v-model.number="rechargeData.money"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-card>
-            </el-col>
-
-          </el-collapse-item>
-          <el-collapse-item title="人头券 Header coupon" name="4">
-            <el-col class="card" :span="23">
-              <el-card shadow="hover">
-                <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">人头券</span>
-                  <el-tooltip :content="'状态: ' + headerStatus" placement="top">
-                    <el-switch
-                      v-model="headerStatus"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
-                    </el-switch>
-                  </el-tooltip>
-                </div>
-                <el-form label-position="left" inline>
-                  <el-form-item label="面值">
-                    <el-input v-model.number="headerData.money"></el-input>
-                  </el-form-item>
-                  <el-form-item label="描述" style="width: 380px">
-                    <el-input style="width: 280px" name="max-height:100px;" :rows="2" type="textarea" v-model.number="rechargeData.money"></el-input>
-                  </el-form-item>
-                </el-form>
-              </el-card>
-            </el-col>
-
-          </el-collapse-item>
-          <el-collapse-item title="满减券 Deduce coupon" name="5">
-            <el-col class="card deduce" :span="23">
-              <el-card shadow="hover">
-                <div class="clearfix">
-                  <span style="font-size: 18px;margin-right: 22px">满减券</span>
-                  <el-tooltip :content="'状态: ' + deduceStatus" placement="top">
-                    <el-switch
-                      v-model="deduceStatus"
-                      active-color="#13ce66"
-                      inactive-color="#ff4949"
-                      active-value="开启"
-                      inactive-value="关闭">
-                    </el-switch>
-                  </el-tooltip>
-                </div>
-                <el-form :model="dynamicValidateForm" ref="dynamicValidateForm" label-width="100px" class="demo-dynamic">
-                  <el-form-item
-                    prop="email"
-                    label="满减金额"
-                  >
-                    <span>满</span>
-                    <el-input v-model="dynamicValidateForm.email"></el-input>
-                    <span>减</span>
-                    <el-input v-model="dynamicValidateForm.email"></el-input>
-                  </el-form-item>
-                  <el-form-item
-                    v-for="(domain, index) in dynamicValidateForm.domains"
-                    :label="'金额' + index"
-                    :key="domain.key"
-                    :prop="'domains.' + index + '.value'"
-                    inline
-                  >
-                    <span>满</span>
-                    <el-input v-model="domain.value"></el-input>
-                    <span>减</span>
-                    <el-input v-model="domain.value"></el-input>
-                    <el-button style="position: absolute; left: -80px;top:9px;padding: 5px" size="mini" type="danger" icon="el-icon-delete" circle @click.prevent="removeDomain(domain)"></el-button>
-                  </el-form-item>
-                  <el-form-item label-width="65%">
-                    <el-button @click="addDomain">新增满减类型</el-button>
-                    <el-button @click="resetForm('dynamicValidateForm')">重置</el-button>
-                  </el-form-item>
-                </el-form>
-              </el-card>
-            </el-col>
-
           </el-collapse-item>
         </el-collapse>
         <el-button class="control-button" type="primary" @click="onSubmitCoupon" :loading="saveCoupon">保存</el-button>
       </el-tab-pane>
+      <!--
       <el-tab-pane label="卡券管理" name="second">
         <template>
           <el-table
@@ -267,9 +258,10 @@
 
         </template>
         <el-button type="primary" @click="plusCoupon" class="control-button">添加卡券</el-button>
-      </el-tab-pane>
+      </el-tab-pane>-->
     </el-tabs>
 
+      <!--卡券弹框-->
     <el-dialog top="7vh" title="增加卡券" :visible.sync="showFormCoupon">
       <el-form :model="couponForm" :label-width="formLabelWidth">
         <el-form-item label="卡券名" >
@@ -425,7 +417,7 @@
       activeName1:'1',
       formLabelWidth: '80px',
       rechargeStatus:'',
-      deduceStatus:'',
+      moneyStatus:'',
       headerStatus:'',
       bestStatus:'',
       rechargeData:{},
@@ -448,7 +440,22 @@
       }
 
     }),
+    created(){
+      this._pullDiscountCoupon()
+    },
     methods: {
+      _pullDiscountCoupon(){
+        let data = [
+          {
+            feild:'rid',
+            value:1000000000,
+            joinType:'eq'
+          }
+        ]
+        // this.$request(this.url.discountCouponComplexPageQuery,'json',data).then((res)=>{
+        //   console.log(res);
+        // })
+      },
       handleClick(tab, event) {
       },
       plusCoupon(){
@@ -511,7 +518,7 @@
 .deduce
   .el-input
     display inline-block
-    width 30%
+    width 25%
   span
     margin 0px 5px
 </style>

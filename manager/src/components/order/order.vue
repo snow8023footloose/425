@@ -60,13 +60,14 @@
               width="130"
               prop="payType"
               label="支付方式"
-              :filters="[{text:'微信支付',value:'wechat-online'},{text:'支付宝支付',value:'alipay-online'}]"
+              :filters="[{text:'微信支付',value:'wechat-online'},{text:'支付宝支付',value:'alipay-online'},{text:'线下支付',value:'underline'}]"
               :filter-method="filterPayArr"
               filter-placement="bottom-end"
             >
               <template slot-scope="props">
                 <span v-if="props.row.payType === 'wechat-online'">微信支付</span>
                 <span v-if="props.row.payType === 'alipay-online'">支付宝支付</span>
+                <span v-if="props.row.payType === 'underline'">线下支付</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -249,7 +250,7 @@
             }, 0);
             sums[index] = sums[index].toFixed(2) + '元';
           } else {
-            sums[index] = '1';
+            sums[index] = '';
           }
         });
         return sums;
@@ -375,6 +376,10 @@
   .cell
     text-align center
 
+
+
+  .el-table-filter
+    left 99px
 
 </style>
 

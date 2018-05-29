@@ -149,7 +149,7 @@ const ERR_OK = 0
         }
       },
       beforeDrop(el) {
-        console.log(this.needPay);
+        // console.log(this.needPay);
         let count = this.balls.length;
         while (count--) {
           let ball = this.balls[count];
