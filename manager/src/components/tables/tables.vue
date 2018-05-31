@@ -223,7 +223,8 @@
                 :label="index">订单{{index+1}}</el-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
-            <el-badge v-if="item.status === 'not-payed'" :value="item.orderDishes.length" class="item">
+            {{item}}
+            <el-badge v-if="item.status === 'not-payed' && item.orderDishes != null" :value="item.orderDishes.length" class="item">
             </el-badge>
           </span>
         </el-radio-group>
@@ -1134,7 +1135,10 @@ export default {
           joinType:'eq'
         }
       ]).then((res)=>{
+        console.log(res);
+
         this.tableOrderList = res.data.data
+        console.log(this.tableOrderList);
       }).catch((err)=>{
         console.log(err);
       })

@@ -51,6 +51,8 @@
         </template>
       </el-tab-pane>
       <el-tab-pane label="会员设置" name="second">
+        <el-button @click="playAudio">播放</el-button>
+        <audio id="chatAudio"><source src="http://data.huiyi8.com/yinxiao/mp3/73913.mp3" type="audio/mpeg"></audio>
         <el-form>
           <el-form-item label="会员收藏类型" prop="region">
             <el-select v-model="memberSetting.newMemberCollectType" placeholder="请选择会员收藏类型">
@@ -127,6 +129,18 @@ export default {
     discountMemberEdit: 0 ,
   }),
   methods: {
+    playAudio(){
+      let audio = document.getElementById('chatAudio')
+      audio.play();
+
+      // audio.pause();
+      //
+      // audio.pause();
+      // audio.currentTime = 0;
+      //
+      // audio.currentTime = 0;
+      // audio.play();
+    },
     deleteMemberCoupon(row){
       this.$request(this.url.memberDelete,'json',{id:row.id}).then((res)=>{
         this.memberTable = res.data.data

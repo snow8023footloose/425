@@ -45,6 +45,9 @@ export  function urlColletion() {
     restaurantServiceTypeDelete: BURL + '/restaurantServiceType/delete',
     restaurantServiceTypeUpdate: BURL + '/restaurantServiceType/update',
 
+    //卡券类型
+    couponType: BURL + '/couponType/complexPageQuery',
+
     //折扣卡券
     discountCouponAdd: BURL + '/discountCoupon/add',
     discountCouponComplexPageQuery: BURL + '/discountCoupon/complexPageQuery',
@@ -166,8 +169,6 @@ export  function urlColletion() {
     legalPerson2: BURL +'/legalPerson/complexPageQuery',
     legalPerson3: BURL +'/legalPerson/delete',
     legalPerson4: BURL +'/legalPerson/update',
-
-
 
     //pre标签
     preTag1: BURL +'/predefineTag/add',

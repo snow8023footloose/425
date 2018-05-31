@@ -11,7 +11,7 @@
               v-loading.fullscreen.lock="loading"
               :data="dishesDataTable"
               style="width: 100%"
-              height="600"
+              height="750"
               :summary-method="getSummaries"
               show-summary
             >
@@ -22,7 +22,7 @@
                 label="品名"
                 width="120">
                 <template slot-scope="scope">
-                  <el-popover :width="120" trigger="hover" placement="right">
+                  <el-popover :width="260" trigger="hover" placement="right">
                     <div slot="reference" class="name-wrapper">
                       <el-tag style="background: rgba(0,0,0,0.11);color: white" v-if="scope.row.status === 'disable'" size="medium">{{ scope.row.name }}</el-tag>
                       <el-tag v-if="scope.row.status === 'enable'" size="medium">{{ scope.row.name }}</el-tag>
@@ -32,13 +32,29 @@
                         type="primary"
                         size="mini"
                         round
+                        icon="el-icon-edit"
                         @click="editDishes(scope.row,scope.$index); visible2 = false ;showFormGoodsPlus = true"
-                        icon="el-icon-edit">编辑</el-button>
+                        >编辑</el-button>
+                      <el-button
+                        v-if="scope.row.status === 'enable'"
+                        @click.native.prevent="disableDishes(scope.row)"
+                        class="not-sell"
+                        type="danger"
+                        icon="el-icon-download"
+                        round size="mini">下架</el-button>
+                      <el-button
+                        v-if="scope.row.status === 'disable'"
+                        @click.native.prevent="enableDishes(scope.row)"
+                        type="primary"
+                        icon="el-icon-upload2"
+                        round size="mini">上架</el-button>
                       <el-button
                         size="mini"
-                        type="text"
+                        type="danger"
+                        round
+                        icon="el-icon-delete"
                         @click.native.prevent="deleteDishes(scope.row,scope.$index); visible2 = false"
-                        icon="el-icon-delete">删除</el-button>
+                      >删除</el-button>
                     </div>
                   </el-popover>
                 </template>
@@ -1178,6 +1194,18 @@ export default {
     this.openFullScreen2()
   },
   methods: {
+    disableDishes(row){
+      row.status = 'disable'
+      this.$request(this.url.dishes4,'json',row).then((res)=>{
+        this._pullDishes()
+      })
+    },
+    enableDishes(row){
+      row.status = 'enable'
+      this.$request(this.url.dishes4,'json',row).then((res)=>{
+        this._pullDishes()
+      })
+    },
     getSummaries(param) {
       const { columns, data } = param;
       const sums = [];

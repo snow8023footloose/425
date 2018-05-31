@@ -137,15 +137,20 @@
             </el-table-column>
             <el-table-column
               sortable
-              prop="stock"
-              label="数量"
-              width="100">
+              width="100"
+              prop="discountAmount"
+              label="优惠金额">
             </el-table-column>
             <el-table-column
               sortable
               width="100"
-              prop="discountAmount"
-              label="优惠金额">
+              prop="price"
+              label="价格">
+              <template slot-scope="scope">
+                <span v-if="scope.row.price === 0">免费赠送</span>
+                <span v-else-if="scope.row.price === null">免费赠送</span>
+                <span v-else>{{scope.row.price}}</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
@@ -154,7 +159,18 @@
               width="100">
               <template slot-scope="scope">
                 <span v-if="scope.row.type === 'coupon'">优惠券</span>
-                <span v-if="scope.row.type === 'platform-voucher'">平台发放</span>
+                <span v-if="scope.row.type === 'platform-voucher'">平台代金券</span>
+              </template>
+            </el-table-column>
+            <el-table-column
+              sortable
+              prop="buzType"
+              label="消费形式"
+              width="100">
+              <template slot-scope="scope">
+                <span v-if="scope.row.buzType === 'head-back'">回头券</span>
+                <span v-else-if="scope.row.buzType === 'new-give'">新人发放</span>
+                <span v-else>无</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -183,31 +199,51 @@
             </el-table-column>
             <el-table-column
               sortable
+              prop="stock"
+              label="剩余数量"
+              width="100">
+            </el-table-column>
+            <el-table-column
+              sortable
+              prop="publishNum"
+              label="发行数量"
+              width="100">
+            </el-table-column>
+            <el-table-column
+              sortable
               width="100"
-              prop="validTime"
+              prop="validType"
               label="有效类型">
+              <template slot-scope="scope">
+                <span>{{scope.row.validTime}}</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               width="100"
               prop="validDay"
-              label="有效日期">
+              label="有效时段">
+              <template slot-scope="scope">
+                <span v-if="scope.row.validDay">{{scope.row.validDay}} 天</span>
+              </template>
             </el-table-column>
             <el-table-column
               sortable
               width="100"
               prop="validTime"
-              label="有效时长">
+              label="有效日期">
             </el-table-column>
             <el-table-column
               fixed="right"
               label="操作"
-              width="100">
+              width="130">
               <template slot-scope="scope">
                 <el-button @click.native.prevent="deleteDiscountCoupon(scope.row)" type="text" size="small">
                   删除
                 </el-button>
                 <el-button @click.native.prevent="editDiscountCoupon(scope.row)" type="text" size="small">编辑</el-button>
+                <el-button v-if="scope.row.status === 'enable'" @click.native.prevent="disableDiscountCoupon(scope.row)" class="not-sell" type="text" size="small">下架</el-button>
+                <el-button v-if="scope.row.status === 'disable'" @click.native.prevent="enableDiscountCoupon(scope.row)" type="text" size="small">上架</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -227,26 +263,33 @@
             @keyup="onkeyup(e)"
             placeholder="请输入卡券名"></el-input>
         </el-form-item>
-        <el-form-item label="价格">
-          <el-input
-            v-model.number="couponForm.price"
-            auto-complete="off"
-            placeholder="请输入价格"></el-input>
-        </el-form-item>
-        <el-form-item label="数量">
-          <el-input
-            v-model.number="couponForm.stock"
-            auto-complete="off"
-            placeholder="请输入数量"></el-input>
+        <el-form-item label="折扣规则">
+          <el-select
+            style="display: inline-block;margin: 0px 2px"
+            v-model="couponForm.tid"
+            placeholder="请选择卡券类型">
+            <el-option
+              v-for="(item,index) in couponType"
+              :key="index"
+              :label="item.name"
+              :value="item.id">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="卡券类型">
           <el-select
             style="display: inline-block;margin: 0px 2px"
             v-model="couponForm.type"
             placeholder="请选择卡券类型">
-            <el-option label="平台发放 platform-voucher" value="platform-voucher"></el-option>
+            <el-option label="代金券 voucher" value="voucher"></el-option>
             <el-option label="优惠券 coupon" value="coupon"></el-option>
           </el-select>
+          <el-input
+            style="width: 220px;margin: 5px 0px"
+            v-if="couponForm.type === 'voucher'"
+            v-model.number="couponForm.price"
+            auto-complete="off"
+            placeholder="请输入价格"></el-input>
         </el-form-item>
         <el-form-item label="限制类型">
           <el-select
@@ -304,48 +347,39 @@
             auto-complete="off"
             placeholder="请输入优惠金额"></el-input>
         </el-form-item>
-        <el-form-item label="打印数量">
+        <el-form-item label="发行数量">
           <el-input
             v-model.number="couponForm.publishNum"
             auto-complete="off"
-            placeholder="请输入打印数量"></el-input>
+            placeholder="请输入数量"></el-input>
         </el-form-item>
-        <el-form-item label="获得次数">
+        <el-form-item label="获得数量">
           <el-input
             v-model.number="couponForm.canGetNum"
             auto-complete="off"
             placeholder="请输入次数"></el-input>
         </el-form-item>
-        <el-form-item label="使用期限">
+        <el-form-item label="期限类型">
           <el-select
             style="display: inline-block;margin: 0px 2px"
             v-model="couponForm.validType"
             placeholder="选择使用期限类型">
             <el-option label="到期时间" value="dot"></el-option>
-            <el-option label="时间段" value="part"></el-option>
-            <el-option label="时长" value="long"></el-option>
+            <el-option label="时间段" value="long"></el-option>
           </el-select>
           <el-input
             style="width: 220px;margin: 5px 0px"
-            v-model="couponForm.validTime"
-            placeholder="输入时间/小时"
+            v-model="couponForm.validDay"
+            placeholder="输入天"
             v-if="couponForm.validType === 'long'">
           </el-input>
           <el-date-picker
             style="width: 220px;margin: 5px 0px"
             v-model="couponForm.validTime"
             type="date"
+            value-format="yyyy-MM-dd HH:mm:ss"
             v-if="couponForm.validType === 'dot'"
             placeholder="选择日期">
-          </el-date-picker>
-          <el-date-picker
-            v-model="couponForm.validDay"
-            style="width: 220px;margin: 5px 0px"
-            type="daterange"
-            v-if="couponForm.validType === 'part'"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="描述">
@@ -362,12 +396,11 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="showFormCoupon = false">取 消</el-button>
+        <el-button @click="showFormCoupon = false;couponForm = {}">取 消</el-button>
         <el-button v-if="discountCouponEdit === 0" type="primary" @click="addConponConfirm">确定</el-button>
         <el-button v-if="discountCouponEdit === 1" type="primary" @click="updateConponConfirm">修改</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 <script>
@@ -383,13 +416,28 @@
       saveCoupon: false,
       couponForm:{},
       couponSetting: {},
-      discountCouponEdit: 0
+      discountCouponEdit: 0,
+      couponType: [],
     }),
     created(){
       this._pullDiscountCoupon()
       this._pullCouponSetting()
+      this._pullCouponType()
     },
     methods: {
+      _pullCouponType(){
+        let data = [
+          {
+            feild:'status',
+            value:'enable',
+            joinType:'eq'
+          }
+        ]
+        this.$request(this.url.couponType,'json',data).then((res)=>{
+          this.couponType = res.data.data
+          console.log(res.data.data);
+        })
+      },
       _pullDiscountCoupon(){
         let data = [
           {
@@ -407,6 +455,18 @@
         this.$request(this.url.couponSettingComplexPageQuery,'json',[]).then((res)=>{
           this.couponSetting = res.data.data[0]
           console.log(this.couponSetting);
+        })
+      },
+      disableDiscountCoupon(row){
+        row.status = 'disable'
+        this.$request(this.url.discountCouponUpdate,'json',row).then((res)=>{
+          this._pullDiscountCoupon()
+        })
+      },
+      enableDiscountCoupon(row){
+        row.status = 'enable'
+        this.$request(this.url.discountCouponUpdate,'json',row).then((res)=>{
+          this._pullDiscountCoupon()
         })
       },
       deleteDiscountCoupon(row){
@@ -498,4 +558,7 @@
     width 25%
   span
     margin 0px 5px
+
+.not-sell
+  color red
 </style>
