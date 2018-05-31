@@ -209,9 +209,10 @@
                   </div>
                 </div>
                 <span class="price"
-                      style="font-size: 20px;font-weight: bolder;margin-right: 85px">
+                      style="font-size: 20px;font-weight: bolder">
                   总计 <span class="dollar">￥</span>{{item.needPay.toFixed(2)}}</span>
-                <el-button type="success" @click="singleAccounts">结账</el-button>
+                <span style="margin-left: 50px"><el-button type="text" @click="printerOrder(item,$event)">打印</el-button></span>
+                <span><el-button type="success" size="small" @click="singleAccounts">结账</el-button></span>
               </div>
               <el-button
                 v-if="item.status === 'not-payed'"
@@ -223,9 +224,14 @@
                 :label="index">订单{{index+1}}</el-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
+<<<<<<< HEAD
             {{item}}
             <el-badge v-if="item.status === 'not-payed' && item.orderDishes != null" :value="item.orderDishes.length" class="item">
             </el-badge>
+=======
+            <!--<el-badge v-if="item.status === 'not-payed'" :value="item.orderDishes.length" class="item">-->
+            <!--</el-badge>-->
+>>>>>>> e2b96ecf15d4ee28db404725e37859abe7b69264
           </span>
         </el-radio-group>
       </span>
@@ -939,11 +945,14 @@ export default {
         console.log(err);
       })
     },
+    printerOrder(item,event){
+      console.log(item);
+      this.kitchen80(item,"收银台",1)
+    },
     selectOrder(item,event){
       console.log(item);
     },
     selectMenu(index, event) {
-
       let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
       let el = foodList[index];
       this.foodsScroll.scrollToElement(el, 300);
@@ -1136,7 +1145,6 @@ export default {
         }
       ]).then((res)=>{
         console.log(res);
-
         this.tableOrderList = res.data.data
         console.log(this.tableOrderList);
       }).catch((err)=>{

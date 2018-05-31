@@ -11,6 +11,7 @@ import {request} from 'api/api'
 import {urlColletion} from 'api/api'
 import {getUID} from 'api/api'
 import {goodsArr} from 'api/api'
+import {cashier60,cashier80,kitchen60,kitchen80} from 'api/printermodels'
 
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
@@ -19,6 +20,10 @@ Vue.prototype.$request = request
 Vue.prototype.url = urlColletion()
 Vue.prototype.getUID = getUID
 Vue.prototype.goodsArr = goodsArr
+Vue.prototype.cashier60 = cashier60
+Vue.prototype.cashier80 = cashier80
+Vue.prototype.kitchen60 = kitchen60
+Vue.prototype.kitchen80 = kitchen80
 
 /* eslint-disable no-new */
 new Vue({

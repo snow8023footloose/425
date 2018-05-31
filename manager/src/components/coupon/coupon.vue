@@ -396,11 +396,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="showFormCoupon = false;couponForm = {}">取 消</el-button>
+        <el-button @click="showFormCoupon = false;">取 消</el-button>
         <el-button v-if="discountCouponEdit === 0" type="primary" @click="addConponConfirm">确定</el-button>
         <el-button v-if="discountCouponEdit === 1" type="primary" @click="updateConponConfirm">修改</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 <script>
