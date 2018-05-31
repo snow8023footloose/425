@@ -254,20 +254,27 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="60">
+                width="120">
                 <template slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="editPrinter(scope.row)"
+                    type="text"
+                    size="small">
+                    编辑
+                  </el-button>
                   <el-button
                     @click.native.prevent="deletePrinter(scope.row)"
                     type="text"
                     size="small">
                     删除
                   </el-button>
+
                 </template>
               </el-table-column>
             </el-table>
 
           </template>
-          <el-button type="primary" icon="el-icon-plus" @click="plusPrinter" class="control-button">添加打印机</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="addPrinter" class="control-button">添加打印机</el-button>
         </el-tab-pane>
 
         <!--打印模板-->
@@ -290,6 +297,10 @@
                 width="150"
                 prop="status"
                 label="状态">
+                <template slot-scope="scope">
+                  <span v-if="scope.row.status === 'enable'">可用</span>
+                  <span v-if="scope.row.status === 'disable'">不可用</span>
+                </template>
               </el-table-column>
               <el-table-column
                 sortable
@@ -312,8 +323,14 @@
               <el-table-column
                 fixed="right"
                 label="操作"
-                width="60">
+                width="120">
                 <template slot-scope="scope">
+                  <el-button
+                    @click.native.prevent="editPrinterTemplate(scope.row)"
+                    type="text"
+                    size="small">
+                    编辑
+                  </el-button>
                   <el-button
                     @click.native.prevent="deletePrinterTemplate(scope.row)"
                     type="text"
@@ -324,7 +341,7 @@
               </el-table-column>
             </el-table>
           </template>
-          <el-button type="primary" icon="el-icon-plus" @click="plusPrinterTemplate" class="control-button">添加打印模板</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="addPrinterTemplate" class="control-button">添加打印模板</el-button>
         </el-tab-pane>
 
         <!--账户-->
@@ -365,9 +382,6 @@
               <el-button type="primary" @click="lastAliBinded">确 定</el-button>
             </span>
           </el-dialog>
-
-
-
           <el-dialog
             title="微信账号绑定"
             :center="true"
@@ -433,8 +447,8 @@
         </el-tab-pane>
 
       </el-tabs>
-      <!--增加打印模板-->
-      <el-dialog title="增加打印机" :visible.sync="showFormPrinterPlus">
+      <!--添加打印机-->
+      <el-dialog title="添加打印机" :visible.sync="showFormPrinterAdd">
         <el-form :model="printerForm" :label-width="formLabelWidth">
           <el-form-item label="名称" >
             <el-input
@@ -470,15 +484,15 @@
           <el-form-item label="备注">
             <el-input v-model="printerForm.remark" auto-complete="off" placeholder="请输入备注"></el-input>
           </el-form-item>
-
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="showFormPrinterPlus = false;">取 消</el-button>
-          <el-button type="primary" @click="plusPrinterConfirm">确定</el-button>
+          <el-button @click="closePrinterLog">取 消</el-button>
+          <el-button v-if="showUpdatePrinter === 0" type="primary" @click="addPrinterConfirm">确定</el-button>
+          <el-button v-if="showUpdatePrinter === 1" type="primary" @click="updatePrinterConfirm">修改</el-button>
         </div>
       </el-dialog>
       <!--增加打印模板-->
-      <el-dialog title="增加打印模板" :visible.sync="showFormPrinterTemplatePlus">
+      <el-dialog title="添加打印模板" :visible.sync="showFormPrinterTemplateAdd">
         <el-form :model="printerTemplateForm" :label-width="formLabelWidth">
           <el-form-item label="模板名" >
             <el-input
@@ -500,8 +514,9 @@
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-          <el-button @click="showFormPrinterTemplatePlus = false;">取 消</el-button>
-          <el-button type="primary" @click="plusPrinterTemplateConfirm">确定</el-button>
+          <el-button @click="closePrinterTemplateLog">取 消</el-button>
+          <el-button v-if="showUpdatePrinterTemplate === 0" type="primary" @click="addPrinterTemplateConfirm">确定</el-button>
+          <el-button v-if="showUpdatePrinterTemplate === 1" type="primary" @click="updatePrinterTemplateConfirm">修改</el-button>
         </div>
       </el-dialog>
     </div>
@@ -524,6 +539,8 @@ export default {
     return {
       alipayAccount:'',
       WeChatAccount:'',
+      showUpdatePrinterTemplate: 0,
+      showUpdatePrinter: 0,
       alipayGetName:'未绑定',
       wechatGetName:'未绑定',
       alipaymsg:'支付宝账号绑定',
@@ -558,8 +575,8 @@ export default {
       value4: true,
       value5: 100,
       printerForm:{},
-      showFormPrinterPlus:false,
-      showFormPrinterTemplatePlus:false,
+      showFormPrinterAdd:false,
+      showFormPrinterTemplateAdd:false,
       settingForm:{},
       value6: 100,
       serviceStatus:'',
@@ -772,10 +789,23 @@ export default {
         console.log(err);
       })
     },
-    plusPrinterConfirm(){
+    closePrinterLog(){
+      this.showFormPrinterAdd = !this.showFormPrinterAdd;
+      this._pullPrinter()
+    },
+     addPrinterConfirm(){
       this.$request(this.url.printerAdd,'json',this.printerForm).then((res)=>{
 
-        this.showFormPrinterPlus = !this.showFormPrinterPlus;
+        this.showFormPrinterAdd = !this.showFormPrinterAdd;
+        this._pullPrinter()
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    updatePrinterConfirm(){
+      this.$request(this.url.printerUpdate,'json',this.printerForm).then((res)=>{
+        console.log(res);
+        this.showFormPrinterAdd = !this.showFormPrinterAdd
         this._pullPrinter()
       }).catch((err)=>{
         console.log(err);
@@ -787,21 +817,48 @@ export default {
     toPrinterSetting2(){
       this.activeName = 'fourth'
     },
-    plusPrinter(){
-      this.showFormPrinterPlus = !this.showFormPrinterPlus;
+     addPrinter(){
+       console.log("cleared");
+       this.printerForm = {}
+      this.showFormPrinterAdd = !this.showFormPrinterAdd;
     },
-    plusPrinterTemplateConfirm(){
+    closePrinterTemplateLog(){
+      this.showFormPrinterTemplateAdd = !this.showFormPrinterTemplateAdd;
+      this._pullPrinterTemplate()
+    },
+     addPrinterTemplateConfirm(){
       // console.log('提交打印机数据',this.printerTemplateForm);
       this.$request(this.url.printerTemplateAdd,'json',this.printerTemplateForm).then((res)=>{
         // console.log(res);
-        this.showFormPrinterTemplatePlus = !this.showFormPrinterTemplatePlus;
+        this.showFormPrinterTemplateAdd = !this.showFormPrinterTemplateAdd;
         this._pullPrinterTemplate()
       }).catch((err)=>{
         console.log(err);
       })
     },
-    plusPrinterTemplate(){
-      this.showFormPrinterTemplatePlus = !this.showFormPrinterTemplatePlus;
+     addPrinterTemplate(){
+      this.showFormPrinterTemplateAdd = !this.showFormPrinterTemplateAdd;
+       this.showUpdatePrinterTemplate = 0
+       this.printerTemplateForm = {}
+    },
+    editPrinterTemplate(row){
+      this.printerTemplateForm = row
+      this.showUpdatePrinterTemplate = 1
+      this.showFormPrinterTemplateAdd = !this.showFormPrinterTemplateAdd;
+    },
+    updatePrinterTemplateConfirm(){
+      let data = this.printerTemplateForm
+      this.$request(this.url.printerTemplateUpdate,'json',data).then((res)=>{
+        console.log(res);
+        this.showFormPrinterTemplateAdd = !this.showFormPrinterTemplateAdd;
+        this.$message({
+          type: 'success',
+          message: '修改成功!'
+        });
+        this._pullPrinterTemplate()
+      }).catch((err)=>{
+        console.log(err);
+      })
     },
     deletePrinterTemplate(row){
       let data = {
@@ -813,6 +870,11 @@ export default {
       }).catch((err)=>{
         console.log(err);
       })
+    },
+    editPrinter(row){
+      this.printerForm = row
+      this.showFormPrinterAdd = !this.showFormPrinterAdd
+      this.showUpdatePrinter = 1
     },
     deletePrinter(row){
       let data = {
