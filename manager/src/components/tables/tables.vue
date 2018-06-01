@@ -964,6 +964,7 @@ export default {
     },
     printerOrder(item,event){
       console.log(item);
+      console.log(item);
       console.log(this.settingForm);
       this.kitchen80(item,"收银台",1)
     },
