@@ -1,4 +1,5 @@
 
+
 var serviceStatus
 var tableStatus
 var orderStatus
@@ -9,7 +10,7 @@ export function goeasy(msgType) {
     appkey: 'BS-f7859ab35ae6453d8cca76020ece4d7c'
   });
   goEasy.subscribe({
-    channel: 'goeasy.restaurant.id.' + restaurantId,
+    channel: 'WEB:PUSH:' + restaurantId,
     onMessage: function (message) {
       message = $.parseJSON(message.content);
       console.log(message);
