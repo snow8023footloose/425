@@ -209,11 +209,16 @@
         }
       }
 
+      if(printerTemplate === '厨房80mm'){
+        this.kitchen80(val,printerName,num)
+      }else if(printerTemplate === '厨房60mm'){
+        this.kitchen60(val,printerName,num)
+      }else if(printerTemplate === '收银台80mm'){
+        this.cashier80(val,printerName,num)
+      }else if(printerTemplate === '收银台60mm'){
+        this.cashier60(val,printerName,num)
+      }
 
-      // if(){
-      //
-      // }
-      this.kitchen80(val,printerName,num)
     }
   },
   computed:{
