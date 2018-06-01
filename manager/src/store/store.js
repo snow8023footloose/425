@@ -15,6 +15,7 @@ const moduleB = {
 }
 const common = {
   startData:{},
+  settingForm:{}
 }
 const cashierTable = {
 

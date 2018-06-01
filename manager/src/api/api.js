@@ -5,8 +5,8 @@ import qs from 'qs'
 // axios.defaults.baseURL = 'http://192.168.2.189';
 axios.defaults.withCredentials = true
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-var BURL = 'http://192.168.2.189/api'
-// var BURL = 'https://www.xwfwlkj.com/api'
+// var BURL = 'http://192.168.2.189/api'
+var BURL = 'https://www.xwfwlkj.com/api'
 export function _addRestaurant(obj) {
   return axios.post("/restaurant/add",  obj, {
     header:{
@@ -128,10 +128,12 @@ export  function urlColletion() {
     attr4: BURL + '/restaurantSpec/attr/update',
 
     //购物车
-    cart1: BURL + '/cart/add',
-    cart2: BURL + '/cart/complexPageQuery',
-    cart3: BURL + '/cart/delete',
-    cart4: BURL + '/cart/update',
+    cartAdd: BURL + '/cart/add',
+    cartComplexPageQuery: BURL + '/cart/complexPageQuery',
+    cartDelete: BURL + '/cart/delete',
+    cartUpdate: BURL + '/cart/update',
+    cartSubmit: BURL + '/cart/updateNum',
+
 
 
     //pre单位

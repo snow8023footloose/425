@@ -10,9 +10,9 @@
         <div class="list-content" ref="list-content">
           <ul style="padding: 0px">
             <li style="display: flex;align-items:baseline" class="food" v-for="(food,key) in selectFoods" :key="key">
-              <h3 class="name" style="font-weight: lighter;flex-grow: 1; width: 200px">{{food.name}}</h3>
+              <h3 class="name" style="font-weight: lighter;flex-grow: 1; width: 200px">{{food.dishesName}}</h3>
               <div class="price" style="flex-grow: 1;">
-                <span>￥{{food.normalPrice*food.count}}</span>
+                <span>￥{{food.totalPrice}}</span>
               </div>
               <div class="cartcontrol-wrapper" >
                 <cartcontrol :food="food"></cartcontrol>
@@ -36,8 +36,8 @@
           </div>
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
-        <div class="price" v-show="totalCount>0" :class="{'highlight':totalPrice>0}">￥{{needPay.toFixed(2)}}</div>
-        <div class="desc" v-show="totalCount===0">亲，购物车为空</div>
+        <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
+        <div @click="showSelected" class="desc">亲，购物车为空</div>
       </div>
     </div>
     <div class="ball-container">
@@ -62,12 +62,12 @@
         <div class="list-content" ref="list-content">
           <ul>
             <li class="food" v-for="(food,key) in selectFoods" :key="key">
-              <span class="name">{{food.name}}</span>
+              <span class="name">{{food.dishesName}}</span>
               <div class="price">
-                <span>￥{{food.normalPrice*food.count}}</span>
+                <span>￥{{food.totalPrice}}</span>
               </div>
               <div class="cartcontrol-wrapper">
-                <cartcontrol :food="food"></cartcontrol>
+                <cartcontrol :food="food" :type="'cart'" @updateShopcart="updateShopcart"></cartcontrol>
               </div>
             </li>
           </ul>
@@ -86,14 +86,6 @@ const ERR_OK = 0
     props: {
       selectFoods: {
         type: Array,
-        default() {
-          return [
-            {
-              normalPrice: 4,
-              count: 1
-            }
-          ];
-        }
       },
       goods1:{
         type:Array
@@ -136,7 +128,23 @@ const ERR_OK = 0
       };
 
     },
+    watch:{
+      dropBalls(){
+        this.fold = false
+      }
+    },
+    mounted(){
+      this.fold = !this.fold;
+    },
     methods: {
+      updateShopcart(){
+        this.$emit('updateShopcart', true);
+      },
+      showSelected(){
+        console.log(this.selectFoods);
+        console.log(this.totalPrice);
+        console.log(this.totalCount);
+      },
       drop(el) {
         for(let i = 0; i < this.balls.length; i++) {
           let ball = this.balls[i];
@@ -204,16 +212,22 @@ const ERR_OK = 0
     computed: {
       totalPrice() {
         let total = 0;
-        this.selectFoods.forEach((food) => {
-          total += food.normalPrice * food.count;
-        });
+        if(this.selectFoods){
+          this.selectFoods.forEach((food) => {
+            total += food.totalPrice
+          });
+        }
+
         return total;
       },
       totalCount() {
         let count = 0;
-        this.selectFoods.forEach((food) => {
-          count += food.count;
-        });
+        if(this.selectFoods){
+          this.selectFoods.forEach((food) => {
+            count += food.num;
+          });
+        }
+
         return count;
       },
       listShow() {

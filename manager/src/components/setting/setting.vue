@@ -762,13 +762,14 @@ export default {
         ':'+this.startTimeSetting.getMinutes()+
         '-'+this.endTimeSetting.getHours()+
         ':'+this.endTimeSetting.getMinutes()
-      // console.log(this.BusinessTime);
     },
     _pullSetting(){
+
       this.$request(this.url.restaurantSetting,'json',[]).then((res)=>{
         this.settingForm = res.data.data[0]
       }).catch((err)=>{
         console.log(err);
+
       })
     },
     _pullPrinter(){
@@ -820,6 +821,7 @@ export default {
      addPrinter(){
        console.log("cleared");
        this.printerForm = {}
+       this.showUpdatePrinter = 0
       this.showFormPrinterAdd = !this.showFormPrinterAdd;
     },
     closePrinterTemplateLog(){

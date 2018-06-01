@@ -11,7 +11,7 @@
               v-loading.fullscreen.lock="loading"
               :data="dishesDataTable"
               style="width: 100%"
-              height="750"
+              height="574"
               :summary-method="getSummaries"
               show-summary
             >

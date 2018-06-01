@@ -138,7 +138,6 @@
                 </div>
               </div>
             </transition>
-
           </div>
         </el-row>
       </el-tab-pane>
@@ -224,20 +223,16 @@
                 :label="index">订单{{index+1}}</el-button>
               <!--<el-button class="singleButton" slot="reference" @click="selectCustomer(item,$event)" type="primary" size="small" icon="el-icon-document" round>订单{{item}}</el-button>-->
             </el-popover>
-<<<<<<< HEAD
-            {{item}}
             <el-badge v-if="item.status === 'not-payed' && item.orderDishes != null" :value="item.orderDishes.length" class="item">
             </el-badge>
-=======
             <!--<el-badge v-if="item.status === 'not-payed'" :value="item.orderDishes.length" class="item">-->
             <!--</el-badge>-->
->>>>>>> e2b96ecf15d4ee28db404725e37859abe7b69264
           </span>
         </el-radio-group>
       </span>
       <el-button
         id="splusOrder"
-        @click="plusOrder"
+        @click="prepayInfo"
         type="success"
         icon="el-icon-plus"
       >立即下单</el-button>
@@ -299,7 +294,9 @@
                       <cartcontrol
                         :food="food"
                         @incrementmi="incrementTotalDecre"
-                        @increment="incrementTotalAdd">
+                        @increment="incrementTotalAdd"
+                        @updateShopcart="updateShopcart"
+                      >
                       </cartcontrol>
                     </div>
                   </div>
@@ -310,7 +307,8 @@
         </div>
         <shopcart
           ref="shop-cart"
-          :select-foods="selectFoods"
+          @updateShopcart="updateShopcart"
+          :select-foods="tableCartList"
           :goods1="goods"
           :needPay="needPay"></shopcart>
       </div>
@@ -363,8 +361,8 @@
             </span>
           </div>
           <el-button-group style="position: fixed;bottom: 30px;left: 50%;width: 246;margin-left: -123px" >
-            <el-button type="success" round @click="confirmOrder" plain icon="el-icon-download">稍后支付</el-button>
-            <el-button type="success" round @click="confirmOrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
+            <el-button type="success" round @click="delayOrderPay" plain icon="el-icon-download">稍后支付</el-button>
+            <el-button type="success" round @click="OrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
           </el-button-group>
         </div>
       </div>
@@ -556,11 +554,13 @@ export default {
     tableTitle:"",
     tableForm: {},
     scrollOnce:0,
+    settingForm:{},
     selectSingleOrder: 0,
     loading: false,
     tagsTotalPrice:0,
     basePrice:0,
     selectedTable:0,
+    tableCartList:[],
     countTable:0,
     tableType:[
       {
@@ -684,6 +684,9 @@ export default {
     }
   },
   methods: {
+    updateShopcart(){
+      this._pullCartList()
+    },
     toCountTable(){
       let _this = this
       setTimeout(function () {
@@ -754,8 +757,10 @@ export default {
               type: 'multi',
               tagIds: attrTags
             }
-            _this.$request(_this.url.cart1,'json',data).then((res)=>{
+            _this.$request(_this.url.cartAdd,'json',data).then((res)=>{
               if(res.data.msg === 'success'){
+
+                _this._pullCartList()
                 _this.ballDrop()
 
               }
@@ -818,8 +823,8 @@ export default {
           tid: this.tid,
           type: 'multi',
         }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-          this.refreshNeedPay()
+        this.$request(this.url.cartAdd,'json',data).then((res)=>{
+          this._pullCartList()
         }).catch((err)=>{
           console.log('加入购物车失败',err);
         })
@@ -838,7 +843,7 @@ export default {
           tid: this.tid,
           type: 'multi',
         }
-        this.$request(this.url.cart1,'json',data).then((res)=>{
+        this.$request(this.url.cartAdd,'json',data).then((res)=>{
           this.refreshNeedPay()
         }).catch((err)=>{
           console.log(err);
@@ -857,7 +862,7 @@ export default {
         food.count = 0;
       });
     },
-    confirmOrder(){
+    delayOrderPay(){
       this.dialogConfirmOrder = !this.dialogConfirmOrder
       var data = {
         restaurantId: parseInt(localStorage.getItem('rid')),
@@ -868,16 +873,13 @@ export default {
         serverType:'real-time',
       }
       this.$request(this.url.payOrder,'form',data).then((res)=>{
-        // console.log(res);
-        this.selectFoods.forEach((food) => {
-          food.count = 0;
-        });
+        console.log(res);
         this._pullTableOrder()
       }).catch((err)=>{
         console.log(err);
       })
     },
-    confirmOrderPay(){
+    OrderPay(){
       var data = {
         restaurantId: parseInt(localStorage.getItem('rid')),
         orderType:'multi',
@@ -893,6 +895,8 @@ export default {
       })
     },
     confirmSku(){
+      console.log('1');
+      let _this = this
       if(!this.transformArrySku()){
         this.$message({
           type: 'info',
@@ -917,19 +921,18 @@ export default {
           tid: this.tid,
           type: 'multi',
         }
-        // console.log('提交购物车数据，包含sid',data);
-        this.$request(this.url.cart1,'json',data).then((res)=>{
-          if(res.data.msg === 'success'){
-            this.ballDrop()
-          }else{
-            console.log('加入购物车成功',res.data.msg);
-          }
+        console.log('2');
+        this.$request(this.url.cartAdd,'json',data).then((res)=>{
+          _this._pullCartList()
+          console.log(this.tableCartList);
+          _this.ballDrop()
+
         }).catch((err)=>{
           console.log('加入购物车失败',err);
         })
       }
     },
-    plusOrder(){
+    prepayInfo(){
       this.dialogConfirmOrder = !this.dialogConfirmOrder
       let data= {
         restaurantId: localStorage.getItem('rid'),
@@ -937,6 +940,7 @@ export default {
         tableId: this.tid
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
+        console.log(res);
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
@@ -947,6 +951,7 @@ export default {
     },
     printerOrder(item,event){
       console.log(item);
+      console.log(this.settingForm);
       this.kitchen80(item,"收银台",1)
     },
     selectOrder(item,event){
@@ -959,6 +964,7 @@ export default {
     },
     singleAccounts(){
       alert("结账中……")
+      this.goeasy('service')
     },
     incrementTotal(target) {
       //体验优化,异步执行下落动画
@@ -1146,7 +1152,24 @@ export default {
       ]).then((res)=>{
         console.log(res);
         this.tableOrderList = res.data.data
-        console.log(this.tableOrderList);
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullCartList(){
+      this.$request(this.url.cartComplexPageQuery,'json',[
+        {
+          feild:'tid',
+          value:this.tid,
+          joinType:'eq'
+        },
+        {
+          feild:'rid',
+          value:localStorage.getItem('rid'),
+          joinType:'eq'
+        }
+      ]).then((res)=>{
+        this.tableCartList = res.data.data
       }).catch((err)=>{
         console.log(err);
       })
@@ -1155,8 +1178,11 @@ export default {
       if(this.$store.state.screenWidth < 1000){
         return
       }
+
+
       this.tableForm = item
       this.tid = item.id
+      this._pullCartList()
       this._pullTableOrder()
       var _this = this;
       var Data = [
@@ -1185,7 +1211,7 @@ export default {
           this.scrollOnce= 1
         }
         loading.close();
-      }, 700);
+      }, 1500);
       this.tableShow = 1
       this.tableTitle = this.tableForm.num
       const loading = this.$loading({
@@ -1274,9 +1300,16 @@ export default {
     },
     handleShowTable() {
       this.showTable = !this.showTable
+    },
+    _pullSetting(){
+      this.$request(this.url.restaurantSetting,'json',[]).then((res)=>{
+        this.settingForm = res.data.data[0]
+      }).catch((err)=>{
+      })
     }
   },
   created() {
+    this._pullSetting()
     this.toCountTable()
     let data1 = [{
       feild: 'status',

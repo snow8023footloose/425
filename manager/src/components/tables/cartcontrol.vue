@@ -1,11 +1,11 @@
 <template>
-  <div class="cartcontrol" enter-active-class="bounceInUp" leave-active-class="bounceOutDown">
+  <div class="cartcontrol">
     <transition name="move">
-      <div class="cart-decrease icon-add_circle" v-show="food.num>0" @click.stop="decreaseCart">
+      <div class="cart-decrease icon-add_circle" v-show="food && food.num>0" @click.stop="decreaseCart">
         <i class="el-icon-remove-outline inner icon-remove_circle_outline"></i>
       </div>
     </transition>
-    <div class="cart-count" v-show="food.num>0">{{food.count}}</div>
+    <div class="cart-count" v-show="food && food.num > 0 ">{{food ? food.num : ''}}</div>
     <i class="el-icon-circle-plus cart-add icon-add_circle" @click="addCart" ref="add"></i>
   </div>
 </template>
@@ -18,6 +18,10 @@
     props: {
       food: {
         type: Object,
+      },
+      type: {
+        type: String,
+        default: 'dishes'
       }
     },
     data() {
@@ -35,32 +39,54 @@
 
       addCart(event) {
         this.show = 1
-
+        console.log(this.food);
         if (!event._constructed) {
           return false;
         }
-        if(this.food.specs){
-          this.$emit('increment', {event:event.target,food:this.food,specs:true});
-        }else{
-          if (!this.food.count) {
-            Vue.set(this.food, 'count', 1);
-          } else {
-            this.food.count++;
+        if(this.type == 'dishes'){
+          if(this.food.specs){
+            this.$emit('increment', {event:event.target,food:this.food,specs:true});
+          }else{
+            if (!this.food.count) {
+              Vue.set(this.food, 'count', 1);
+            } else {
+              this.food.count++;
+            }
+            this.$emit('increment', {event:event.target,food:this.food,specs:false});
           }
-          this.$emit('increment', {event:event.target,food:this.food,specs:false});
+        }else{
+          this.$request(this.url.cartSubmit,'form',{
+            id:this.food.id,
+            delta: 1
+          }).then((res)=>{
+            console.log(res);
+            this.$emit('updateShopcart', true);
+          })
         }
+
 
       },
       decreaseCart(event) {
         if (!event._constructed) {
           return false;
         }
-        if (!this.food.count) {
-          Vue.set(this.food, 'count', 1);
-        } else {
-          this.food.count--;
+        if(this.type == 'dishes'){
+          if (!this.food.count) {
+            Vue.set(this.food, 'count', 1);
+          } else {
+            this.food.count--;
+          }
+          this.$emit('incrementmi', {event:event.target,food:this.food});
+        }else{
+          this.$request(this.url.cartSubmit,'form',{
+            id:this.food.id,
+            delta:-1
+          }).then((res)=>{
+            console.log(res);
+            this.$emit('updateShopcart', true);
+          })
         }
-        this.$emit('incrementmi', {event:event.target,food:this.food});
+
       }
     }
   };

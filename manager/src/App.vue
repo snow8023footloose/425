@@ -318,6 +318,7 @@ export default {
         });
       });
     },
+
     resetForm(formName) {
       this.ruleForm2 = {
         username: '',
@@ -342,8 +343,8 @@ export default {
   created() {
     this._pullService()
     if (localStorage.rid){
-      this.ruleForm2.username = 17375636967
-      this.ruleForm2.password = 17375636967
+      this.ruleForm2.username = 18670360154
+      this.ruleForm2.password = 18670360154
     }
     this.$store.state.screenWidth = this.screenWidth
     this.fitSize()
