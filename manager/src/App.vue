@@ -123,6 +123,7 @@
           <!--</router-link>-->
         </el-menu>
       </el-col>
+
       <el-col :span="menuStyle.mainWidth" @click.native.once="changeSize(true)">
         <router-view></router-view>
       </el-col>
@@ -130,14 +131,17 @@
   </div>
 </template>
 <script>
+  // 信息推送
 
-export default {
+
+
+  export default {
   name: 'App',
   data () {
     var validatePass = (rule, value, callback) => {
-      if (value === '') {
+      if (value === ''){
         callback(new Error('请输入账号'));
-      } else {
+      }else{
         if (this.ruleForm2.password !== '') {
           this.$refs.ruleForm2.validateField('password');
         }
@@ -174,6 +178,9 @@ export default {
         username: '',
         password: '',
       },
+      settingForm: {},
+      printerTable: [],
+      printerTemplateTable: [],
       rules2: {
         username: [
           { validator: validatePass, trigger: 'blur' }
@@ -184,9 +191,69 @@ export default {
       }
     };
   },
-  methods: {
-    _pullService(){
+  watch:{
+    watchOrder(val){
+      var id = this.settingForm.cashierPrinterId  //打印机id  用来获得打印名
+      var num = this.settingForm.cashierPrinterNum
+      var templateId = this.settingForm.cashierPrinterTemplate  //打印机模板
+      var printerName
+      var printerTemplate
+      for(let i = 0; i<this.printerTable.length; i++){
+        if(this.printerTable[i].id === id){
+          printerName = this.printerTable[i].driveName  //获得打印机名
+        }
+      }
+      for(let i = 0; i<this.printerTemplateTable.length; i++){
+        if(this.printerTemplateTable[i].id === templateId){
+          printerTemplate = this.printerTable[i].name  //获得打印机模板
+        }
+      }
 
+
+      // if(){
+      //
+      // }
+      this.kitchen80(val,printerName,num)
+    }
+  },
+  computed:{
+    watchOrder(){
+      console.log(this.settingForm);
+      return this.$store.state.orderStatus
+    }
+  },
+  methods: {
+    _pullSetting(){
+      this.$request(this.url.restaurantSetting,'json',[]).then((res)=>{
+        this.settingForm = res.data.data[0]
+        console.log(this.settingForm);
+        // this.settingForm.cashierPrinterId
+        // this.settingForm.cashierPrinterNum
+        // this.settingForm.cashierPrinterTemplate
+      }).catch((err)=>{
+        console.log(err);
+
+      })
+    },
+    _pullPrinter(){
+      this.$request(this.url.printerComplexPageQuery,'json',[]).then((res)=>{
+        this.printerTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPrinterTemplate(){
+      this.$request(this.url.printerTemplateComplexPageQuery,'json',[{
+        feild:"status",
+        value:"enable",
+        joinType:"eq"
+      }]).then((res)=>{
+        this.printerTemplateTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullService(){
       let data = [
         {
           feild:'status',
@@ -341,10 +408,13 @@ export default {
     }
   },
   created() {
+    this._pullSetting()
     this._pullService()
+    this._pullPrinter()
+    this._pullPrinterTemplate()
     if (localStorage.rid){
-      this.ruleForm2.username = 18670360154
-      this.ruleForm2.password = 18670360154
+      this.ruleForm2.username = 17375636967
+      this.ruleForm2.password = 17375636967
     }
     this.$store.state.screenWidth = this.screenWidth
     this.fitSize()

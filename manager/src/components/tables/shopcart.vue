@@ -37,7 +37,7 @@
           <div class="num" v-show="totalCount>0">{{totalCount}}</div>
         </div>
         <div class="price" :class="{'highlight':totalPrice>0}">￥{{totalPrice}}</div>
-        <div @click="showSelected" class="desc">亲，购物车为空</div>
+        <div @click="showSelected" class="desc" v-if="totalPrice === 0">亲，购物车为空</div>
       </div>
     </div>
     <div class="ball-container">

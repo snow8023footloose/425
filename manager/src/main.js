@@ -12,7 +12,7 @@ import {urlColletion} from 'api/api'
 import {getUID} from 'api/api'
 import {goodsArr} from 'api/api'
 import {cashier60,cashier80,kitchen60,kitchen80} from 'api/printermodels'
-import {goeasy} from 'api/goeasy'
+
 
 Vue.prototype.$axios = axios
 Vue.config.productionTip = false
@@ -25,10 +25,52 @@ Vue.prototype.cashier60 = cashier60
 Vue.prototype.cashier80 = cashier80
 Vue.prototype.kitchen60 = kitchen60
 Vue.prototype.kitchen80 = kitchen80
-Vue.prototype.goeasy = goeasy
+
+
+let goEasy = new GoEasy({
+  appkey: 'BS-f7859ab35ae6453d8cca76020ece4d7c'
+});
+goEasy.subscribe({
+  channel: 'WEB:PUSH:' + localStorage.getItem('rid'),
+  onMessage: function (message) {
+    console.log(message);
+    let msg = JSON.parse(message.content)
+    let type = msg.msgType
+    // let data = msg.data
+    // console.log(msg);
+    // console.log(type);
+    // console.log(data);
+    switch (type) {
+      case 'service': // 服务消息
+        handService(msg.data)
+        // console.log(type);
+        break;
+      case 'table-status': // 餐桌类型
+        handTable(msg.data)
+        // console.log(type);
+        break;
+      case 'order-status': // 订单消息
+        handOrder(msg.data)
+        break;
+    }
+  }
+});
+
+
+var serviceData
+var tableUpdate
+var orderData
+
+
+
+
+
+
+
+
 
 /* eslint-disable no-new */
-new Vue({
+let app = new Vue({
   el: '#app',
   router,
   store,
@@ -36,3 +78,17 @@ new Vue({
   template: '<App/>',
   render: h => h(App)
 })
+console.log(app);
+
+function handService(data) {
+  app.$store.state.serviceStatus = data
+}
+function handTable(data) {
+  app.$store.state.tableStatus = data
+}
+function handOrder(data) {
+  app.$store.state.orderStatus = data
+}
+
+
+export default app;

@@ -8,6 +8,7 @@
         <el-row :guter="0">
           <div class="table-container" id="table-container" ref="container">
             <!--餐桌按分类展示-->
+
             <transition name="el-zoom-in-left"  v-for="(item,index) in tableList" :key="item.num" v-if="selectedTable === item.tid && item.status === tableStatus">
               <div v-show="showTable" class="transition-box">
                 <el-tooltip :content="item.description" placement="top">
@@ -27,7 +28,7 @@
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'not-payed'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -59,7 +60,7 @@
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'not-payed'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -93,7 +94,7 @@
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'not-payed'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -125,7 +126,7 @@
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
-                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'pre-pay'">
+                  <div class="box-header" style="background: rgba(255,82,91,0.78)" v-else-if="item.status === 'not-payed'">
                     桌号：{{item.num}}
                     人数：{{item.seatNum}}
                   </div>
@@ -138,6 +139,7 @@
                 </div>
               </div>
             </transition>
+
           </div>
         </el-row>
       </el-tab-pane>
@@ -157,7 +159,7 @@
     <div class="table-status-type" style="display: inline-block;margin-left: 20px" @click="toCountTable">
       <el-button size="mini" type="success" plain round @click="tableStatus = ''">全部</el-button>
       <el-button size="mini" type="primary" plain round @click="tableStatus = 'pre-order'">未下单</el-button>
-      <el-button size="mini" type="danger" plain round @click="tableStatus = 'pre-pay'">未支付</el-button>
+      <el-button size="mini" type="danger" plain round @click="tableStatus = 'not-payed'">未支付</el-button>
       <el-button size="mini" type="warning" plain round @click="tableStatus = 'pre-clear'">未清台</el-button>
       <el-button size="mini" type="info" plain round @click="tableStatus = 'disable'">未开启</el-button>
     </div>
@@ -362,7 +364,7 @@
           </div>
           <el-button-group style="position: fixed;bottom: 30px;left: 50%;width: 246;margin-left: -123px" >
             <el-button type="success" round @click="delayOrderPay" plain icon="el-icon-download">稍后支付</el-button>
-            <el-button type="success" round @click="OrderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
+            <el-button type="success" round @click="orderPay" icon="el-icon-d-arrow-right">直接结账</el-button>
           </el-button-group>
         </div>
       </div>
@@ -635,9 +637,20 @@ export default {
         });
       }
       return foods;
-    }
+    },
+    watchTable(){
+      return this.$store.state.tableStatus
+    },
+
   },
   watch:{
+    watchTable(val) {
+      console.log(val);
+      this.$request(this.url.table4, 'json', val).then((res)=>{
+        this._pullTable()
+      }).catch((err)=>{
+      })
+    },
     getFoods(){
       this.basePrice = this.getFoods.normalPrice
     },
@@ -879,7 +892,7 @@ export default {
         console.log(err);
       })
     },
-    OrderPay(){
+    orderPay(){
       var data = {
         restaurantId: parseInt(localStorage.getItem('rid')),
         orderType:'multi',
@@ -1084,6 +1097,7 @@ export default {
     },
     updateTable(confirmData,a){
       this.tableForm.status = 'pre-order'
+
       let data = this.tableForm
       this.$refs[confirmData].validate((valid) => {
         if (valid) {

@@ -60,7 +60,10 @@ const store = new Vuex.Store({
       { id: 0, text: '这是0', done: true },
       { id: 2, text: '这是2', done: false },
     ],
-    count: 1
+    count: 1,
+    tableStatus:{},
+    orderStatus:{},
+    serviceStatus:{}
   },
   getters: {
     doneTodos: state => {
