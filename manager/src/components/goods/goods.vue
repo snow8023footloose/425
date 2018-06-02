@@ -199,7 +199,7 @@
             <span style="width: 80%;">
             <el-tag
               :key="index"
-              v-for="(tag,index) in dynamicTags1"
+              v-for="(tag,index) in categoryTable"
               closable
               :disable-transitions="false"
               @close="handleClose1(tag,index)"
@@ -575,7 +575,7 @@
           <el-form-item label="类型" prop="cid">
             <el-select clearable v-model="dishes.cid" clearable placeholder="请选择，默认其他">
               <el-option
-                v-for="(item,index) in dynamicTags1"
+                v-for="(item,index) in categoryTable"
                 :key="index"
                 :label="item.name"
                 :value="item.id">
@@ -999,7 +999,7 @@ export default {
       inputVisiblePopularize: false,
       inputValuePopularize: '',
       toDynamicTags1:[],
-      dynamicTags1: [],
+      categoryTable: [],
       categoryPid:[
         {
           value:'1',
@@ -1162,14 +1162,13 @@ export default {
     },
     repeatNum1: function () {
       let inputValue = this.inputValue1;
-      for(var i=0; i<this.dynamicTags1.length; i++){
-        if(this.dynamicTags1[i].name === inputValue){
+      for(var i=0; i<this.categoryTable.length; i++){
+        if(this.categoryTable[i].name === inputValue){
           return false;
         }
       }
     },
     repeatNum2: function () {
-
       let inputValue = this.inputValue2;
       if(!this.toDynamicTags2.sku){
         return 0
@@ -1182,7 +1181,7 @@ export default {
     }
   },
   created() {
-    this._pullDishes()
+    this.dishesDataTable = this.$store.state.dishesDataTable
     this._pullCategory()
     this._pullTags()
     this._pullSpec()
@@ -1191,7 +1190,6 @@ export default {
     }
     this._pullPopularizeTag()
     this._pullPrinter()
-    this.openFullScreen2()
   },
   methods: {
     disableDishes(row){
@@ -1405,8 +1403,8 @@ export default {
       this.$request(this.url.dishesCategory2,'json',Data).then((res)=>{
         let response = res.data.data
         // console.log(response);
-        this.dynamicTags1 = response
-        // console.log(this.dynamicTags1);
+        this.categoryTable = response
+        // console.log(this.categoryTable);
         for(let i=0;i<response.length;i++){
           this.filterTagArr.push({
             text:response[i].name,
@@ -1687,7 +1685,7 @@ export default {
           })
         }else{
           this.$message.error(
-            '信息不完整或者填写错误！!'
+            '信息不完整或者填写错误！'
           );
           return false;
         }
@@ -1699,7 +1697,7 @@ export default {
         id:this.toDynamicTags1.id,
       }
       for(let key in this.toDynamicTags1){
-        if(this.toDynamicTags1[key] === this.dynamicTags1[index][key]){
+        if(this.toDynamicTags1[key] === this.categoryTable[index][key]){
           continue;
         }
         updateObj[key] = this.toDynamicTags1[key];
@@ -1903,7 +1901,6 @@ export default {
         }
         updateObj.tags = tags
       }
-
       let popularizeTags = []
       if(this.valueOfTagsPopularize){
         popularizeTags = Object.assign([],this.valueOfTagsPopularize)
@@ -1975,7 +1972,6 @@ export default {
         if(repeatNum === false){
           alert('提示：同名项，不可建立')
         }else {
-
           let data = {
             name: inputValuePopularize,
             status: 'enable'
@@ -2014,14 +2010,12 @@ export default {
     handleInputConfirm() {
       let inputValue = this.inputValue;
       let repeatNum  = this.repeatNum
-
       let maxNumber = 0
       let numbers = []
       for(let i = 0;i<this.dynamicTags.length;i++){
         numbers.push(this.dynamicTags[i].zindex)
       }
       maxNumber = Math.max(...numbers)+1
-
       if (inputValue){
         if(repeatNum === false){
           alert('提示：同名项，不可建立')
@@ -2046,7 +2040,6 @@ export default {
                 message: '数据问题!'
               });
             }
-
           }).catch((err)=>{
             this.$message({
               type: 'info',
@@ -2071,7 +2064,6 @@ export default {
       this.showFormPopularizeTagEdit = !this.showFormPopularizeTagEdit
     },
     handleClosePopularize(tag,index) {
-      // console.log(tag);
       this.$confirm('是否删除该标签，与其的相关菜品标签将全部取消, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2140,8 +2132,8 @@ export default {
 
       let maxNumber = 0
       let numbers = []
-      for(let i = 0;i<this.dynamicTags1.length;i++){
-        numbers.push(this.dynamicTags1[i].zindex)
+      for(let i = 0;i<this.categoryTable.length;i++){
+        numbers.push(this.categoryTable[i].zindex)
       }
       maxNumber = Math.max(...numbers)+1
 
@@ -2208,7 +2200,7 @@ export default {
             type: 'success',
             message: '数据提交成功!'
           });
-          this.dynamicTags1.splice(this.dynamicTags1.indexOf(tag), 1);
+          this.categoryTable.splice(this.categoryTable.indexOf(tag), 1);
         }).catch((err)=>{
           this.$message({
             type: 'info',
@@ -2226,8 +2218,6 @@ export default {
         });
       });
     },
-
-    // 2
     showInput2() {
       this.inputVisible2 = true;
       this.$nextTick(_ => {
@@ -2333,7 +2323,7 @@ export default {
       });
     },
     // 3
-    showInput3() {
+    showInput3(){
       this.inputVisible3 = true;
       this.$nextTick(_ => {
         this.$refs.saveTagInput3.$refs.input.focus();
@@ -2363,7 +2353,7 @@ export default {
       this.inputVisible3 = false;
       this.inputValue3 = '';
     },
-    handleClose3(tag) {
+    handleClose3(tag){
       this.$confirm('是否删除该SKU，应用此SKU的菜品将取消, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2381,14 +2371,9 @@ export default {
         });
       });
     },
-    handleRemove(file, fileList) {
-    },
     toNature(){
       this.showFormGoodsPlus = !this.showFormGoodsPlus
       this.activeName = 'second'
-    },
-    handlePreview(file) {
-      // console.log(file);
     },
     plusMethodsThis(){
       //初始化表格

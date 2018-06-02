@@ -23,7 +23,6 @@ export function cashier60(orderMsg,printerName,number) {
   var hasHeight = 110;
 
   //body  此处循环  计算高度
-  console.log(orderDishes);
   for(let i=0; i<orderDishes.length;i++){
     if(orderDishes[i].skuTagContent){
       LODOP.ADD_PRINT_TEXT(hasHeight, 0, 170, 20, orderDishes[i].dishesName);
@@ -219,6 +218,7 @@ export function kitchen80(orderMsg,printerName,number) {
 
   var hasHeight = 35;
   //body
+  console.log(orderDishes);
   for(let i=0; i<orderDishes.length;i++){
     if(orderDishes[i].skuTagContent){
       LODOP.ADD_PRINT_LINE(hasHeight, 0, hasHeight, 259, 2, 0.5);

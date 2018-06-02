@@ -225,7 +225,7 @@
               </el-table-column>
               <el-table-column
                 sortable
-                width="150"
+                width="100"
                 prop="status"
                 label="状态">
                 <template slot-scope="scope">
@@ -235,15 +235,15 @@
               </el-table-column>
               <el-table-column
                 sortable
-                prop="driverName"
-                label="驱动名"
-                width="200">
+                prop="width"
+                label="打印宽度"
+                width="150">
               </el-table-column>
               <el-table-column
                 sortable
-                prop="remark"
-                label="备注"
-                width="100">
+                prop="driverName"
+                label="驱动名"
+                width="200">
               </el-table-column>
               <el-table-column
                 sortable
@@ -251,6 +251,13 @@
                 prop="description"
                 label="描述/介绍">
               </el-table-column>
+              <el-table-column
+                sortable
+                prop="remark"
+                label="备注"
+                width="100">
+              </el-table-column>
+
               <el-table-column
                 fixed="right"
                 label="操作"
@@ -294,7 +301,7 @@
               </el-table-column>
               <el-table-column
                 sortable
-                width="150"
+                width="100"
                 prop="status"
                 label="状态">
                 <template slot-scope="scope">
@@ -306,7 +313,7 @@
                 sortable
                 width="150"
                 prop="printWidth"
-                label="打印宽度">
+                label="模板宽度">
               </el-table-column>
               <el-table-column
                 sortable
@@ -450,7 +457,7 @@
       <!--添加打印机-->
       <el-dialog title="添加打印机" :visible.sync="showFormPrinterAdd">
         <el-form :model="printerForm" :label-width="formLabelWidth">
-          <el-form-item label="名称" >
+          <el-form-item label="打印机名" >
             <el-input
               autofocus="true"
               v-model="printerForm.name"
@@ -458,11 +465,17 @@
               @keyup="onkeyup(e)"
               placeholder="请输入打印机名称"></el-input>
           </el-form-item>
-          <el-form-item label="驱动">
+          <el-form-item label="驱动名">
             <el-input
               v-model="printerForm.driverName"
               auto-complete="off"
-              placeholder="请输入驱动"></el-input>
+              placeholder="请输入驱动名"></el-input>
+          </el-form-item>
+          <el-form-item label="打印宽度">
+            <el-input
+              v-model="printerForm.width"
+              auto-complete="off"
+              placeholder="请输入打印宽度"></el-input>
           </el-form-item>
           <el-form-item label="状态" style="text-align: left">
             <el-select
@@ -506,11 +519,11 @@
               v-model="printerTemplateForm.description"
               placeholder="请输入打印机模板介绍"></el-input>
           </el-form-item>
-          <el-form-item label="打印宽度">
+          <el-form-item label="模板宽度">
             <el-input
               v-model="printerTemplateForm.printWidth"
               auto-complete="off"
-              placeholder="请输入打印宽度"></el-input>
+              placeholder="请输入模板宽度"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">

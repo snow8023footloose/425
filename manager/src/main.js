@@ -33,13 +33,8 @@ let goEasy = new GoEasy({
 goEasy.subscribe({
   channel: 'WEB:PUSH:' + localStorage.getItem('rid'),
   onMessage: function (message) {
-    console.log(message);
     let msg = JSON.parse(message.content)
     let type = msg.msgType
-    // let data = msg.data
-    // console.log(msg);
-    // console.log(type);
-    // console.log(data);
     switch (type) {
       case 'service': // 服务消息
         handService(msg.data)
@@ -55,11 +50,6 @@ goEasy.subscribe({
     }
   }
 });
-
-
-var serviceData
-var tableUpdate
-var orderData
 
 
 

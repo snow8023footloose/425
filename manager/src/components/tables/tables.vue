@@ -426,9 +426,7 @@
             >
             </el-option>
           </el-select>
-
         </el-form-item>
-
         <el-form-item
           label="订单类型"
           style="text-align: left"
@@ -460,7 +458,6 @@
             </el-option>
           </el-select>
         </el-form-item>
-
         <el-form-item v-if="tableForm.chargeType === 'charge'" label="价格">
           <el-input v-model.number="tableForm.money" auto-complete="off" placeholder="请输入价格"></el-input>
         </el-form-item>
@@ -483,7 +480,60 @@
     <!--添加餐桌按钮-->
     <el-button size="large" type="primary" icon="el-icon-plus" @click="addTablePre" class="control-button">添加餐桌</el-button>
 
-    <!--选择规格对话框SKU-->
+
+    <!--打印机对话框选择-->
+    <el-dialog
+      width="70%"
+      title="打印选项"
+      :visible.sync="showFormPrinter"
+      :append-to-body="true"
+      style="z-index: 9999"
+    >
+      <el-form label-position="left" label-width="70px">
+        <el-form-item label="打印机">
+          <el-radio-group v-model="printerName" @change="selectedPrinterName(printerName)">
+            <el-radio-button v-for="(printer,index) in printerTable" :label="printer.driverName" :key="index">{{printer.name}}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-form label-position="left" label-width="70px">
+        <el-form-item label="打印模板">
+          <el-radio-group v-model="printerTemplate">
+            <el-radio-button
+              v-for="(printerTemplate,index) in printerTemplateTable"
+              :label="printerTemplate.name"
+              :key="index"
+              v-if="printerTemplate.printWidth === printerWidth"
+            ></el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item
+          label="打印份数"
+          style="text-align: left"
+          prop="chargeType"
+        >
+          <el-select
+            style="display: inline-block"
+            v-model="printerNum"
+            placeholder="请选择打印份数">
+            <el-option
+              v-for="(item,index) in 10"
+              :key="index"
+              :label="item"
+              :value="item"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <!--选择规格对话框SKU-->
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="showFormPrinter = false">关 闭</el-button>
+        <el-button type="primary" @click="confirmPrinter" icon="el-icon-printer">打 印</el-button>
+      </div>
+    </el-dialog>
+
+
     <el-dialog
       width="70%"
       title="选择规格"
@@ -500,7 +550,6 @@
       </el-form>
       <el-form label-position="left" label-width="70px">
         <el-form-item label="标签">
-          <!--<input type="radio" name="user.sex" id="male" value="男" >-->
           <el-checkbox-group v-model="selectedTags">
             <el-checkbox  v-for="(attrs,index) in getFoods.tags" :label="attrs.name" border :key="index"></el-checkbox>
           </el-checkbox-group>
@@ -519,12 +568,18 @@ import BScroll from 'better-scroll'
 import Vue from 'vue';
 import shopcart from '@/components/tables/shopcart.vue'
 import cartcontrol from '@/components/tables/cartcontrol.vue'
+
 const ERR_OK = 0
 export default {
   name: 'tables',
   data: () => ({
     tid:0,
+    printerWidth: 600,
     tableStatus:'',
+    printerName:'',
+    printerNum:1,
+    printerTemplate:'',
+    showFormPrinter:false,
     tableList:[],
     cartList:[],
     discountMoney:0,
@@ -552,6 +607,7 @@ export default {
     showFormTableAdd: false,
     showFormSelectSpec:false,
     tableOrderConfirm:[],
+    selectedOrder: {},
     formLabelWidth:'80px',
     tableTitle:"",
     tableForm: {},
@@ -563,6 +619,8 @@ export default {
     basePrice:0,
     selectedTable:0,
     tableCartList:[],
+    printerTemplateTable: [],
+    printerTable: [],
     countTable:0,
     tableType:[
       {
@@ -697,6 +755,56 @@ export default {
     }
   },
   methods: {
+    selectedPrinterName(val){
+      for(let i = 0; i<this.printerTable.length; i++){
+        if(this.printerTable[i].driverName === val){
+          this.printerWidth = this.printerTable[i].width  //获得打印机名
+        }
+      }
+    },
+    _pullPrinter(){
+      this.$request(this.url.printerComplexPageQuery,'json',[]).then((res)=>{
+        this.printerTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    _pullPrinterTemplate(){
+      this.$request(this.url.printerTemplateComplexPageQuery,'json',[{
+        feild:"status",
+        value:"enable",
+        joinType:"eq"
+      }]).then((res)=>{
+        this.printerTemplateTable = res.data.data
+      }).catch((err)=>{
+        console.log(err);
+      })
+    },
+    confirmPrinter(){
+      // console.log(this.printerTemplateTable, this.printerTable);
+      console.log(this.printerTemplate, this.printerName,this.printerNum);
+      var printerTemplate = this.printerTemplate
+      console.log(this.selectedOrder);
+      if(printerTemplate === '80mm-无价格'){
+        this.kitchen80(this.selectedOrder,this.printerName,this.printerNum)
+        console.log('正在打印 启动的是厨房80mm模板，打印机器是'+this.printerName)
+      }else if(printerTemplate === '60mm-无价格'){
+        this.kitchen60(this.selectedOrder,this.printerName,this.printerNum)
+        console.log('正在打印 启动的是厨房60mm模板，打印机器是'+this.printerName)
+      }else if(printerTemplate === '80mm-价格-订单号'){
+        this.cashier80(this.selectedOrder,this.printerName,this.printerNum)
+        console.log('正在打印 启动的是收银台80mm模板，打印机器是'+this.printerName)
+      }else if(printerTemplate === '60mm-价格-订单号'){
+        this.cashier60(this.selectedOrder,this.printerName,this.printerNum)
+        console.log('正在打印 启动的是收银台60mm模板，打印机器是'+this.printerName)
+      }
+    },
+    printerOrder(item,event){
+      this.selectedOrder = item
+      // console.log(this.settingForm);
+      // this.kitchen80(item,"收银台",1)
+      this.showFormPrinter = !this.showFormPrinter
+    },
     updateShopcart(){
       this._pullCartList()
     },
@@ -876,7 +984,7 @@ export default {
       });
     },
     delayOrderPay(){
-      this.dialogConfirmOrder = !this.dialogConfirmOrder
+
       var data = {
         restaurantId: parseInt(localStorage.getItem('rid')),
         orderType:'multi',
@@ -888,6 +996,8 @@ export default {
       this.$request(this.url.payOrder,'form',data).then((res)=>{
         console.log(res);
         this._pullTableOrder()
+        this._pullCartList()
+        this.dialogConfirmOrder = !this.dialogConfirmOrder
       }).catch((err)=>{
         console.log(err);
       })
@@ -903,6 +1013,9 @@ export default {
       }
       this.$request(this.url.payOrder,'form',data).then((res)=>{
         // console.log(res);
+        this._pullTableOrder()
+        this._pullCartList()
+        this.dialogConfirmOrder = !this.dialogConfirmOrder
       }).catch((err)=>{
         console.log(err);
       })
@@ -962,13 +1075,9 @@ export default {
         console.log(err);
       })
     },
-    printerOrder(item,event){
-      console.log(item);
-      console.log(item);
-      console.log(this.settingForm);
-      this.kitchen80(item,"收银台",1)
-    },
+
     selectOrder(item,event){
+      this.selectedOrder = item
       console.log(item);
     },
     selectMenu(index, event) {
@@ -1324,8 +1433,10 @@ export default {
     }
   },
   created() {
+    this._pullPrinter()
     this._pullSetting()
     this.toCountTable()
+    this._pullPrinterTemplate()
     let data1 = [{
       feild: 'status',
       value: 'enable',
