@@ -59,7 +59,7 @@
             id:this.food.id,
             delta: 1
           }).then((res)=>{
-            console.log(res);
+            // console.log(res);
             this.$emit('updateShopcart', true);
           })
         }
@@ -82,7 +82,7 @@
             id:this.food.id,
             delta:-1
           }).then((res)=>{
-            console.log(res);
+            // console.log(res);
             this.$emit('updateShopcart', true);
           })
         }

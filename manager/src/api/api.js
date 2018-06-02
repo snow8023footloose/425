@@ -59,7 +59,7 @@ export  function urlColletion() {
     couponSettingUpdate: BURL + '/restaurantCouponSetting/update',
 
     memberAdd: BURL + '/discountCoupon/add',
-    memberComplexPageQuery: BURL + '/discountCoupon/complexPageQuery',
+    memberComplexPageQuery: BURL + '/xwfUserMember/complexPageQuery',
     memberDelete: BURL + '/discountCoupon/delete',
     memberUpdate: BURL + '/discountCoupon/update',
 
@@ -218,8 +218,6 @@ export  function urlColletion() {
     //餐厅设置
     restaurantSetting:BURL + '/restaurantSetting/complexPageQuery',
     restaurantUpdate:BURL + '/restaurantSetting/update',
-
-
   }
 }
 

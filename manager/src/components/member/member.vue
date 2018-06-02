@@ -180,20 +180,21 @@ export default {
       let data = [
         {
           feild:'status',
-          value:'123',
-          joinType:'ne'
+          value:'enable',
+          joinType:'eq'
         }
       ]
       this.$request(this.url.memberComplexPageQuery,'json',data).then((res)=>{
+        console.log(res);
         this.memberTable = res.data.data
-        console.log(this.memberTable);
+        console.log(this.memberTable,'111111111');
       })
     },
     _pullMemberSetting(){
-      this.$request(this.url.memberSettingComplexPageQuery,'json',[]).then((res)=>{
-        this.memberSettingUpdate = res.data.data[0]
-        console.log(this.memberSettingUpdate);
-      })
+      // this.$request(this.url.memberSettingComplexPageQuery,'json',[]).then((res)=>{
+      //   this.memberSettingUpdate = res.data.data[0]
+      //   console.log(this.memberSettingUpdate);
+      // })
     },
     saveMemberSetting(){
       let data = this.memberSetting

@@ -533,7 +533,6 @@
       </div>
     </el-dialog>
 
-
     <el-dialog
       width="70%"
       title="选择规格"
@@ -909,7 +908,7 @@ export default {
         tableId: this.tid
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
@@ -1066,7 +1065,7 @@ export default {
         tableId: this.tid
       }
       this.$request(this.url.confirmOrder,'form',data).then((res)=>{
-        console.log(res);
+
         this.cartList = res.data.data.cartList
         this.discountMoney = res.data.data.discountMoney
         this.needPay = res.data.data.needPay
@@ -1078,7 +1077,6 @@ export default {
 
     selectOrder(item,event){
       this.selectedOrder = item
-      console.log(item);
     },
     selectMenu(index, event) {
       let foodList = this.$refs['foods-wrapper'].getElementsByClassName('food-list-hook');
@@ -1262,6 +1260,39 @@ export default {
       })
     },
     _pullTableOrder(){
+      // const end = new Date();
+      // const start = new Date();
+      var date = new Date();
+      var seperator1 = "-";
+      var seperator2 = ":";
+      var month = date.getMonth() + 1;
+      var strDate = date.getDate();
+      if (month >= 1 && month <= 9) {
+        month = "0" + month;
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = "0" + strDate;
+      }
+      var Hours = date.getHours();
+      var Minutes = date.getMinutes();
+      var Seconds = date.getSeconds();
+
+      if (Hours >= 0 && Hours <= 9) {
+        Hours = "0" + Hours;
+      }
+      if (Minutes >= 0 && Minutes <= 9) {
+        Minutes = "0" + Minutes;
+      }
+      if (Seconds >= 0 && Seconds <= 9) {
+        Seconds = "0" + Seconds;
+      }
+      var currentdate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+        + " " + Hours + seperator2 + Minutes
+        + seperator2 + Seconds;
+      var zerodate = date.getFullYear() + seperator1 + month + seperator1 + strDate
+        + " " + '00:00:00';
+
+      // console.log(currentdate, zerodate);
       this.$request(this.url.orderComplexPageQuery,'json',[
         {
           feild:'tid',
@@ -1272,9 +1303,19 @@ export default {
           feild:'rid',
           value:localStorage.getItem('rid'),
           joinType:'eq'
+        },
+        {
+          feild:'createTime',
+          value: zerodate,
+          joinType:'gt'
+        },
+        {
+          feild:'createTime',
+          value: currentdate,
+          joinType:'lt'
         }
       ]).then((res)=>{
-        console.log(res);
+        // console.log(res);
         this.tableOrderList = res.data.data
       }).catch((err)=>{
         console.log(err);

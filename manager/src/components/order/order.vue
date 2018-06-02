@@ -312,13 +312,13 @@
 
         let  data =[
           {
-            feild:'time',
-            value: startTime,
+            feild:'createTime',
+            value: startTime + " " + '00:00:00',
             joinType:'gt'
           },
           {
-            feild:'time',
-            value: endTime,
+            feild:'createTime',
+            value: endTime + " " + '00:00:00',
             joinType:'lt'
           },
         ]

@@ -28,14 +28,14 @@
         </el-button-group>
         <el-button type="success" @click="withDraw" round>提现</el-button>
       </el-tab-pane>
-      <el-tab-pane label="消费统计" name="second" :disabled="true">
-        <el-tabs v-model="activeName2" type="card" @tab-click="handleClick">
-          <el-tab-pane label="餐桌" name="first">暂无信息……</el-tab-pane>
-          <el-tab-pane label="菜品" name="second">暂无信息……</el-tab-pane>
-          <el-tab-pane label="时段" name="third">暂无信息……</el-tab-pane>
-        </el-tabs>
+      <!--<el-tab-pane label="消费统计" name="second" :disabled="true">-->
+        <!--<el-tabs v-model="activeName2" type="card" @tab-click="handleClick">-->
+          <!--<el-tab-pane label="餐桌" name="first">暂无信息……</el-tab-pane>-->
+          <!--<el-tab-pane label="菜品" name="second">暂无信息……</el-tab-pane>-->
+          <!--<el-tab-pane label="时段" name="third">暂无信息……</el-tab-pane>-->
+        <!--</el-tabs>-->
 
-      </el-tab-pane>
+      <!--</el-tab-pane>-->
     </el-tabs>
 
     <el-dialog title="提现" :visible.sync="showForm">
