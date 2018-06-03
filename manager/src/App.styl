@@ -1,9 +1,10 @@
 body
   overflow hidden
 
+
 .control-button
   position: fixed
-  right: 50px
+  right: 5%
   bottom: 45px
   z-index: 103
 
@@ -45,8 +46,13 @@ body
   width: 100%
   height: 100%
   overflow hidden
-  background url("bg-scene.png")
-  background-size auto 100%
+  background #ccc
+  background: -moz-linear-gradient(top, #fff 0%, #78baff 100%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fff), color-stop(100%,#78baff));
+  background: -webkit-linear-gradient(top, #fff 0%,#78baff 100%);
+  background: -o-linear-gradient(top, #fff 0%,#78baff 100%);
+  background: -ms-linear-gradient(top, #fff 0%,#78baff 100%);
+  background: linear-gradient(to bottom, #fff 0%,#78baff 100%);
   .main-content
     position relative
     height auto
@@ -54,6 +60,9 @@ body
       .el-menu
         padding-right 5px
         background rgba(255, 255, 255, 0.2)
+        border-radius 10px
+        padding-top 5px
+        padding-bottom 5px
         .vlink
           text-decoration: none
           font-size: 2em
@@ -152,7 +161,9 @@ td
 .el-col
   .el-tabs__content
     height 777px
-    padding-right 15px
+    padding 15px
+    background white
+    border-radius 10px
 
 .el-select
   display inline-block
@@ -174,7 +185,7 @@ td
   .el-table--fit
     height 570px
 
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member,.finance,.goods,.order
     >.el-tabs
       .el-tabs__content
         height 570px
@@ -187,12 +198,12 @@ td
     height: 20em
 
 
+
+
 @media screen and (max-width: 900px)
   th
     padding 0px !important
 
-  .filter
-    display none
 
   .el-table--fit
     height 500px
@@ -204,7 +215,7 @@ td
     .el-tabs__content
       max-height 200px
 
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member,.finance,.goods,.order
     >.el-tabs
       .el-tabs__content
         height 500px
@@ -270,7 +281,7 @@ td
       top 165px
       left 145px
 
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member,.finance,.goods,.order
     >.el-tabs
       .el-tabs__content
         height 260px
@@ -308,7 +319,7 @@ td
   .el-table--fit
     height 342px !important
 
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member,.finance,.goods,.order
     >.el-tabs
       .el-tabs__content
         height 300px
@@ -360,7 +371,7 @@ td
   .el-table--fit
     height 300px !important
 
-  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member
+  .setting,.tables,.xwfcustom,.xwfer,.xwffunction,.coupon,.member,.finance,.goods,.order
     >.el-tabs
       .el-tabs__content
         height 270px

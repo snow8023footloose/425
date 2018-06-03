@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="app">
     <div class="login" v-show="loginShow">
       <img class="loginPic" src="./logo.png" alt="">
       <el-form
@@ -171,8 +171,8 @@
       showServiceMsg:false,
       fullscreenLoading: false,
       activeService:'first',
-      loginstate: false,
-      loginShow: true,
+      loginstate: true,
+      loginShow: false,
       menuShow: true,
       menuClass:'menu',
       ruleForm2: {

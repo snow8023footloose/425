@@ -13,7 +13,7 @@
             :summary-method="getSummaries"
             show-summary
             style="width: 100%"
-            height="600"
+            height="530"
           >
             <el-table-column type="expand" fixed="left">
               <template slot-scope="props" style="width: 20%">
@@ -146,8 +146,10 @@
             </el-table-column>
           </el-table>
           <div class="filter">
+            <!--<el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>-->
+
             <el-date-picker
-              style="margin-left: 45%;margin-top: 10px"
+              style="margin: 10px 20px 0px 10px"
               v-model="filterOrderDate"
               type="daterange"
               align="right"
@@ -158,7 +160,6 @@
               end-placeholder="结束日期"
               :picker-options="pickerOptions">
             </el-date-picker>
-            <el-button type="success" @click="resetFilters" icon="el-icon-refresh" circle></el-button>
 
           </div>
         </template>
@@ -381,6 +382,12 @@
   .el-table-filter
     left 99px
 
+
+  .filter
+    position absolute
+    width 400px
+    left 50%
+    margin-left -150px
 </style>
 
 
